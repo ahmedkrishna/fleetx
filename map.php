@@ -158,7 +158,7 @@ if (empty($map_vehicles)) {
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--listing">
+<body class="fx-home fx-page-shell fx-page-shell--map">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -167,17 +167,28 @@ $hero_title = 'خريطة السيارات التفاعلية';
 $hero_eyebrow = 'مواقع السيارات المتاحة';
 $hero_desc = 'تصفح السيارات المتاحة للمزايدة الفورية والشراء المباشر حسب موقعها الجغرافي في مدن المملكة.';
 $hero_bg = 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=1600&q=80';
-$hero_modifier = 'overlap';
-$hero_bottom_html = '<div class="fx-page-hero__toolbar"><div class="stat-item"><div class="stat-num">' . count($map_vehicles) . '</div><div class="stat-lbl">مركبة على الخريطة</div></div></div>';
+$hero_modifier = 'light';
+$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-map-trifold"></i> ' . count($map_vehicles) . ' مركبة على الخريطة</span>';
+$hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph-fill ph-map-pin"></i> مدن المملكة</span>';
+$hero_meta_html .= '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-broadcast"></i> تحديث مباشر</span>';
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="container fx-page-body fx-page-body--overlap-lg">
-  
+<div class="container fx-page-body fx-page-body--overlap fx-map-page">
+  <div class="fx-map-intro-bar">
+    <div class="fx-map-intro-stat">
+      <i class="ph-fill ph-car"></i>
+      <div>
+        <strong><?= count($map_vehicles) ?></strong>
+        <span>مركبة معروضة</span>
+      </div>
+    </div>
+    <a href="/auctions.php" class="fx-map-intro-link">عرض القائمة <i class="ph ph-arrow-left"></i></a>
+  </div>
+
   <div class="fx-map-layout">
-    <!-- Sidebar Filters -->
     <div>
-      <aside class="fx-map-sidebar">
+      <aside class="fx-map-sidebar fx-filter-panel">
         <form id="sideFilterForm" method="GET" action="">
           <input type="hidden" name="type" value="<?= $type_filter ?? '' ?>">
           
@@ -186,15 +197,18 @@ include 'includes/page-hero.inc.php';
             <a href="?type=<?= $type_filter ?? '' ?>" class="fx-map-filter-reset" title="إعادة ضبط"><i class="ph ph-trash"></i></a>
           </div>
 
-          <div class="filter-group">
-            <h4 class="filter-title">البحث المباشر</h4>
-            <input type="text" name="search" value="<?= htmlspecialchars($search_query ?? '') ?>" placeholder="كلمة البحث..." class="form-control-light fx-map-filter-input-gap" onchange="document.getElementById('sideFilterForm').submit()">
-            <input type="text" name="seller" value="<?= htmlspecialchars($seller_query ?? '') ?>" placeholder="اسم البائع أو الشركة..." class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
+          <div class="filter-group fx-filter-group">
+            <h4 class="filter-title fx-filter-title">البحث المباشر</h4>
+            <div class="fx-filter-search-wrap fx-map-filter-input-gap">
+              <i class="ph ph-magnifying-glass"></i>
+              <input type="text" name="search" value="<?= htmlspecialchars($search_query ?? '') ?>" placeholder="كلمة البحث..." class="fx-filter-input" onchange="document.getElementById('sideFilterForm').submit()">
+            </div>
+            <input type="text" name="seller" value="<?= htmlspecialchars($seller_query ?? '') ?>" placeholder="اسم البائع أو الشركة..." class="fx-filter-input" onchange="document.getElementById('sideFilterForm').submit()">
           </div>
 
-          <div class="filter-group">
-            <h4 class="filter-title">المدينة</h4>
-            <select name="city" class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
+          <div class="filter-group fx-filter-group">
+            <h4 class="filter-title fx-filter-title">المدينة</h4>
+            <select name="city" class="fx-filter-select" onchange="document.getElementById('sideFilterForm').submit()">
               <option value="">جميع المدن</option>
               <?php foreach(['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة'] as $c): ?>
               <option value="<?= $c ?>" <?= (($city_filter??'') === $c)?'selected':'' ?>><?= $c ?></option>
@@ -203,17 +217,17 @@ include 'includes/page-hero.inc.php';
           </div>
 
           <?php if (($type_filter ?? '') === 'live'): ?>
-            <div class="filter-group">
-              <h4 class="filter-title">فترة المزاد</h4>
-              <select name="period" class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">فترة المزاد</h4>
+              <select name="period" class="fx-filter-select" onchange="document.getElementById('sideFilterForm').submit()">
                 <option value="">الكل</option>
                 <option value="today" <?= (isset($_GET['period']) && $_GET['period'] === 'today')?'selected':'' ?>>اليوم</option>
                 <option value="tomorrow" <?= (isset($_GET['period']) && $_GET['period'] === 'tomorrow')?'selected':'' ?>>غداً</option>
                 <option value="this_week" <?= (isset($_GET['period']) && $_GET['period'] === 'this_week')?'selected':'' ?>>هذا الأسبوع</option>
               </select>
             </div>
-            <div class="filter-group">
-              <h4 class="filter-title">حالة المزاد</h4>
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">حالة المزاد</h4>
               <?php 
                 $statuses = ['active' => 'جاري حالياً', 'upcoming' => 'قادم', 'ended' => 'منتهي'];
                 $sf = $status_filter ?? [];
@@ -226,9 +240,9 @@ include 'includes/page-hero.inc.php';
               <?php endforeach; ?>
             </div>
           <?php else: ?>
-            <div class="filter-group">
-              <h4 class="filter-title">الشركة الصانعة</h4>
-              <select name="make[]" class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">الشركة الصانعة</h4>
+              <select name="make[]" class="fx-filter-select" onchange="document.getElementById('sideFilterForm').submit()">
                 <option value="">جميع الماركات</option>
                 <?php foreach(['Toyota', 'Hyundai', 'Kia', 'Nissan', 'Ford', 'BMW', 'Mercedes'] as $m): ?>
                 <option value="<?= $m ?>" <?= (isset($make_filter) && is_array($make_filter) && in_array($m, $make_filter))?'selected':'' ?>><?= $m ?></option>
@@ -236,8 +250,8 @@ include 'includes/page-hero.inc.php';
               </select>
             </div>
             
-            <div class="filter-group">
-              <h4 class="filter-title">نوع الوقود</h4>
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">نوع الوقود</h4>
               <?php 
                 $fuels = ['بنزين', 'ديزل', 'هايبرد', 'كهرباء'];
                 $ff = $fuel_filter ?? [];
@@ -250,16 +264,17 @@ include 'includes/page-hero.inc.php';
               <?php endforeach; ?>
             </div>
 
-            <div class="filter-group">
-              <h4 class="filter-title">سنة الصنع</h4>
-              <div class="fx-range-dual">
-                <input type="number" name="year_min" value="<?= htmlspecialchars($year_min ?? '') ?>" placeholder="من" class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
-                <input type="number" name="year_max" value="<?= htmlspecialchars($year_max ?? '') ?>" placeholder="إلى" class="form-control-light" onchange="document.getElementById('sideFilterForm').submit()">
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">سنة الصنع</h4>
+              <div class="fx-filter-range">
+                <input type="number" name="year_min" value="<?= htmlspecialchars($year_min ?? '') ?>" placeholder="من" class="fx-filter-input fx-filter-input--en" dir="ltr" onchange="document.getElementById('sideFilterForm').submit()">
+                <span class="fx-filter-range-sep">-</span>
+                <input type="number" name="year_max" value="<?= htmlspecialchars($year_max ?? '') ?>" placeholder="إلى" class="fx-filter-input fx-filter-input--en" dir="ltr" onchange="document.getElementById('sideFilterForm').submit()">
               </div>
             </div>
 
-            <div class="filter-group">
-              <h4 class="filter-title">نطاق السعر (ر.س)</h4>
+            <div class="filter-group fx-filter-group">
+              <h4 class="filter-title fx-filter-title">نطاق السعر (ر.س)</h4>
               <div class="fx-price-range-labels">
                   <span id="priceRangeValMin"><?= !empty($price_min) ? $price_min : '0' ?></span>
                   <span id="priceRangeValMax"><?= !empty($price_max) ? $price_max : '500,000+' ?></span>
@@ -267,14 +282,15 @@ include 'includes/page-hero.inc.php';
               <input type="range" name="price_max" min="0" max="500000" step="5000" value="<?= !empty($price_max) ? $price_max : 500000 ?>" class="fx-price-range-input" onchange="document.getElementById('sideFilterForm').submit()" oninput="document.getElementById('priceRangeValMax').innerText = this.value">
             </div>
           <?php endif; ?>
-          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; justify-content:center;">تطبيق الفلاتر</button>
+          <div class="fx-filter-actions">
+            <button type="submit" class="btn btn-primary fx-filter-submit">تطبيق الفلاتر</button>
+          </div>
         </form>
       </aside>
     </div>
 
-    <!-- Map Column -->
     <div>
-      <div class="fx-map-container">
+      <div class="fx-map-container fx-map-container--home">
         <div id="map"></div>
       </div>
     </div>
@@ -328,7 +344,7 @@ include 'includes/page-hero.inc.php';
               <div class="fx-map-popup-title">${v.title}</div>
               <div class="fx-map-popup-city"><i class="ph ph-map-pin"></i> ${v.city}</div>
               <div class="fx-map-popup-price">${Number(v.current_price).toLocaleString('ar-SA')} ر.س</div>
-              <a href="/auction-live.php?id=${v.id}" class="btn btn-primary btn-sm" style="width:100%; display:inline-flex; align-items:center; justify-content:center; gap:6px;">دخول المزاد <i class="ph ph-arrow-up-right"></i></a>
+              <a href="/auction-live.php?id=${v.id}" class="btn btn-primary btn-sm fx-map-popup-btn">دخول المزاد <i class="ph ph-arrow-up-right"></i></a>
             </div>
           </div>
         `;

@@ -8327,3 +8327,161 @@ a.auctions-tab-btn {
     border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
   }
 }
+
+/* ==========================================================================
+   PHASE 14 — Map page + auction-live room (homepage match)
+   ========================================================================== */
+
+.fx-page-shell--map,
+.fx-page-shell--live {
+  background: #f8fafc;
+}
+
+/* Map page */
+.fx-map-page { padding-bottom: 80px; }
+.fx-map-intro-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.fx-map-intro-stat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.fx-map-intro-stat > i {
+  font-size: 28px;
+  color: var(--primary);
+  background: rgba(27, 201, 118, 0.1);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fx-map-intro-stat strong {
+  display: block;
+  font-family: var(--font-en);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text-dark);
+  line-height: 1.1;
+}
+.fx-map-intro-stat span {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.fx-map-intro-link {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fx-map-intro-link:hover { opacity: 0.85; }
+
+.fx-map-layout {
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  margin-bottom: 0;
+}
+.fx-map-sidebar.fx-filter-panel {
+  padding: 0;
+  border-radius: var(--radius-xl);
+  top: 96px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.fx-map-sidebar .fx-map-filter-head {
+  padding: 20px 22px 16px;
+  margin-bottom: 0;
+  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+.fx-map-sidebar form { padding: 20px 22px 22px; }
+.fx-map-sidebar .fx-filter-group { margin-bottom: 16px; }
+.fx-map-sidebar .fx-filter-group:last-of-type { margin-bottom: 0; }
+.fx-map-filter-input-gap { margin-bottom: 10px; }
+.fx-map-container--home {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+  min-height: 600px;
+}
+.fx-map-container--home #map {
+  height: 620px;
+  border-radius: var(--radius-xl);
+}
+.fx-map-popup-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12) !important;
+  border: 1px solid var(--border-light);
+}
+
+/* Auction live room */
+.fx-live-room-page { padding-bottom: 100px; }
+.fx-live-room-page .fx-live-room { gap: 28px; }
+.fx-live-room-page .fx-vehicle-gallery-card {
+  margin-bottom: 24px;
+}
+.fx-live-room-page .fx-detail-block.fx-panel-first {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.fx-live-bidding-panel {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+.fx-page-shell--live .pbb-status {
+  border-color: rgba(27, 201, 118, 0.35);
+  color: #047857;
+  background: rgba(27, 201, 118, 0.08);
+}
+.fx-page-shell--live .pbb-timer span {
+  background: #fff;
+  border-color: rgba(27, 201, 118, 0.2);
+  color: var(--text-dark);
+}
+.fx-page-shell--live .pbb-price-val { color: var(--text-dark); }
+.fx-page-shell--live .pbb-ai-wrapper.active {
+  border-color: rgba(27, 201, 118, 0.3);
+  background: rgba(27, 201, 118, 0.04);
+}
+.fx-page-shell--live input:checked + .slider { background: var(--primary); }
+.fx-page-shell--live .fx-live-spec {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+}
+.fx-page-shell--live .fx-mobile-bid-bar {
+  background: rgba(255, 255, 255, 0.98);
+  border-top-color: rgba(27, 201, 118, 0.15);
+}
+
+@media (max-width: 992px) {
+  .fx-map-layout { grid-template-columns: 1fr; }
+  .fx-map-sidebar.fx-filter-panel { position: static; }
+  .fx-map-intro-bar { flex-direction: column; align-items: stretch; text-align: center; }
+  .fx-map-intro-stat { justify-content: center; }
+  .fx-map-intro-link { justify-content: center; }
+}
+@media (max-width: 768px) {
+  .fx-map-container--home #map { height: 480px; }
+}

@@ -50,7 +50,7 @@ $viewers = max(12, $bid_viewers * 3 + rand(8, 24));
   <title>غرفة المزاد المباشر: <?= sanitize($title_car) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--detail">
+<body class="fx-home fx-page-shell fx-page-shell--live">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -61,22 +61,22 @@ $hero_title = $title_car;
 $hero_bg = $coverImage;
 $hero_back_href = '/event.php?id=' . ($auction['event_id'] ?? 1);
 $hero_back_label = '← العودة إلى الحدث';
-$hero_modifier = 'overlap';
+$hero_modifier = 'light';
 $hero_eyebrow = 'غرفة المزاد المباشر';
 $hero_meta_html = '
-  <span class="fx-page-hero__chip"><span class="fx-live-dot"></span> مزاد حي</span>
+  <span class="fx-page-hero__chip fx-page-hero__chip--accent"><span class="fx-live-dot"></span> مزاد حي</span>
   <span class="fx-page-hero__chip"><i class="ph-fill ph-eye"></i> ' . number_format($viewers) . ' مشاهد</span>
-  <span class="fx-page-hero__chip"><i class="ph ph-gavel"></i> ' . number_format($current_price) . ' ر.س</span>';
+  <span class="fx-page-hero__chip"><i class="ph ph-gavel"></i> ' . number_format($current_price) . ' ر.س</span>
+  <span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . sanitize($auction['city'] ?? 'الرياض') . '</span>';
+$hero_actions_html = '<button type="button" class="btn btn-outline fx-vehicle-fav-btn" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="container fx-page-body fx-page-body--overlap-lg">
+<div class="container fx-page-body fx-page-body--overlap fx-live-room-page">
   <div class="fx-live-room">
     
-    <!-- Right Panel: Vehicle Display (Order 1) -->
     <div class="live-gallery-panel">
-      <!-- White Wrapper Card for Gallery and Header -->
-      <div class="fx-live-card">
+      <div class="fx-live-card fx-panel-first fx-vehicle-gallery-card">
           <div class="fx-live-card-header">
             <div class="fx-live-card-title">
                 <span class="fx-live-dot"></span>
@@ -112,7 +112,7 @@ include 'includes/page-hero.inc.php';
       </div>
       <!-- End Wrapper -->
       
-      <div class="fx-detail-block">
+      <div class="fx-detail-block fx-panel-first">
         <h3><?= sanitize($title_car) ?></h3>
         <p class="fx-live-desc">
           هذه المركبة معروضة في المزاد المباشر. جميع المركبات مفحوصة فنياً بأكثر من 100 نقطة قبل العرض.
@@ -130,7 +130,7 @@ include 'includes/page-hero.inc.php';
 
     <!-- Left Panel: Bidding Panel (Order 2) -->
 
-<div class="pbb-board">
+<div class="pbb-board fx-live-bidding-panel">
     
     <!-- Top Header -->
     <div class="pbb-top">
