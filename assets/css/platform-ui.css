@@ -7255,3 +7255,260 @@ input:checked + .slider:before { transform: translateX(20px); }
   .fx-search-overlap--light { margin-top: -48px; }
   .fx-hero-bg { background-position: center 40%; }
 }
+
+/* ==========================================================================
+   PHASE 11 — Hero fleetxhero1 + homepage section redesign
+   ========================================================================== */
+.fx-hero-wrap--fleet1 { background: #eef2f7; }
+.fx-hero-wrapper--fleet1 {
+  background-color: #eef2f7 !important;
+  background-image: url('/assets/images/fleetxhero1.png') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  border-radius: 0 0 56px 56px;
+  padding-bottom: 32px;
+  overflow: hidden;
+}
+.fx-hero-section--fleet1 {
+  background: transparent !important;
+  min-height: clamp(560px, 88vh, 820px);
+  padding-top: 120px;
+  padding-bottom: 48px;
+}
+.fx-hero-content--fleet1 {
+  color: #0f172a;
+  transform: translateY(-10px);
+  text-shadow: none;
+  z-index: 6;
+  position: relative;
+}
+.fx-hero-tagline--fleet1 {
+  color: var(--primary);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(27, 201, 118, 0.25);
+  border-radius: var(--radius-round);
+  padding: 8px 18px;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+.fx-hero-title--fleet1 {
+  color: #0f172a;
+  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.8);
+}
+.fx-hero-subtitle--fleet1 {
+  color: #334155;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.fx-hero-mini-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 24px 0 28px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.fx-hero-mini-stat {
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+.fx-hero-mini-stat strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  font-family: var(--font-en);
+  color: var(--primary);
+}
+.fx-hero-mini-stat span {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+}
+.fx-cta-row--fleet1 { margin-top: 4px; }
+.fx-hero-section--fleet1 .fx-hero-layer--signs { z-index: 5; pointer-events: none; }
+
+/* Section 2 — Auctions */
+.fx-home-auctions {
+  padding: 72px 0 80px;
+  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
+}
+.fx-home-section-intro { margin-bottom: 36px; }
+.fx-home-section-intro--center { text-align: center; max-width: 760px; margin-left: auto; margin-right: auto; }
+.fx-home-section-intro--on-dark { margin-bottom: 48px; }
+.fx-home-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-round);
+  background: rgba(27, 201, 118, 0.1);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.fx-home-eyebrow--light {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.section-title--light { color: #fff; }
+.section-subtitle--light { color: rgba(255, 255, 255, 0.65); }
+.fx-home-quick-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 24px;
+}
+.fx-home-quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+}
+.fx-home-quick-stat i { color: var(--primary); font-size: 20px; }
+.fx-home-quick-stat strong {
+  font-family: var(--font-en);
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-dark);
+}
+.fx-home-quick-stat span { font-size: 12px; color: var(--text-muted); font-weight: 700; }
+.fx-home-tabs-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.fx-home-tabs {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+.fx-home-tabs .auctions-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.fx-home-tabs-link {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.fx-home-tabs-link:hover { opacity: 0.85; }
+
+/* Section 3 — HIW */
+.fx-home-hiw { padding-top: 24px; }
+.fx-home-hiw-block .browser-tabs-container {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Section 4 — Services grid */
+.fx-home-services {
+  padding: 80px 0;
+  background: #fff;
+}
+.fx-home-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+.fx-home-service-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 32px 26px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.fx-home-service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9);
+}
+.fx-home-service-card--2::before { background: linear-gradient(90deg, #0ea5e9, #8b5cf6); }
+.fx-home-service-card--3::before { background: linear-gradient(90deg, #8b5cf6, var(--primary)); }
+.fx-home-service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(27, 201, 118, 0.12);
+  border-color: rgba(27, 201, 118, 0.25);
+}
+.fx-home-service-card__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: rgba(27, 201, 118, 0.1);
+  color: var(--primary);
+  margin-bottom: 18px;
+}
+.fx-home-service-card h3 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin: 0 0 10px;
+}
+.fx-home-service-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* Section 5 & 6 polish */
+.fx-home-stats-section .stat-feature-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  transition: var(--transition);
+}
+.fx-home-stats-section .stat-feature-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-4px);
+}
+.fx-home-contact .fx-contact-form-card {
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+}
+
+@media (max-width: 992px) {
+  .fx-home-services-grid { grid-template-columns: 1fr; }
+  .fx-home-tabs-wrap { flex-direction: column; align-items: stretch; }
+  .fx-home-tabs-link { justify-content: center; }
+}
+@media (max-width: 768px) {
+  .fx-hero-wrapper--fleet1 { border-radius: 0 0 32px 32px; background-position: center 42% !important; }
+  .fx-hero-section--fleet1 { min-height: auto; padding-top: 100px; }
+  .fx-hero-mini-stats { flex-direction: column; }
+  .fx-home-auctions { padding: 48px 0 56px; }
+}

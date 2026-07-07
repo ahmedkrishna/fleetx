@@ -62,24 +62,30 @@ if ($total_sales_value >= 1000000000) {
 <!-- Navbar template -->
 <?php include 'includes/navbar.php'; ?>
 
-<!-- ── Hero Section (clean light theme) ── -->
-<div class="fx-hero-wrap fx-hero-wrap--light">
-<div class="hero-wrapper fx-hero-wrapper--light">
-  <section class="hero fx-hero-section fx-hero-section--clean">
-    <div class="fx-hero-bg fx-hero-layer--bg-img--fleet1" aria-hidden="true"></div>
+<!-- ── Hero Section ── -->
+<div class="fx-hero-wrap fx-hero-wrap--fleet1">
+<div class="hero-wrapper fx-hero-wrapper--fleet1">
+  <section class="hero fx-hero-section fx-hero-section--fleet1">
+    <div id="bidding-signs-container" class="fx-hero-layer fx-hero-layer--signs"></div>
 
-    <div class="hero-content fx-hero-content fx-hero-content--light">
-      <div class="hero-tagline fx-hero-tagline--light">
+    <div class="hero-content fx-hero-content fx-hero-content--fleet1">
+      <div class="hero-tagline fx-hero-tagline--fleet1">
         <span id="heroTaglineTypewriter">أول منصة مزادات أساطيل ذكية وموثوقة بالمملكة</span>
       </div>
 
-      <h1 class="hero-title fx-hero-title--light">
+      <h1 class="hero-title fx-hero-title--fleet1">
         <span id="heroMainTitle">أضخم مزادات أساطيل السيارات</span>
       </h1>
 
-      <p class="hero-subtitle fx-hero-subtitle--light">تجربة مزايدة حية وسلسة لسيارات الشركات والجهات الحكومية — مع تقارير فحص فنية موثقة وشفافية كاملة.</p>
+      <p class="hero-subtitle fx-hero-subtitle--fleet1">تجربة مزايدة حية وسلسة لسيارات الشركات والجهات الحكومية — مع تقارير فحص فنية موثقة وشفافية كاملة.</p>
 
-      <div class="fx-cta-row fx-cta-row--light">
+      <div class="fx-hero-mini-stats">
+        <div class="fx-hero-mini-stat"><strong><?= $total_auctions > 0 ? number_format($total_auctions) : '30+' ?></strong><span>مزاد منظم</span></div>
+        <div class="fx-hero-mini-stat"><strong><?= $sales_display ?></strong><span>مبيعات (<?= $sales_unit ?>)</span></div>
+        <div class="fx-hero-mini-stat"><strong><?= $approval_rate ?>%</strong><span>إتمام المزادات</span></div>
+      </div>
+
+      <div class="fx-cta-row fx-cta-row--fleet1">
         <a href="/map.php" class="btn btn-primary fx-cta-btn">
           خريطة المزادات <i class="ph ph-map-pin ph-space-left"></i>
         </a>
@@ -140,125 +146,6 @@ if ($total_sales_value >= 1000000000) {
     </script>
   </section>
 
-  <!-- ── Search Panel ── -->
-  <div class="stats-container reveal fx-search-overlap fx-search-overlap--light">
-    <div class="container">
-        <div class="hero-search-panel hero-search-panel--light">
-          <form action="/auctions.php" method="GET" class="hero-search-form hero-search-form--light collapsed-mobile">
-            <!-- Search input -->
-            <div class="search-field search-field--wide">
-              <label><i class="ph ph-magnifying-glass"></i> كلمة البحث</label>
-              <input type="text" name="search" placeholder="ابحث عن سيارات، مزادات..." id="quickSearch">
-            </div>
-            
-            <!-- Make filter -->
-            <div class="search-field">
-              <label><i class="ph ph-car"></i> الماركة</label>
-              <select name="make">
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                          <option value="">كل الماركات</option>
-            <option value="Toyota">تويوتا</option>
-            <option value="Hyundai">هيونداي</option>
-            <option value="Nissan">نيسان</option>
-            <option value="Ford">فورد</option>
-            <option value="Chevrolet">شيفروليه</option>
-            <option value="Kia">كيا</option>
-            <option value="GMC">جمس</option>
-            <option value="Mazda">مازدا</option>
-            <option value="Honda">هوندا</option>
-            <option value="Lexus">لكزس</option>
-            <option value="Mercedes">مرسيدس</option>
-            <option value="BMW">بي ام دبليو</option>
-            <option value="Audi">أودي</option>
-            <option value="Porsche">بورش</option>
-            <option value="Geely">جيلي</option>
-            <option value="Changan">شانجان</option>
-            <option value="MG">إم جي</option>
-          </select>
-            </div>
-            
-            <!-- City filter -->
-            <div class="search-field">
-              <label><i class="ph ph-map-pin"></i> المدينة</label>
-              <select name="city">
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                          <option value="">كل المدن</option>
-            <option value="Riyadh">الرياض</option>
-            <option value="Jeddah">جدة</option>
-            <option value="Dammam">الدمام</option>
-            <option value="Mecca">مكة المكرمة</option>
-            <option value="Medina">المدينة المنورة</option>
-            <option value="Khobar">الخبر</option>
-            <option value="Abha">أبها</option>
-            <option value="Tabuk">تبوك</option>
-            <option value="Taif">الطائف</option>
-            <option value="Buraidah">بريدة</option>
-            <option value="Jizan">جازان</option>
-            <option value="Najran">نجران</option>
-            <option value="Hail">حائل</option>
-            <option value="Jubail">الجبيل</option>
-            <option value="Al-Ahsa">الأحساء</option>
-          </select>
-            </div>
-            
-            <!-- Transaction Type filter -->
-            <div class="search-field">
-              <label><i class="ph ph-list-dashes"></i> نوع البيع</label>
-              <select name="type">
-                <option value="">الكل</option>
-                <option value="live">مزايدة</option>
-                <option value="instant">شراء فوري</option>
-              </select>
-            </div>
-            
-            <!-- Action buttons -->
-            <div class="search-actions">
-              <button type="submit" class="btn btn-primary btn-search-submit--light" title="بحث">
-                <i class="ph ph-magnifying-glass"></i> بحث
-              </button>
-            </div>
-          </form>
-          <div class="mobile-search-expand-btn" onclick="document.querySelector('.hero-search-form').classList.toggle('collapsed-mobile'); this.querySelector('.toggle-icon').classList.toggle('is-rotated', !document.querySelector('.hero-search-form').classList.contains('collapsed-mobile'));">
-            <i class="ph-bold ph-caret-down toggle-icon"></i>
-          </div>
-        </div>
-      </div>
-    </div>
 </div>
 </div>
 
@@ -286,20 +173,26 @@ if ($db_connected) {
 
 ?>
 
-<!-- ── Unified Auctions Section (White Background) ── -->
-<section class="reveal fx-section--white">
+<!-- ── Section 2: Auctions ── -->
+<section class="reveal fx-home-auctions">
   <div class="container">
-    <div class="fx-section-head">
+    <div class="fx-home-section-intro">
+      <span class="fx-home-eyebrow"><i class="ph-fill ph-gavel"></i> أحدث العروض</span>
       <h2 class="section-title">استكشف المركبات المتاحة</h2>
-      <p class="section-subtitle">تصفح أحدث مزادات السيارات والمبيعات الفورية المدرجة في المنصة</p>
+      <p class="section-subtitle">تصفح أحدث مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
+      <div class="fx-home-quick-stats">
+        <div class="fx-home-quick-stat"><i class="ph-fill ph-broadcast"></i><strong><?= count($live_auctions) ?></strong><span>مزاد نشط</span></div>
+        <div class="fx-home-quick-stat"><i class="ph-fill ph-lightning"></i><strong><?= count($instant_cars) ?></strong><span>شراء فوري</span></div>
+        <div class="fx-home-quick-stat"><i class="ph-fill ph-buildings"></i><strong><?= count($events) ?></strong><span>حدث مباشر</span></div>
+      </div>
     </div>
 
-    <!-- Tabs Container -->
-    <div class="auctions-tabs-wrapper">
-      <div class="auctions-tabs">
-        <button class="auctions-tab-btn active" onclick="switchAuctionTab('live')">المزادات الحية والمباشرة</button>
-        <button class="auctions-tab-btn" onclick="switchAuctionTab('instant')">الشراء الفوري</button>
+    <div class="auctions-tabs-wrapper fx-home-tabs-wrap">
+      <div class="auctions-tabs fx-home-tabs">
+        <button class="auctions-tab-btn active" onclick="switchAuctionTab('live')"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
+        <button class="auctions-tab-btn" onclick="switchAuctionTab('instant')"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
       </div>
+      <a href="/auctions.php" class="fx-home-tabs-link">عرض الكل <i class="ph ph-arrow-left"></i></a>
     </div>
 
     <!-- ── Live Auctions Tab Content ── -->
@@ -443,11 +336,17 @@ if ($db_connected) {
   }
 </script>
 
-<!-- ── HOW IT WORKS: Sticky Sections with Tabs ── -->
-<section class="fx-hiw-section">
-  
-  <!-- ============ SECTION: BUYERS ============ -->
-  <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers">
+<!-- ── Section 3: How It Works ── -->
+<section class="fx-hiw-section fx-home-hiw">
+  <div class="container">
+    <div class="fx-home-section-intro fx-home-section-intro--center fx-home-section-intro--on-dark">
+      <span class="fx-home-eyebrow fx-home-eyebrow--light"><i class="ph-fill ph-path"></i> كيف يعمل FleetX</span>
+      <h2 class="section-title section-title--light">ابدأ رحلتك في دقائق</h2>
+      <p class="section-subtitle section-subtitle--light">مساران واضحان للمشترين والبائعين — من التوثيق حتى إتمام الصفقة.</p>
+    </div>
+  </div>
+
+  <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers fx-home-hiw-block">
     <div class="container container--full">
       <div class="hiw-dark-head">
         <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
@@ -599,48 +498,37 @@ function closeHiwModal() {
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal(); });
 </script>
 
-<!-- ── Features Section (SaaS / Premium style) ── -->
-<section class="reveal fx-section--services">
+<!-- ── Section 4: Services ── -->
+<section class="reveal fx-home-services">
   <div class="container">
-    <div class="fx-section-head fx-section-head--narrow">
+    <div class="fx-home-section-intro fx-home-section-intro--center">
+      <span class="fx-home-eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
       <h2 class="section-title">خدمات مزادات ذكية ومتكاملة</h2>
-      <p class="section-subtitle">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي</p>
+      <p class="section-subtitle">من الفحص والتوثيق إلى التسوية والتسليم — منصة واحدة لإدارة دورة بيع الأسطول بالكامل.</p>
     </div>
 
-
-    <div class="services-flex-container">
-      <div class="service-flex-card-new service-card-1 reveal" >
-        
-        
-        
-        <div class="service-content service-content--stack">
-          <i class="ph ph-clipboard-text icon-grad"></i>
-          <h3>تقرير فحص 100+ نقطة</h3>
-          <p>جميع السيارات المعروضة تخضع لفحص فني شامل يغطي الهيكل والميكانيكا والكهرباء معتمد من قبل خبراء المنصة.</p>
-        </div>
-      </div>
-      
-      <div class="service-flex-card-new service-card-2 service-flex-card-new--delay-1 reveal">
-        <div class="service-content service-content--stack">
-          <i class="ph ph-shield-check icon-grad"></i>
-          <h3>بيئة موثقة بالكامل</h3>
-          <p>نحن نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع بوابة النفاذ الوطني الموحد لضمان جدية المزايدات.</p>
-        </div>
-      </div>
-      
-      <div class="service-flex-card-new service-card-3 service-flex-card-new--delay-2 reveal">
-        <div class="service-content service-content--stack">
-          <i class="ph ph-robot icon-grad"></i>
-          <h3>نظام المزايدة التلقائية</h3>
-          <p>حدد سقف ميزانيتك للسيارة، وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة لحين الوصول لحدك الأقصى.</p>
-        </div>
-      </div>
+    <div class="fx-home-services-grid">
+      <article class="fx-home-service-card fx-home-service-card--1 reveal">
+        <div class="fx-home-service-card__icon"><i class="ph-fill ph-clipboard-text"></i></div>
+        <h3>تقرير فحص 100+ نقطة</h3>
+        <p>فحص فني شامل للهيكل والميكانيكا والكهرباء قبل عرض أي مركبة في المزاد أو الشراء الفوري.</p>
+      </article>
+      <article class="fx-home-service-card fx-home-service-card--2 reveal">
+        <div class="fx-home-service-card__icon"><i class="ph-fill ph-shield-check"></i></div>
+        <h3>بيئة موثقة بالكامل</h3>
+        <p>تحقق من هوية المشترين والبائعين عبر النفاذ الوطني لضمان جدية المزايدات وسلامة التعاملات.</p>
+      </article>
+      <article class="fx-home-service-card fx-home-service-card--3 reveal">
+        <div class="fx-home-service-card__icon"><i class="ph-fill ph-robot"></i></div>
+        <h3>مزايدة تلقائية ذكية</h3>
+        <p>حدد سقف ميزانيتك وسيقوم النظام بالمزايدة تلقائياً بأقل زيادة ممكنة حتى الحد الأقصى الذي تحدده.</p>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- ── Stats Section (Parallax Dark Theme) ── -->
-<section class="stats-section stats-section--parallax">
+<!-- ── Section 5: Stats ── -->
+<section class="stats-section stats-section--parallax fx-home-stats-section">
   <div class="stats-section__overlay"></div>
   
   <div class="container reveal stats-section__inner">
@@ -687,8 +575,8 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
     </div>
   </div>
 </section>
-<!-- ── Contact Us Section ── -->
-<section class="fx-contact-section" id="contact-us">
+<!-- ── Section 6: Contact ── -->
+<section class="fx-contact-section fx-home-contact" id="contact-us">
   <div class="container">
     <div class="contact-grid">
       
@@ -1002,6 +890,43 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         clock.querySelector('[data-unit="secs"]').innerText = secs.toString().padStart(2, '0');
       });
     }, 1000);
+
+    // Bidding signs animation
+    const bids = [
+      { text: 'مزايدة جديدة', amount: '150,000 ريال', car: 'تويوتا لاندكروزر', url: '/event.php?id=1' },
+      { text: 'سعر حصري', amount: '85,000 ريال', car: 'هيونداي سوناتا', url: '/vehicle-details.php?id=2' },
+      { text: 'مزايدة قوية', amount: '210,000 ريال', car: 'لكزس LX', url: '/event.php?id=3' },
+      { text: 'فرصة ذهبية', amount: '45,000 ريال', car: 'تويوتا كامري', url: '/vehicle-details.php?id=4' },
+      { text: 'شراء فوري', amount: '320,000 ريال', car: 'مرسيدس S-Class', url: '/vehicle-details.php?id=5' },
+      { text: 'مزايدة نارية', amount: '110,000 ريال', car: 'نيسان باترول', url: '/event.php?id=6' }
+    ];
+
+    function spawnBiddingSign() {
+      const container = document.getElementById('bidding-signs-container');
+      if (!container) return;
+      const sign = document.createElement('div');
+      const isMobile = window.innerWidth <= 768;
+      const isLeft = Math.random() > 0.5;
+      sign.className = 'bidding-sign ' + (isLeft ? 'left-side' : 'right-side');
+      let topPos = isMobile
+        ? (window.lastSignPos === 'top' ? (window.lastSignPos = 'bottom', Math.floor(Math.random() * 6) + 70) : (window.lastSignPos = 'top', Math.floor(Math.random() * 6) + 10))
+        : Math.floor(Math.random() * 60) + 20;
+      sign.style.top = topPos + '%';
+      const tilt = Math.floor(Math.random() * 15) + 5;
+      sign.style.setProperty('--tilt', (isLeft ? -tilt : tilt) + 'deg');
+      const bid = bids[Math.floor(Math.random() * bids.length)];
+      sign.innerHTML = '<div class="paddle-stick"></div><div class="paddle-board"><i class="ph-fill ph-gavel"></i><div class="paddle-board-text"><span class="paddle-board-label">' + bid.text + '<br>على ' + bid.car + '</span><span class="paddle-board-amount">' + bid.amount + '</span></div></div>';
+      sign.style.cursor = 'pointer';
+      sign.onclick = function() { window.location.href = bid.url || '/auctions.php'; };
+      container.appendChild(sign);
+      setTimeout(function() { sign.classList.add('show'); }, 100);
+      setTimeout(function() {
+        sign.classList.remove('show');
+        setTimeout(function() { sign.remove(); }, 600);
+      }, 5000);
+    }
+    setInterval(spawnBiddingSign, 5000);
+    setTimeout(spawnBiddingSign, 800);
 
   });
 </script>
