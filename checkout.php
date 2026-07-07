@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <title><?= sanitize($page_title) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--detail">
+<body class="fx-home fx-page-shell fx-page-shell--checkout">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -159,77 +159,77 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $hero_title = 'إتمام الشراء والدفع الآمن';
 $hero_desc = 'يرجى مراجعة تفاصيل الفاتورة واختيار طريقة الدفع المناسبة.';
 $hero_bg = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=80';
-$hero_modifier = 'checkout';
+$hero_modifier = 'light';
+$hero_eyebrow = 'الدفع الآمن';
 include 'includes/page-hero.inc.php';
 ?>
 
 <div class="container fx-page-body fx-page-body--overlap">
   
   <?php if(isset($error)): ?>
-    <div style="background: var(--danger-pale); border-right: 4px solid var(--danger); padding: 16px; border-radius: var(--radius-md); color: var(--danger); margin-bottom: 24px; font-weight:700;">
+    <div class="fx-checkout-alert">
       <i class="ph ph-warning-circle ph-space-left"></i> <?= sanitize($error) ?>
     </div>
   <?php endif; ?>
 
   <div class="fx-checkout-layout">
     
-    <!-- Payment Form -->
-    <div class="checkout-box">
-      <h3 style="font-size: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 16px; margin-bottom: 24px; color:var(--text-dark)">الخدمات الإضافية</h3>
+    <div class="fx-checkout-box">
+      <h3 class="fx-checkout-heading">الخدمات الإضافية</h3>
       
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px;" id="extra-services">
-        <label class="payment-option" style="padding:16px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <input type="checkbox" name="extra_transfer" value="1500" class="extra-service-cb" style="accent-color: var(--primary); transform: scale(1.2);">
+      <div class="fx-checkout-stack" id="extra-services">
+        <label class="payment-option">
+            <div class="fx-checkout-option-inner">
+              <input type="checkbox" name="extra_transfer" value="1500" class="extra-service-cb">
               <div>
-                <div style="font-weight: 800; color: var(--text-dark);">نقل ملكية وتأمين أساسي</div>
+                <div class="fx-checkout-option-title">نقل ملكية وتأمين أساسي</div>
               </div>
             </div>
-            <div style="font-weight:900; font-family:var(--font-en);">+1,500 SAR</div>
+            <div class="fx-checkout-option-price">+1,500 SAR</div>
         </label>
-        <label class="payment-option" style="padding:16px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <input type="checkbox" name="extra_delivery" value="500" class="extra-service-cb" style="accent-color: var(--primary); transform: scale(1.2);">
+        <label class="payment-option">
+            <div class="fx-checkout-option-inner">
+              <input type="checkbox" name="extra_delivery" value="500" class="extra-service-cb">
               <div>
-                <div style="font-weight: 800; color: var(--text-dark);">توصيل لباب بيتك</div>
+                <div class="fx-checkout-option-title">توصيل لباب بيتك</div>
               </div>
             </div>
-            <div style="font-weight:900; font-family:var(--font-en);">+500 SAR</div>
+            <div class="fx-checkout-option-price">+500 SAR</div>
         </label>
-        <label class="payment-option" style="padding:16px; border-color:#f59e0b; background:rgba(245,158,11,0.05);">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <input type="checkbox" name="extra_gold" value="3000" class="extra-service-cb" style="accent-color: #f59e0b; transform: scale(1.2);">
+        <label class="payment-option payment-option--gold">
+            <div class="fx-checkout-option-inner">
+              <input type="checkbox" name="extra_gold" value="3000" class="extra-service-cb">
               <div>
-                <div style="font-weight: 800; color: #d97706;"><i class="ph-fill ph-crown"></i> الباقة الذهبية الشاملة</div>
-                <div style="font-size: 11px; color: var(--text-muted); margin-top:2px;">نقل، تأمين شامل، صيانة مجانية سنة</div>
+                <div class="fx-checkout-option-title"><i class="ph-fill ph-crown"></i> الباقة الذهبية الشاملة</div>
+                <div class="fx-checkout-option-sub">نقل، تأمين شامل، صيانة مجانية سنة</div>
               </div>
             </div>
-            <div style="font-weight:900; font-family:var(--font-en); color:#d97706;">+3,000 SAR</div>
+            <div class="fx-checkout-option-price fx-checkout-option-price--gold">+3,000 SAR</div>
         </label>
       </div>
 
-      <h3 style="font-size: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 16px; margin-bottom: 24px; color:var(--text-dark)">طريقة الدفع</h3>
+      <h3 class="fx-checkout-heading">طريقة الدفع</h3>
       
       <form action="" method="POST">
-        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px;">
+        <div class="fx-checkout-stack fx-checkout-stack--payments">
           
           <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <input type="radio" name="payment_method" value="wallet" checked style="accent-color: var(--primary); transform: scale(1.2);">
+            <div class="fx-checkout-option-inner">
+              <input type="radio" name="payment_method" value="wallet" checked>
               <div>
-                <div style="font-weight: 800; color: var(--text-dark);">المحفظة الرقمية</div>
-                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">الرصيد المتاح: <span class="font-en"><?= number_format($wallet) ?> SAR</span></div>
+                <div class="fx-checkout-option-title">المحفظة الرقمية</div>
+                <div class="fx-checkout-option-sub">الرصيد المتاح: <span class="font-en"><?= number_format($wallet) ?> SAR</span></div>
               </div>
             </div>
             <i class="ph-fill ph-wallet" style="font-size: 24px; color: var(--primary);"></i>
           </label>
           
           <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <input type="radio" name="payment_method" value="card" style="accent-color: var(--primary); transform: scale(1.2);">
+            <div class="fx-checkout-option-inner">
+              <input type="radio" name="payment_method" value="card">
               <div>
-                <div style="font-weight: 800; color: var(--text-dark);">البطاقة الائتمانية / مدى</div>
-                <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">سيتم توجيهك لبوابة الدفع الآمنة</div>
+                <div class="fx-checkout-option-title">البطاقة الائتمانية / مدى</div>
+                <div class="fx-checkout-option-sub">سيتم توجيهك لبوابة الدفع الآمنة</div>
               </div>
             </div>
             <i class="ph-fill ph-credit-card" style="font-size: 24px; color: var(--text-muted);"></i>
@@ -237,72 +237,68 @@ include 'includes/page-hero.inc.php';
 
         </div>
         
-        <!-- Credit Card Form (Simulated Gateway) -->
-        <div id="card-payment-form" style="display: none; background: #fff; padding: 24px; border-radius: var(--radius-md); border: 1px solid var(--border-light); margin-bottom: 32px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-          <h4 style="font-size: 16px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <div id="card-payment-form" class="fx-checkout-card-form">
+          <h4 class="fx-checkout-card-form__head">
             بيانات البطاقة
-            <div style="display: flex; gap: 6px;">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" style="height: 20px;">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" style="height: 20px;">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mada_Logo.svg" style="height: 20px; background: #fff; border-radius: 2px;">
+            <div class="fx-checkout-card-brands">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mada_Logo.svg" alt="Mada">
             </div>
           </h4>
-          <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="fx-checkout-card-fields">
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">الاسم على البطاقة</label>
-              <input type="text" placeholder="مثال: Ahmed Fouad" class="form-control" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none;">
+              <label class="fx-checkout-field-label">الاسم على البطاقة</label>
+              <input type="text" placeholder="مثال: Ahmed Fouad" class="fx-checkout-field-input">
             </div>
             <div>
-              <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">رقم البطاقة</label>
-              <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" class="form-control" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none; font-family: var(--font-en); direction: ltr; text-align: left;">
+              <label class="fx-checkout-field-label">رقم البطاقة</label>
+              <input type="text" placeholder="0000 0000 0000 0000" maxlength="19" class="fx-checkout-field-input fx-checkout-field-input--en">
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="fx-checkout-field-grid">
               <div>
-                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">تاريخ الانتهاء</label>
-                <input type="text" placeholder="MM/YY" maxlength="5" class="form-control" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none; font-family: var(--font-en); direction: ltr; text-align: left;">
+                <label class="fx-checkout-field-label">تاريخ الانتهاء</label>
+                <input type="text" placeholder="MM/YY" maxlength="5" class="fx-checkout-field-input fx-checkout-field-input--en">
               </div>
               <div>
-                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">رمز الحماية (CVV)</label>
-                <input type="text" placeholder="123" maxlength="3" class="form-control" style="width: 100%; padding: 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none; font-family: var(--font-en); direction: ltr; text-align: left;">
+                <label class="fx-checkout-field-label">رمز الحماية (CVV)</label>
+                <input type="text" placeholder="123" maxlength="3" class="fx-checkout-field-input fx-checkout-field-input--en">
               </div>
             </div>
           </div>
         </div>
         
-        <button type="submit" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 18px; display:flex; align-items:center; justify-content:center; gap:8px;">تأكيد الدفع <i class="ph-fill ph-lock-key"></i></button>
+        <button type="submit" class="btn btn-primary fx-checkout-submit">تأكيد الدفع <i class="ph-fill ph-lock-key"></i></button>
       </form>
     </div>
 
-    <!-- Order Summary -->
-    <div style="align-self: start; position: sticky; top: 100px;">
-      <div class="summary-card">
-        <h3 style="font-size: 18px; font-weight:800; margin-bottom: 24px; color:var(--text-dark)">ملخص الطلب</h3>
+    <div class="fx-checkout-summary">
+      <div class="fx-checkout-summary-card">
+        <h3>ملخص الطلب</h3>
         
-        <div style="display: flex; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed var(--border-light);">
-          <img src="<?= $vehicle['image_url'] ?? getCarImage($vehicle['make'] ?? '') ?>" style="width: 80px; height: 60px; border-radius: var(--radius-sm); object-fit: cover;">
+        <div class="fx-checkout-vehicle">
+          <img src="<?= $vehicle['image_url'] ?? getCarImage($vehicle['make'] ?? '') ?>" alt="<?= sanitize($vehicle['title']) ?>">
           <div>
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px; color:var(--text-dark)"><?= sanitize($vehicle['title']) ?></div>
-            <div style="font-size: 12px; color: var(--text-muted);"><i class="ph ph-buildings"></i> <?= sanitize($vehicle['seller'] ?? 'بائع معتمد') ?></div>
+            <div class="fx-checkout-vehicle-title"><?= sanitize($vehicle['title']) ?></div>
+            <div class="fx-checkout-vehicle-seller"><i class="ph ph-buildings"></i> <?= sanitize($vehicle['seller'] ?? 'بائع معتمد') ?></div>
           </div>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-muted); font-weight:600;">
+        <div class="fx-checkout-line">
           <span>قيمة المركبة</span>
           <span class="font-en"><?= number_format($price) ?> SAR</span>
         </div>
         
-        <div style="display: flex; justify-content: space-between; margin-bottom: 24px; color: var(--text-muted); font-weight:600;">
+        <div class="fx-checkout-line">
           <span>ضريبة القيمة المضافة (15%)</span>
           <span class="font-en"><?= number_format($vat) ?> SAR</span>
         </div>
         
-        <div id="extra-services-summary" style="display:none; flex-direction:column; gap:8px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--border-light);">
-          <!-- Populated by JS -->
-        </div>
+        <div id="extra-services-summary" class="fx-checkout-extras-summary"></div>
         
-        <div style="display: flex; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--border-light);">
-          <span style="font-weight: 900; font-size: 18px; color:var(--text-dark)">الإجمالي</span>
-          <span style="font-size: 24px; font-weight: 900; color: var(--primary); font-family: var(--font-en);" id="total-amount-display" data-base="<?= $total ?>"><?= number_format($total) ?> SAR</span>
+        <div class="fx-checkout-total">
+          <span class="fx-checkout-total-label">الإجمالي</span>
+          <span class="fx-checkout-total-val" id="total-amount-display" data-base="<?= $total ?>"><?= number_format($total) ?> SAR</span>
         </div>
       </div>
     </div>
@@ -336,7 +332,7 @@ include 'includes/page-hero.inc.php';
                   currentTotal += val;
                   let name = c.nextElementSibling.querySelector('div').innerText;
                   summaryHTML += `
-                    <div style="display: flex; justify-content: space-between; font-size:13px; color: var(--text-dark); font-weight:700;">
+                    <div class="fx-checkout-extra-line">
                       <span>+ ${name}</span>
                       <span class="font-en">${val.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",")} SAR</span>
                     </div>`;
@@ -344,10 +340,10 @@ include 'includes/page-hero.inc.php';
           });
           
           if (hasExtras) {
-              summaryDiv.style.display = 'flex';
+              summaryDiv.classList.add('is-visible');
               summaryDiv.innerHTML = summaryHTML;
           } else {
-              summaryDiv.style.display = 'none';
+              summaryDiv.classList.remove('is-visible');
           }
           
           totalDisplay.innerHTML = currentTotal.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",") + ' SAR';
@@ -359,9 +355,9 @@ include 'includes/page-hero.inc.php';
   paymentRadios.forEach(radio => {
       radio.addEventListener('change', function() {
           if (this.value === 'card') {
-              ccForm.style.display = 'block';
+              ccForm.classList.add('is-visible');
           } else {
-              ccForm.style.display = 'none';
+              ccForm.classList.remove('is-visible');
           }
       });
   });
@@ -369,7 +365,7 @@ include 'includes/page-hero.inc.php';
   // Trigger initial state
   const initialSelected = document.querySelector('input[name="payment_method"]:checked');
   if(initialSelected && initialSelected.value === 'card') {
-      ccForm.style.display = 'block';
+      ccForm.classList.add('is-visible');
   }
 </script>
 </body>

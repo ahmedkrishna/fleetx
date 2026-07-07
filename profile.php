@@ -53,32 +53,35 @@ $role_label = $role_labels[$role] ?? 'عضو';
   <title>حسابي | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--legal">
+<body class="fx-home fx-page-shell fx-page-shell--profile">
 
 <?php include 'includes/navbar.php'; ?>
 
-<div class="container fx-profile-page">
-  <div class="fx-profile-header">
-    <div class="fx-profile-user">
-      <div class="fx-profile-avatar"><?= mb_substr($user_name, 0, 1) ?></div>
-      <div>
-        <h1 class="fx-profile-name"><?= sanitize($user_name) ?></h1>
-        <p class="fx-profile-badge">
-          <?php if ($nafath_verified): ?>
-            <i class="ph-fill ph-check-circle"></i> حساب <?= $role_label ?> موثق (Nafath)
-          <?php else: ?>
-            <i class="ph ph-user"></i> حساب <?= $role_label ?>
-          <?php endif; ?>
-        </p>
-      </div>
+<?php
+$hero_title = sanitize($user_name);
+$hero_desc = 'إدارة المحفظة والمزايدات والمفضلة وإعدادات حسابك';
+$hero_bg = 'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'حسابي';
+$hero_meta_html = '<div class="fx-profile-hero-meta">
+  <div class="fx-profile-hero-avatar">' . mb_substr($user_name, 0, 1) . '</div>
+  <div>
+    <p class="fx-profile-hero-badge">' .
+      ($nafath_verified
+        ? '<i class="ph-fill ph-check-circle"></i> حساب ' . $role_label . ' موثق (Nafath)'
+        : '<i class="ph ph-user"></i> حساب ' . $role_label) .
+    '</p>
+    <div class="fx-profile-actions-top">
+      <a href="' . getDashboardUrl() . '" class="btn btn-outline btn-sm"><i class="ph ph-squares-four ph-space-left"></i> لوحة التحكم</a>
     </div>
-    <a href="<?= getDashboardUrl() ?>" class="btn btn-outline btn-sm hide-on-mobile">
-      <i class="ph ph-squares-four ph-space-left"></i> لوحة التحكم
-    </a>
   </div>
+</div>';
+include 'includes/page-hero.inc.php';
+?>
 
-  <div class="fx-profile-layout">
-    <aside class="fx-profile-sidebar">
+<div class="container fx-page-body fx-page-body--overlap fx-profile-page">
+  <div class="fx-profile-layout fx-profile-layout--home">
+    <aside class="fx-profile-sidebar fx-profile-sidebar--home">
       <ul class="fx-profile-nav">
         <li><a href="?tab=wallet" class="<?= $tab === 'wallet' ? 'active' : '' ?>"><i class="ph-fill ph-wallet"></i> المحفظة والمشتريات</a></li>
         <li><a href="?tab=favorites" class="<?= $tab === 'favorites' ? 'active' : '' ?>"><i class="ph ph-heart"></i> المفضلة</a></li>
@@ -90,7 +93,7 @@ $role_label = $role_labels[$role] ?? 'عضو';
 
     <main class="fx-profile-main">
       <?php if ($tab === 'wallet'): ?>
-        <div class="fx-profile-card fx-wallet-card">
+        <div class="fx-profile-card fx-profile-card--home fx-wallet-card">
           <div class="fx-wallet-glow"></div>
           <div class="fx-wallet-row">
             <div>
@@ -106,7 +109,7 @@ $role_label = $role_labels[$role] ?? 'عضو';
           </div>
         </div>
 
-        <div class="fx-profile-card">
+        <div class="fx-profile-card fx-profile-card--home">
           <h3>مزايدات نشطة تشارك بها</h3>
           <?php if ($active_bid): ?>
             <?php $bid_title = sanitize($active_bid['make'] . ' ' . $active_bid['model'] . ' ' . $active_bid['year']); ?>
@@ -126,19 +129,19 @@ $role_label = $role_labels[$role] ?? 'عضو';
               </div>
             </div>
           <?php else: ?>
-            <p class="fx-empty-tab">لا توجد مزايدات نشطة حالياً. <a href="/auctions.php" style="color:var(--primary); font-weight:800;">تصفح المزادات</a></p>
+            <p class="fx-empty-tab">لا توجد مزايدات نشطة حالياً. <a href="/auctions.php" class="fx-link-primary">تصفح المزادات</a></p>
           <?php endif; ?>
         </div>
 
       <?php elseif ($tab === 'favorites'): ?>
-        <div class="fx-profile-card">
-          <h3>المفضلة <span style="font-size:14px; color:var(--text-muted); font-weight:700;">(<?= count($fav_items) ?>)</span></h3>
+        <div class="fx-profile-card fx-profile-card--home">
+          <h3>المفضلة <span class="fx-muted-count">(<?= count($fav_items) ?>)</span></h3>
           <?php if (empty($fav_items)): ?>
-            <div class="fx-empty-state" style="padding:48px 24px; border:none; box-shadow:none;">
-              <i class="ph-fill ph-heart" style="font-size:48px; color:#ef4444; margin-bottom:14px;"></i>
+            <div class="fx-empty-state fx-empty-state--profile">
+              <i class="ph-fill ph-heart"></i>
               <h3>لم تقم بإضافة أي مركبات للمفضلة بعد</h3>
               <p>تصفح المزادات أو الشراء الفوري واضغط على أيقونة القلب لحفظ المركبات هنا</p>
-              <a href="/auctions.php" class="btn btn-primary" style="margin-top:20px;">تصفح المركبات الآن</a>
+              <a href="/auctions.php" class="btn btn-primary fx-empty-cta">تصفح المركبات الآن</a>
             </div>
           <?php else: ?>
             <div class="fav-grid">
@@ -182,17 +185,17 @@ $role_label = $role_labels[$role] ?? 'عضو';
         </div>
 
       <?php elseif ($tab === 'bids'): ?>
-        <div class="fx-profile-card">
+        <div class="fx-profile-card fx-profile-card--home">
           <h3>سجل المزايدات والمشتريات</h3>
-          <p class="fx-empty-tab">جميع المشتريات والمزايدات التي قمت بها ستظهر هنا مع الفواتير. يمكنك أيضاً مراجعة سجل المزايدات من <a href="/buyer.php?section=bids" style="color:var(--primary); font-weight:800;">لوحة المشتري</a>.</p>
+          <p class="fx-empty-tab">جميع المشتريات والمزايدات التي قمت بها ستظهر هنا مع الفواتير. يمكنك أيضاً مراجعة سجل المزايدات من <a href="/buyer.php?section=bids" class="fx-link-primary">لوحة المشتري</a>.</p>
         </div>
 
       <?php elseif ($tab === 'settings'): ?>
-        <div class="fx-profile-card">
+        <div class="fx-profile-card fx-profile-card--home">
           <h3>إعدادات الحساب</h3>
           <form onsubmit="event.preventDefault(); alert('تم حفظ الإعدادات!');">
-            <div class="form-group" style="margin-bottom:16px;">
-              <label style="display:block; margin-bottom:8px; font-weight:800; color:var(--text-dark);">الاسم الكامل</label>
+            <div class="fx-profile-settings-group">
+              <label class="fx-profile-settings-label">الاسم الكامل</label>
               <input type="text" class="form-control" value="<?= sanitize($user_name) ?>">
             </div>
             <button type="submit" class="btn btn-primary">حفظ التغييرات</button>

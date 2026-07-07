@@ -79,12 +79,6 @@ if ($total_sales_value >= 1000000000) {
 
       <p class="hero-subtitle fx-hero-subtitle--fleet1">تجربة مزايدة حية وسلسة لسيارات الشركات والجهات الحكومية — مع تقارير فحص فنية موثقة وشفافية كاملة.</p>
 
-      <div class="fx-hero-mini-stats">
-        <div class="fx-hero-mini-stat"><strong><?= $total_auctions > 0 ? number_format($total_auctions) : '30+' ?></strong><span>مزاد منظم</span></div>
-        <div class="fx-hero-mini-stat"><strong><?= $sales_display ?></strong><span>مبيعات (<?= $sales_unit ?>)</span></div>
-        <div class="fx-hero-mini-stat"><strong><?= $approval_rate ?>%</strong><span>إتمام المزادات</span></div>
-      </div>
-
       <div class="fx-cta-row fx-cta-row--fleet1">
         <a href="/map.php" class="btn btn-primary fx-cta-btn">
           خريطة المزادات <i class="ph ph-map-pin ph-space-left"></i>
@@ -318,39 +312,30 @@ if ($db_connected) {
 
   function switchHiwTab(e, type, step) {
     const tabsContainer = document.getElementById(type + '-tabs');
-    const tabs = tabsContainer.querySelectorAll('.b-tab');
-    tabs.forEach(t => t.classList.remove('active'));
+    if (!tabsContainer) return;
+    tabsContainer.querySelectorAll('.b-tab').forEach(t => t.classList.remove('active'));
     e.currentTarget.classList.add('active');
 
-    const contents = document.querySelectorAll(`[id^="${type}-step-"]`);
-    contents.forEach(c => c.classList.remove('active', 'visible'));
-
-    const tabs2 = e.currentTarget.parentElement.querySelectorAll('.b-tab');
-    tabs2.forEach(t => t.classList.remove('active'));
-    e.currentTarget.classList.add('active');
+    document.querySelectorAll(`[id^="${type}-step-"]`).forEach(c => {
+      c.style.display = 'none';
+      c.classList.remove('active');
+    });
 
     const activeContent = document.getElementById(`${type}-step-${step}`);
-    if(activeContent) {
+    if (activeContent) {
+      activeContent.style.display = 'flex';
       activeContent.classList.add('active', 'reveal', 'visible');
     }
   }
 </script>
 
-<!-- ── Section 3: How It Works ── -->
-<section class="fx-hiw-section fx-home-hiw">
-  <div class="container">
-    <div class="fx-home-section-intro fx-home-section-intro--center fx-home-section-intro--on-dark">
-      <span class="fx-home-eyebrow fx-home-eyebrow--light"><i class="ph-fill ph-path"></i> كيف يعمل FleetX</span>
-      <h2 class="section-title section-title--light">ابدأ رحلتك في دقائق</h2>
-      <p class="section-subtitle section-subtitle--light">مساران واضحان للمشترين والبائعين — من التوثيق حتى إتمام الصفقة.</p>
-    </div>
-  </div>
-
-  <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers fx-home-hiw-block">
+<!-- ── Section 3: How It Works (classic light sticky) ── -->
+<section class="fx-hiw-section fx-hiw-section--classic">
+  <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers">
     <div class="container container--full">
-      <div class="hiw-dark-head">
-        <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
-        <p class="hiw-dark-sub">للمشترين الأفراد والشركات المعتمدة</p>
+      <div class="hiw-classic-head">
+        <h2 class="hiw-classic-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
+        <p class="hiw-classic-sub">للمشترين الأفراد والشركات المعتمدة</p>
       </div>
 
       <div class="browser-tabs-container">
@@ -359,52 +344,49 @@ if ($db_connected) {
           <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
           <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
         </div>
-        <div class="browser-content hiw-panel hiw-panel--browser">
-          
-          <div id="buyer-step-1" class="hiw-tab-content active">
+        <div class="browser-content hiw-panel hiw-panel--light">
+          <div id="buyer-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
               <i class="ph ph-identification-card hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">التسجيل وتوثيق الهوية <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('buyer-reg')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">سجّل حسابك في 3 خطوات سريعة عبر منصة نفاذ الوطني الموحّد لضمان أعلى معايير الأمان والثقة في التعاملات.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=600&q=80" class="hiw-tab-img" alt="التسجيل" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?w=600&q=80" class="hiw-tab-img" alt="التسجيل" loading="lazy">
             </div>
           </div>
 
-          <div id="buyer-step-2" class="hiw-tab-content">
+          <div id="buyer-step-2" class="hiw-tab-content" style="display:none;">
             <div class="hiw-tab-col">
               <i class="ph ph-wallet hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">المحفظة والتأمين <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('buyer-wallet')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">أودع مبلغ التأمين المطلوب في محفظتك الرقمية عبر قنوات الدفع المتعددة للبدء في المزايدة المباشرة.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&q=80" class="hiw-tab-img" alt="المحفظة" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1616081467471-a47ea1fc7fcc?w=600&q=80" class="hiw-tab-img" alt="المحفظة" loading="lazy">
             </div>
           </div>
 
-          <div id="buyer-step-3" class="hiw-tab-content">
+          <div id="buyer-step-3" class="hiw-tab-content" style="display:none;">
             <div class="hiw-tab-col">
               <i class="ph ph-gavel hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">المزايدة والفوز بالمركبة <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('buyer-bid')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">سجّل في المزاد المختار، وحدّد صفتك القانونية، وشارك في غرفة المزاد الحية للفوز بالمركبات.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=600&q=80" class="hiw-tab-img" alt="المزايدة والفوز" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1600860548174-569420dd7b89?w=600&q=80" class="hiw-tab-img" alt="المزايدة والفوز" loading="lazy">
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ============ SECTION: SELLERS ============ -->
   <div id="sellers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--sellers">
     <div class="container container--full">
-      <div class="hiw-dark-head">
-        <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">بائع معتمد؟</span></h2>
-        <p class="hiw-dark-sub">لشركات التأجير والأساطيل</p>
+      <div class="hiw-classic-head">
+        <h2 class="hiw-classic-title">كيف تبدأ كـ <span class="fx-text-primary">بائع معتمد؟</span></h2>
+        <p class="hiw-classic-sub">لشركات التأجير والأساطيل</p>
       </div>
 
       <div class="browser-tabs-container">
@@ -413,46 +395,43 @@ if ($db_connected) {
           <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
           <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
         </div>
-        <div class="browser-content hiw-panel hiw-panel--browser">
-          
-          <div id="seller-step-1" class="hiw-tab-content active">
+        <div class="browser-content hiw-panel hiw-panel--light">
+          <div id="seller-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
               <i class="ph ph-buildings hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">توثيق الشركة والاعتماد <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('seller-reg')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">سجّل شركتك وأرفق السجل التجاري ليتم تدقيقها واعتماد حسابك كبائع موثوق خلال 48 ساعة عمل.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80" class="hiw-tab-img" alt="توثيق الشركة" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" class="hiw-tab-img" alt="توثيق الشركة" loading="lazy">
             </div>
           </div>
 
-          <div id="seller-step-2" class="hiw-tab-content">
+          <div id="seller-step-2" class="hiw-tab-content" style="display:none;">
             <div class="hiw-tab-col">
               <i class="ph ph-package hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">اختيار الباقة وشحن الحساب <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('seller-wallet')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">اختر باقة الاشتراك المناسبة لحجم أسطولك، وأودع رسوم التفعيل للبدء في الاستفادة من أدوات البيع.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" class="hiw-tab-img" alt="شحن الحساب" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" class="hiw-tab-img" alt="شحن الحساب" loading="lazy">
             </div>
           </div>
 
-          <div id="seller-step-3" class="hiw-tab-content">
+          <div id="seller-step-3" class="hiw-tab-content" style="display:none;">
             <div class="hiw-tab-col">
               <i class="ph ph-car hiw-tab-icon"></i>
               <h3 class="hiw-tab-title">إدراج المركبات وإطلاق المزادات <i class="ph-fill ph-warning-circle hiw-info-icon" onclick="openHiwModal('seller-list')" title="عرض التفاصيل والآلية"></i></h3>
               <p class="hiw-tab-desc">أضف تفاصيل مركباتك وتقارير الفحص، وأطلق مزادك لتتلقى العروض من آلاف المشترين المعتمدين.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
-
 </section>
 
 <!-- HIW Modal HTML -->
@@ -498,31 +477,39 @@ function closeHiwModal() {
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal(); });
 </script>
 
-<!-- ── Section 4: Services ── -->
+<!-- ── Section 4: Why FleetX (flex hover cards) ── -->
 <section class="reveal fx-home-services">
   <div class="container">
     <div class="fx-home-section-intro fx-home-section-intro--center">
       <span class="fx-home-eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
       <h2 class="section-title">خدمات مزادات ذكية ومتكاملة</h2>
-      <p class="section-subtitle">من الفحص والتوثيق إلى التسوية والتسليم — منصة واحدة لإدارة دورة بيع الأسطول بالكامل.</p>
+      <p class="section-subtitle">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي</p>
     </div>
 
-    <div class="fx-home-services-grid">
-      <article class="fx-home-service-card fx-home-service-card--1 reveal">
-        <div class="fx-home-service-card__icon"><i class="ph-fill ph-clipboard-text"></i></div>
-        <h3>تقرير فحص 100+ نقطة</h3>
-        <p>فحص فني شامل للهيكل والميكانيكا والكهرباء قبل عرض أي مركبة في المزاد أو الشراء الفوري.</p>
-      </article>
-      <article class="fx-home-service-card fx-home-service-card--2 reveal">
-        <div class="fx-home-service-card__icon"><i class="ph-fill ph-shield-check"></i></div>
-        <h3>بيئة موثقة بالكامل</h3>
-        <p>تحقق من هوية المشترين والبائعين عبر النفاذ الوطني لضمان جدية المزايدات وسلامة التعاملات.</p>
-      </article>
-      <article class="fx-home-service-card fx-home-service-card--3 reveal">
-        <div class="fx-home-service-card__icon"><i class="ph-fill ph-robot"></i></div>
-        <h3>مزايدة تلقائية ذكية</h3>
-        <p>حدد سقف ميزانيتك وسيقوم النظام بالمزايدة تلقائياً بأقل زيادة ممكنة حتى الحد الأقصى الذي تحدده.</p>
-      </article>
+    <div class="services-flex-container">
+      <div class="service-flex-card-new service-card-1 reveal">
+        <div class="service-content service-content--stack">
+          <i class="ph ph-clipboard-text icon-grad"></i>
+          <h3>تقرير فحص 100+ نقطة</h3>
+          <p>جميع السيارات المعروضة تخضع لفحص فني شامل يغطي الهيكل والميكانيكا والكهرباء معتمد من قبل خبراء المنصة.</p>
+        </div>
+      </div>
+
+      <div class="service-flex-card-new service-card-2 service-flex-card-new--delay-1 reveal">
+        <div class="service-content service-content--stack">
+          <i class="ph ph-shield-check icon-grad"></i>
+          <h3>بيئة موثقة بالكامل</h3>
+          <p>نحن نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع بوابة النفاذ الوطني الموحد لضمان جدية المزايدات.</p>
+        </div>
+      </div>
+
+      <div class="service-flex-card-new service-card-3 service-flex-card-new--delay-2 reveal">
+        <div class="service-content service-content--stack">
+          <i class="ph ph-robot icon-grad"></i>
+          <h3>نظام المزايدة التلقائية</h3>
+          <p>حدد سقف ميزانيتك للسيارة، وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة لحين الوصول لحدك الأقصى.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>

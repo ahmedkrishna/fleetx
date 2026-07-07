@@ -53,7 +53,7 @@ $card_id = intval($c['id'] ?? 0);
   </div>
 
   <?php if ($card_id): ?>
-  <div class="card-fav" data-id="<?= $card_id ?>"><i class="ph ph-heart"></i></div>
+  <div class="card-fav" data-id="<?= $card_id ?>" onclick="event.stopPropagation();"><i class="ph ph-heart"></i></div>
   <?php endif; ?>
 
   <div class="ac-img-wrap">
@@ -121,7 +121,7 @@ $card_id = intval($c['id'] ?? 0);
     </div>
     <?php endif; ?>
 
-    <div class="ac-actions">
+    <div class="ac-actions" onclick="event.stopPropagation();">
       <a href="<?= htmlspecialchars($href) ?>" class="btn btn-primary btn-ac-full<?= $is_instant ? ' btn-ac-full--gradient' : '' ?>">
         <?= $is_instant ? 'شراء الآن' : 'عرض تفاصيل المزاد' ?> <i class="ph ph-arrow-left"></i>
       </a>
