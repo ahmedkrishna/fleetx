@@ -352,54 +352,61 @@ if ($db_connected) {
   <title>لوحة البائع | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
   </head>
-<body class="page-inner fx-page-shell fx-page-shell--dashboard">
+<body class="fx-home fx-page-shell fx-page-shell--seller">
 <?php include 'includes/navbar.php'; ?>
 
 <?php
 $hero_title_html = sanitize($company['company_name']);
 if (!empty($company['is_verified'])) {
-    $hero_title_html .= ' <span class="verified-badge"><i class="ph-fill ph-seal-check" style="font-size:16px;"></i> بائع موثق</span>';
+    $hero_title_html .= ' <span class="verified-badge"><i class="ph-fill ph-seal-check"></i> بائع موثق</span>';
 }
 $hero_desc = 'إدارة كاملة لأسطولك ومزاداتك ومستحقاتك المالية';
 $hero_bg = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80';
-$hero_modifier = 'dashboard';
-$hero_extra_class = 'fx-page-hero--seller';
+$hero_modifier = 'light';
+$hero_eyebrow = 'لوحة البائع';
+$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-car"></i> ' . (int)$fleet_count . ' مركبة معروضة</span>'
+    . '<span class="fx-page-hero__chip"><i class="ph-fill ph-currency-circle-dollar"></i> ' . number_format((float)$total_sales) . ' ر.س مبيعات</span>'
+    . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-gavel"></i> ' . (int)($active_auctions_count ?? 0) . ' مزاد نشط</span>';
+$hero_actions_html = '<a href="/add-auction.php" class="btn btn-primary"><i class="ph ph-gavel ph-space-left"></i> مزاد مباشر</a>'
+    . '<a href="/add-auction.php?type=instant" class="btn btn-outline"><i class="ph ph-lightning ph-space-left"></i> بيع فوري</a>';
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="seller-container fx-dash-page-body">
+<div class="container fx-page-body fx-page-body--overlap fx-seller-page">
+  <div class="fx-seller-layout">
 
   <!-- ── SIDEBAR ── -->
-  <aside class="seller-sidebar">
-    <div class="seller-profile">
-      <div class="seller-avatar"><i class="ph-fill ph-buildings"></i></div>
-      <div class="seller-company-name"><?= sanitize($company['company_name']) ?></div>
+  <aside class="fx-profile-sidebar fx-profile-sidebar--home fx-seller-sidebar">
+    <div class="fx-seller-profile">
+      <div class="fx-seller-avatar"><i class="ph-fill ph-buildings"></i></div>
+      <div class="fx-seller-company-name"><?= sanitize($company['company_name']) ?></div>
       <span class="subscription-badge sub-<?= $current_plan ?>">
-        <i class="ph-fill ph-crown" style="font-size:14px;"></i>
+        <i class="ph-fill ph-crown"></i>
         <?= $plans[$current_plan]['name'] ?? 'الباقة المتقدمة' ?>
       </span>
       <?php if ($company['is_verified']): ?>
-      <div class="seller-verified-inline" style="margin-top:8px;">
-        <i class="ph-fill ph-seal-check" style="font-size:16px;"></i> حساب موثق ومعتمد
+      <div class="fx-seller-verified">
+        <i class="ph-fill ph-seal-check"></i> حساب موثق ومعتمد
       </div>
       <?php endif; ?>
     </div>
-    <ul class="seller-nav">
+    <ul class="fx-profile-nav fx-seller-nav">
       <li><a href="?section=dashboard" class="<?= $section==='dashboard'?'active':'' ?>"><i class="ph ph-chart-bar"></i> لوحة التحكم</a></li>
       <li><a href="?section=fleet" class="<?= $section==='fleet'?'active':'' ?>"><i class="ph ph-car"></i> أسطولي المعروض</a></li>
-      <li style="padding: 6px 24px 2px; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">إضافة إعلان</li>
-      <li><a href="/add-auction.php" class="<?= $section==='add_auction'?'active':'' ?>" style="padding-right:36px;"><i class="ph ph-gavel" style="color:var(--primary);"></i> جدولة مزاد مباشر</a></li>
-      <li><a href="/add-auction.php?type=instant" style="padding-right:36px;"><i class="ph ph-lightning" style="color:#f59e0b;"></i> بيع فوري</a></li>
-      <li><a href="/bulk-upload.php" style="padding-right:36px;"><i class="ph ph-upload-simple" style="color:#8b5cf6;"></i> رفع مجمّع Excel</a></li>
+      <li class="fx-seller-nav-label">إضافة إعلان</li>
+      <li><a href="/add-auction.php" class="fx-seller-nav-sub <?= $section==='add_auction'?'active':'' ?>"><i class="ph ph-gavel fx-icon-primary"></i> جدولة مزاد مباشر</a></li>
+      <li><a href="/add-auction.php?type=instant" class="fx-seller-nav-sub"><i class="ph ph-lightning fx-icon-warning"></i> بيع فوري</a></li>
+      <li><a href="/bulk-upload.php" class="fx-seller-nav-sub"><i class="ph ph-upload-simple fx-icon-purple"></i> رفع مجمّع Excel</a></li>
       <li><a href="?section=payouts" class="<?= $section==='payouts'?'active':'' ?>"><i class="ph ph-money"></i> المستحقات المالية</a></li>
       <li><a href="?section=reports" class="<?= $section==='reports'?'active':'' ?>"><i class="ph ph-clipboard-text"></i> تقارير الفحص</a></li>
       <li><a href="?section=subscription" class="<?= $section==='subscription'?'active':'' ?>"><i class="ph ph-crown"></i> الباقة والاشتراك</a></li>
       <li><a href="?section=settings" class="<?= $section==='settings'?'active':'' ?>"><i class="ph ph-gear"></i> إعدادات الحساب</a></li>
+      <li><a href="/logout.php" class="danger"><i class="ph ph-sign-out"></i> تسجيل خروج</a></li>
     </ul>
   </aside>
 
   <!-- ── MAIN CONTENT ── -->
-  <main class="seller-main">
+  <main class="fx-seller-main">
     <div class="fx-dash-mobile-nav">
       <select onchange="if(this.value) window.location.href=this.value" aria-label="قائمة لوحة البائع">
         <option value="">انتقل إلى قسم...</option>
@@ -430,39 +437,39 @@ include 'includes/page-hero.inc.php';
     }
     ?>
     <?php if (!$nafath_verified): ?>
-      <div style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px; font-weight: 700;">
-          <i class="ph-fill ph-warning-circle" style="font-size: 24px;"></i>
+      <div class="fx-dash-alert fx-dash-alert--danger">
+        <div class="fx-dash-alert__body">
+          <i class="ph-fill ph-warning-circle"></i>
           <span>حسابك كبائع غير موثق في نفاذ. نرجو التوثيق لتتمكن من إضافة المزادات وعرض سياراتك للبيع.</span>
         </div>
-        <a href="/nafath.php" class="btn btn-primary" style="background: var(--danger); border-color: var(--danger); padding: 8px 16px;">توثيق الآن</a>
+        <a href="/nafath.php" class="btn btn-primary fx-dash-alert__btn">توثيق الآن</a>
       </div>
     <?php else: ?>
-      <div style="background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; font-weight: 700;">
-        <i class="ph-fill ph-check-circle" style="font-size: 20px;"></i>
-        الشركة موثقة عبر النفاذ الوطني
+      <div class="fx-dash-alert fx-dash-alert--success">
+        <i class="ph-fill ph-check-circle"></i>
+        <span>الشركة موثقة عبر النفاذ الوطني</span>
       </div>
     <?php endif; ?>    <!-- ══════════════════════════════════════════════ -->
     <!-- SECTION: DASHBOARD                            -->
     <!-- ══════════════════════════════════════════════ -->
     <?php if ($section === 'dashboard'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-chart-bar" style="color:var(--primary)"></i> لوحة التحكم</h1>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <a href="/add-auction.php" class="btn-action-top" style="background:linear-gradient(135deg,#1bc976,#16a360);">
-          <i class="ph ph-gavel" style="color:#fff;"></i> مزاد مباشر
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-chart-bar fx-icon-primary"></i> لوحة التحكم</h1>
+      <div class="fx-seller-actions-top">
+        <a href="/add-auction.php" class="btn-action-top btn-action-top--live">
+          <i class="ph ph-gavel"></i> مزاد مباشر
         </a>
-        <a href="/add-auction.php?type=instant" class="btn-action-top" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-          <i class="ph ph-lightning" style="color:#fff;"></i> بيع فوري
+        <a href="/add-auction.php?type=instant" class="btn-action-top btn-action-top--instant">
+          <i class="ph ph-lightning"></i> بيع فوري
         </a>
-        <a href="/bulk-upload.php" class="btn-action-top" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
-          <i class="ph ph-upload-simple" style="color:#fff;"></i> رفع Excel
+        <a href="/bulk-upload.php" class="btn-action-top btn-action-top--bulk">
+          <i class="ph ph-upload-simple"></i> رفع Excel
         </a>
       </div>
     </div>
 
-    <div class="stats-grid">
+    <div class="stats-grid fx-seller-stats">
       <div class="stat-card primary">
         <div class="stat-card-icon"><i class="ph-fill ph-car"></i></div>
         <div class="stat-card-label">مركبات معروضة</div>
@@ -485,35 +492,35 @@ include 'includes/page-hero.inc.php';
       </div>
     </div>
 
-    <div class="activity-card" style="margin-bottom:24px;">
-      <h3 class="activity-title"><i class="ph-fill ph-chart-line-up" style="color:var(--primary); font-size:22px;"></i> المبيعات الشهرية (ر.س)</h3>
+    <div class="activity-card fx-seller-card fx-seller-card--chart">
+      <h3 class="activity-title"><i class="ph-fill ph-chart-line-up fx-icon-primary"></i> المبيعات الشهرية (ر.س)</h3>
       <canvas id="sellerSalesChart" height="80"></canvas>
     </div>
 
-    <div class="activity-card">
-      <h3 class="activity-title"><i class="ph-fill ph-clock-counter-clockwise" style="color:var(--primary); font-size:22px;"></i> آخر النشاطات</h3>
+    <div class="activity-card fx-seller-card">
+      <h3 class="activity-title"><i class="ph-fill ph-clock-counter-clockwise fx-icon-primary"></i> آخر النشاطات</h3>
       <ul class="activity-list">
         <?php if (empty($seller_activities)): ?>
-        <li class="activity-item" style="justify-content:center; color:var(--text-muted);">لا يوجد نشاط بعد — أضف مركباتك وابدأ المزادات</li>
+        <li class="activity-item activity-item--empty">لا يوجد نشاط بعد — أضف مركباتك وابدأ المزادات</li>
         <?php else: foreach ($seller_activities as $act):
           $is_bid = ($act['src'] ?? '') === 'bid';
           $icon = $is_bid ? 'ph-gavel' : 'ph-clipboard-text';
-          $color = $is_bid ? '#f59e0b' : '#a855f7';
+          $tone = $is_bid ? 'bid' : 'inspection';
         ?>
         <li class="activity-item">
-          <div class="activity-icon" style="background:<?= $color ?>1a; color:<?= $color ?>;"><i class="ph-fill <?= $icon ?>"></i></div>
+          <div class="activity-icon activity-icon--<?= $tone ?>"><i class="ph-fill <?= $icon ?>"></i></div>
           <div class="activity-info">
             <h4><?= sanitize($act['msg'] ?? 'نشاط') ?></h4>
             <p><?= sanitize($act['created_at'] ?? '') ?></p>
           </div>
           <?php if ($is_bid): ?>
-          <div class="activity-amount" style="color:<?= $color ?>;"><?= number_format($act['val'] ?? 0) ?> <span style="font-size:12px;">ر.س</span></div>
+          <div class="activity-amount activity-amount--bid"><?= number_format($act['val'] ?? 0) ?> <span>ر.س</span></div>
           <?php endif; ?>
         </li>
         <?php endforeach; endif; ?>
       </ul>
       <?php if (($pending_inspections ?? 0) > 0): ?>
-      <a href="?section=fleet" style="display:block; text-align:center; margin-top:16px; color:var(--primary); font-weight:800; font-size:14px;">
+      <a href="?section=fleet" class="fx-seller-fleet-link">
         <?= $pending_inspections ?> مركبة بانتظار الفحص — عرض الأسطول
       </a>
       <?php endif; ?>
@@ -539,15 +546,15 @@ include 'includes/page-hero.inc.php';
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'fleet'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-car" style="color:var(--primary)"></i> أسطولي المعروض</h1>
-      <a href="/add-auction.php" class="btn-action-top"><i class="ph ph-plus" style="color:#fff;"></i> إضافة مركبة</a>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-car fx-icon-primary"></i> أسطولي المعروض</h1>
+      <a href="/add-auction.php" class="btn-action-top"><i class="ph ph-plus"></i> إضافة مركبة</a>
     </div>
 
     <?php if (empty($fleet_auctions)): ?>
-    <div class="seller-empty">
-      <div style="width:100px; height:100px; background:rgba(27,201,118,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
-        <i class="ph-fill ph-car" style="font-size:48px; color:#1bc976;"></i>
+    <div class="seller-empty fx-seller-card">
+      <div class="fx-seller-empty-icon">
+        <i class="ph-fill ph-car"></i>
       </div>
       <h3>لا توجد مركبات معروضة حالياً</h3>
       <p>ابدأ بإضافة مركباتك لعرضها في المزادات وجذب المشترين.</p>
@@ -619,11 +626,11 @@ include 'includes/page-hero.inc.php';
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'integration'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-plugs" style="color:var(--primary)"></i> الربط الخارجي وجلب البيانات</h1>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-plugs fx-icon-primary"></i> الربط الخارجي وجلب البيانات</h1>
     </div>
 
-    <div class="stat-card" style="margin-bottom: 24px; border-left: 4px solid var(--primary);">
+    <div class="stat-card fx-seller-card fx-seller-integration-card">
         <h3 style="margin-bottom: 15px;">استدعاء بيانات المركبة آلياً</h3>
         <p style="color: var(--text-muted); margin-bottom: 20px;">
             أدخل رقم الشاسيه (VIN) أو رقم اللوحة لجلب بيانات المركبة كاملة من مركز المعلومات الوطني (موجز/علم) لتسهيل عملية إضافة المركبة.
@@ -748,11 +755,11 @@ include 'includes/page-hero.inc.php';
       }
     ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-money" style="color:var(--primary)"></i> سجل ودفعات المبيعات</h1>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-money fx-icon-primary"></i> سجل ودفعات المبيعات</h1>
     </div>
 
-    <div class="payout-hero">
+    <div class="payout-hero fx-seller-payout-hero">
       <i class="ph-fill ph-wallet payout-hero-bg"></i>
       <div style="position:relative; z-index:2;">
         <div class="payout-hero-label">رصيد المبيعات المتاح للسحب</div>
@@ -765,7 +772,7 @@ include 'includes/page-hero.inc.php';
     </div>
 
     <!-- Summary Cards -->
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:24px;">
+    <div class="stats-grid fx-seller-stats fx-seller-stats--3">
       <div class="stat-card primary">
         <div class="stat-card-icon"><i class="ph-fill ph-check-circle"></i></div>
         <div class="stat-card-label">إجمالي المدفوعات المستلمة</div>
@@ -783,7 +790,7 @@ include 'includes/page-hero.inc.php';
       </div>
     </div>
 
-    <div class="payout-table-wrap">
+    <div class="payout-table-wrap fx-seller-card">
       <div class="payout-table-header" style="display:flex; justify-content:space-between; align-items:center;">
           <span>سجل التحويلات والمعاملات</span>
           <button class="btn btn-outline" style="font-size:13px; padding:6px 12px; background:#fff; border-color:var(--border-light);" onclick="alert('جاري التصدير...')"><i class="ph ph-download-simple"></i> تصدير CSV</button>
@@ -821,8 +828,8 @@ include 'includes/page-hero.inc.php';
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'reports'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-clipboard-text" style="color:var(--primary)"></i> تقارير الفحص</h1>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-clipboard-text fx-icon-primary"></i> تقارير الفحص</h1>
     </div>
 
     <?php foreach ($reports as $report):
@@ -833,7 +840,7 @@ include 'includes/page-hero.inc.php';
         return 'score-poor';
       };
     ?>
-    <div class="report-card">
+    <div class="report-card fx-seller-card">
       <div class="report-card-header">
         <div>
           <div class="report-vehicle-name"><?= sanitize($report['vehicle']) ?></div>
@@ -876,8 +883,8 @@ include 'includes/page-hero.inc.php';
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'subscription'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-crown" style="color:var(--primary)"></i> الباقة والاشتراك</h1>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-crown fx-icon-primary"></i> الباقة والاشتراك</h1>
     </div>
 
     <div class="plans-grid">
@@ -919,8 +926,8 @@ include 'includes/page-hero.inc.php';
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'settings'): ?>
 
-    <div class="seller-header-bar">
-      <h1 class="seller-section-title"><i class="ph-fill ph-gear" style="color:var(--primary)"></i> إعدادات الحساب</h1>
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-gear fx-icon-primary"></i> إعدادات الحساب</h1>
     </div>
 
     <?php if ($settings_msg === 'success'): ?>
@@ -1023,6 +1030,7 @@ include 'includes/page-hero.inc.php';
     <?php endif; ?>
 
   </main>
+  </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>

@@ -8673,3 +8673,254 @@ a.auctions-tab-btn {
   .fx-auth-box--card { padding: 24px 20px; }
   .fx-register-body--light { padding-top: 76px; }
 }
+
+/* ==========================================================================
+   PHASE 16 — Seller dashboard (homepage light theme match)
+   ========================================================================== */
+
+.fx-page-shell--seller {
+  background: #f8fafc;
+}
+.fx-page-shell--seller .fx-page-body--overlap { margin-top: -48px; }
+.fx-seller-page { padding: 0 0 80px; }
+
+.fx-seller-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.fx-seller-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* Sidebar profile block */
+.fx-seller-sidebar { padding-bottom: 8px; }
+.fx-seller-profile {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+.fx-seller-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1bc976 0%, #0ea5e9 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 24px rgba(27, 201, 118, 0.2);
+}
+.fx-seller-company-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+.fx-seller-verified {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #047857;
+  font-weight: 700;
+  margin-top: 8px;
+}
+.fx-seller-nav-label {
+  padding: 10px 12px 4px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  list-style: none;
+}
+.fx-seller-nav .fx-seller-nav-sub { padding-right: 28px; font-size: 13px; }
+.fx-icon-primary { color: var(--primary); }
+.fx-icon-warning { color: #f59e0b; }
+.fx-icon-purple { color: #8b5cf6; }
+
+/* Unified light cards */
+.fx-seller-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.seller-header-bar.fx-seller-card {
+  padding: 20px 24px;
+  margin-bottom: 0;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.activity-card.fx-seller-card,
+.seller-empty.fx-seller-card,
+.payout-table-wrap.fx-seller-card,
+.report-card.fx-seller-card {
+  padding: 24px;
+  margin-bottom: 0;
+}
+.fx-seller-card--chart { margin-bottom: 0; }
+
+/* Nafath alerts */
+.fx-dash-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  flex-wrap: wrap;
+}
+.fx-dash-alert--danger {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #b91c1c;
+}
+.fx-dash-alert--success {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #047857;
+  gap: 10px;
+}
+.fx-dash-alert__body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+}
+.fx-dash-alert__body i,
+.fx-dash-alert--success > i { font-size: 22px; flex-shrink: 0; }
+.fx-dash-alert__btn {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  white-space: nowrap;
+}
+
+/* Action buttons */
+.fx-seller-actions-top {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-action-top--live { background: linear-gradient(135deg, #1bc976, #16a360); color: #fff; }
+.btn-action-top--instant { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+.btn-action-top--bulk { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+.btn-action-top--live:hover,
+.btn-action-top--instant:hover,
+.btn-action-top--bulk:hover { color: #fff; }
+
+/* Stats grid polish */
+.fx-seller-stats .stat-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-xl);
+}
+.fx-seller-stats--3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Activity feed */
+.activity-title i { font-size: 22px; }
+.activity-item--empty {
+  justify-content: center;
+  color: var(--text-muted);
+}
+.activity-icon--bid {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+.activity-icon--inspection {
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+}
+.activity-amount--bid { color: #f59e0b; }
+.activity-amount--bid span { font-size: 12px; }
+.fx-seller-fleet-link {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+}
+.fx-seller-fleet-link:hover { text-decoration: underline; }
+
+/* Empty state */
+.fx-seller-empty-icon {
+  width: 100px;
+  height: 100px;
+  background: rgba(27, 201, 118, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+.fx-seller-empty-icon i {
+  font-size: 48px;
+  color: #1bc976;
+}
+
+/* Light payout hero */
+.fx-seller-payout-hero {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 55%, #a7f3d0 100%);
+  border: 1px solid rgba(27, 201, 118, 0.2);
+  color: #0f172a;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(27, 201, 118, 0.08);
+}
+.fx-seller-payout-hero .payout-hero-label { color: #475569; }
+.fx-seller-payout-hero .payout-hero-amount { color: #047857; }
+.fx-seller-payout-hero .payout-hero-note { color: #64748b; }
+.fx-seller-payout-hero .payout-hero-bg { color: #1bc976; opacity: 0.08; }
+.fx-seller-payout-hero .payout-btn-transfer {
+  background: #1bc976;
+  border-color: #16a360;
+  color: #000;
+}
+.fx-seller-payout-hero .payout-btn-transfer:hover {
+  background: #16a360;
+  color: #000;
+}
+
+/* Integration panel accent */
+.fx-seller-integration-card {
+  border-right: 4px solid var(--primary);
+  padding: 24px;
+}
+
+/* Verified badge in light hero */
+.fx-page-hero--light .verified-badge {
+  font-size: 13px;
+  vertical-align: middle;
+}
+.fx-page-hero--light .verified-badge i { font-size: 16px; }
+
+/* Plan cards on light shell */
+.fx-page-shell--seller .plan-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-xl);
+}
+
+@media (max-width: 991px) {
+  .fx-seller-layout { grid-template-columns: 1fr; }
+  .fx-profile-sidebar--home.fx-seller-sidebar { position: static; }
+  .fx-seller-stats--3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .fx-seller-actions-top { width: 100%; }
+  .fx-seller-actions-top .btn-action-top { flex: 1; justify-content: center; }
+  .fx-dash-alert { flex-direction: column; align-items: stretch; }
+  .fx-dash-alert__btn { text-align: center; }
+}
