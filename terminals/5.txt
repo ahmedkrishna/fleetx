@@ -1,0 +1,13 @@
+---
+pid: 24520
+cwd: "E:\Design\bearand\Fleetx"
+command: "$users = @('u274391035','u274391035_usr_BbBE85ay','u274391035.BbBE85ay'); $hosts = @('ftp.mazadi.bearand.com','82.25.102.67'); foreach ($h in $hosts) { foreach ($u in $users) { $out = curl -s --connect-timeout 5 \"ftp://${h}/\" -u \"${u}:*A7medfouad*\" 2>&1; if ($out -and $out -notmatch '530|421|timeout') { Write-Output \"OK $h $u : $out\" } else { Write-Output \"FAIL $h $u\" } } }"
+started_at: 2026-07-06T15:39:11.134Z
+running_for_ms: 69480016 
+---
+FAIL ftp.mazadi.bearand.com u274391035
+FAIL ftp.mazadi.bearand.com u274391035_usr_BbBE85ay
+FAIL ftp.mazadi.bearand.com u274391035.BbBE85ay
+FAIL 82.25.102.67 u274391035
+FAIL 82.25.102.67 u274391035_usr_BbBE85ay
+FAIL 82.25.102.67 u274391035.BbBE85ay

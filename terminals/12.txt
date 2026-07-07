@@ -1,0 +1,7 @@
+---
+pid: 6172
+cwd: "E:\Design\bearand\Fleetx"
+command: "cd \"E:\\Design\\bearand\\Fleetx\\scratch\" && npx playwright install chromium 2>&1 | Select-Object -Last 10"
+started_at: 2026-07-06T16:29:40.159Z
+running_for_ms: 234995   
+---

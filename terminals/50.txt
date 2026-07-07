@@ -1,0 +1,40 @@
+---
+pid: 30020
+cwd: "E:\Design\bearand\Fleetx"
+command: "cd \"E:\\Design\\bearand\\Fleetx\" && php tests/verify_dashboards_live.php"
+started_at: 2026-07-07T08:48:33.335Z
+running_for_ms: 7705001  
+---
+=== FleetX Live Dashboard Verify ===
+Base: https://mazadi.bearand.com
+
+[PASS] Buyer guest redirects (302)
+[PASS] Buyer demo login
+[PASS] Buyer dashboard HTTP 200
+[PASS] Buyer fx-page-shell--dashboard
+[PASS] Buyer fx-page-hero--dashboard
+[PASS] Buyer fx-page-hero--buyer
+[PASS] Buyer sidebar present
+[PASS] Buyer main content
+[PASS] Buyer hero welcome text
+[PASS] Buyer mobile nav
+[PASS] Buyer section: dashboard
+[PASS] Buyer section: bids
+[PASS] Buyer section: favorites
+[PASS] Buyer section: wallet
+[PASS] Buyer section: settings
+[PASS] Seller demo login
+[PASS] Seller dashboard HTTP 200
+[PASS] Seller fx-page-shell--dashboard
+[PASS] Seller fx-page-hero--dashboard
+[PASS] Seller fx-page-hero--seller
+[PASS] Seller sidebar present
+[PASS] Seller main content
+[PASS] Seller verified badge or company
+[PASS] Seller mobile nav
+[PASS] Seller section: dashboard
+[PASS] Seller section: fleet
+[PASS] Seller section: payouts
+[PASS] Seller section: settings
+
+=== RESULT: 28 passed, 0 failed ===

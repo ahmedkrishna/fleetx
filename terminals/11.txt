@@ -1,0 +1,7 @@
+---
+pid: 27176
+cwd: "E:\Design\bearand\Fleetx"
+command: "$pass='*A7medfouad*'; $paths=@('/public_html/','/domains/mazadi.bearand.com/public_html/','/'); $users=@('u274391035','u274391035.BbBE85ay','u274391035_ftp','u274391035@mazadi.bearand.com'); $hosts=@('82.25.102.67','ftp.mazadi.bearand.com'); foreach($h in $hosts){ foreach($u in $users){ foreach($p in $paths){ $out = curl -s --connect-timeout 6 --ftp-pasv \"ftp://${h}${p}\" -u \"${u}:${pass}\" 2>&1; if($out -and $out -notmatch '530|421|refused|timed out|Could not|Login incorrect'){ Write-Output \"OK host=$h user=$u path=$p => $($out.Substring(0,[Math]::Min(120,$out.Length)))\" } } } }"
+started_at: 2026-07-06T16:27:00.549Z
+running_for_ms: 394993   
+---

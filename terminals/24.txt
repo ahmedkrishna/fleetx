@@ -1,0 +1,11 @@
+---
+pid: 31964
+cwd: "E:\Design\bearand\Fleetx"
+command: "php \"E:\\Design\\bearand\\Fleetx\\tests\\e2e_end_to_end.php\" 2>&1 | Select-Object -Last 4"
+started_at: 2026-07-07T04:19:43.961Z
+running_for_ms: 23840987 
+---
+[PASS] Deployed: inspector-report.php — HTTP 302
+[PASS] Deployed: deploy_fix.php — HTTP 200
+
+=== RESULT: 28 passed, 0 failed, 0 skipped ===

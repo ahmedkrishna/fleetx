@@ -1,0 +1,28 @@
+# Dependencies & tooling
+scratch/node_modules/
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+*.local
+
+# OS & editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs & temp
+*.log
+tmp/
+temp/
+terminals/
+
+# Scratch / dev experiments (keep zip9 reference out of main tree)
+scratch/
+
+# FTP credentials (never commit)
+deploy.local.ps1

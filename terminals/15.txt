@@ -1,0 +1,7 @@
+---
+pid: 32560
+cwd: "E:\Design\bearand\Fleetx"
+command: "Start-Sleep -Seconds 60"
+started_at: 2026-07-06T16:30:58.688Z
+running_for_ms: 159998   
+---

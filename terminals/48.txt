@@ -1,0 +1,10 @@
+---
+pid: 23236
+cwd: "E:\Design\bearand\Fleetx"
+command: "curl.exe -s \"https://mazadi.bearand.com/buyer.php\" -o NUL -w \"buyer_guest:%{http_code}\\n\" && curl.exe -s -c \"E:\\Design\\bearand\\Fleetx\\scratch\\ck.txt\" -b \"E:\\Design\\bearand\\Fleetx\\scratch\\ck.txt\" -X POST \"https://mazadi.bearand.com/login.php\" -d \"login_type=trader&mobile=0501111111&password=123456\" -L -o NUL && curl.exe -s -b \"E:\\Design\\bearand\\Fleetx\\scratch\\ck.txt\" \"https://mazadi.bearand.com/buyer.php\" | findstr /i \"fx-page-shell--dashboard fx-page-hero--dashboard fx-page-hero--buyer\" && curl.exe -s -b \"E:\\Design\\bearand\\Fleetx\\scratch\\ck.txt\" -X POST \"https://mazadi.bearand.com/login.php\" -d \"login_type=company&mobile=0500000002&password=123456\" -L -o NUL && curl.exe -s -b \"E:\\Design\\bearand\\Fleetx\\scratch\\ck.txt\" \"https://mazadi.bearand.com/seller.php\" | findstr /i \"fx-page-shell--dashboard fx-page-hero--seller\" && cd \"E:\\Design\\bearand\\Fleetx\" && php tests/e2e_end_to_end.php"
+started_at: 2026-07-07T08:43:55.232Z
+running_for_ms: 7985006  
+---
+buyer_guest:302
+<body class="page-inner fx-page-shell fx-page-shell--dashboard">
+<header class="fx-page-hero fx-page-hero--dashboard fx-page-hero--buyer">

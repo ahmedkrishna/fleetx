@@ -1,0 +1,11 @@
+---
+pid: 32480
+cwd: "E:\Design\bearand\Fleetx"
+command: "php \"E:\\Design\\bearand\\Fleetx\\tests\\e2e_end_to_end.php\" 2>&1 | Select-String -Pattern \"FAIL|RESULT|Place bid\""
+started_at: 2026-07-07T04:23:54.015Z
+running_for_ms: 23590845 
+---
+
+[PASS] Place bid — تمت مزايدتك بنجاح!
+=== RESULT: 28 passed, 0 failed, 0 skipped ===
+

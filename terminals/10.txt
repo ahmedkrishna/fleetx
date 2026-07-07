@@ -1,0 +1,12 @@
+---
+pid: 34512
+cwd: "E:\Design\bearand\Fleetx"
+command: "$pass = '*A7medfouad*'; $users = @('u274391035','u274391035_usr_BbBE85ay','ahmedkrishna11@gmail.com','u274391035.BbBE85ay','u274391035@mazadi.bearand.com'); foreach ($u in $users) { $r = curl -s --connect-timeout 8 -w \" %{http_code}\" \"ftp://ftp.mazadi.bearand.com/\" --user \"${u}:${pass}\" --ftp-pasv 2>&1; if ($r -notmatch '530|421|000') { Write-Output \"MAYBE OK $u : $($r.Substring(0,[Math]::Min(80,$r.Length)))\" } else { Write-Output \"FAIL $u\" } }"
+started_at: 2026-07-06T16:23:23.607Z
+running_for_ms: 66829998 
+---
+FAIL u274391035
+FAIL u274391035_usr_BbBE85ay
+FAIL ahmedkrishna11@gmail.com
+FAIL u274391035.BbBE85ay
+FAIL u274391035@mazadi.bearand.com

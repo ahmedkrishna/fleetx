@@ -1,0 +1,10 @@
+---
+pid: 34544
+cwd: "E:\Design\bearand\Fleetx"
+command: "$hosts = @('ftp.mazadi.bearand.com','mazadi.bearand.com','82.25.102.67'); foreach ($h in $hosts) { try { $r = curl -s --connect-timeout 5 \"ftp://$h/\" -u \"u274391035:*A7medfouad*\" 2>&1 | Select-Object -First 3; Write-Output \"=== $h ===\"; Write-Output $r } catch { Write-Output \"$h failed\" } }"
+started_at: 2026-07-06T15:37:03.715Z
+running_for_ms: 69609991 
+---
+=== ftp.mazadi.bearand.com ===
+=== mazadi.bearand.com ===
+=== 82.25.102.67 ===

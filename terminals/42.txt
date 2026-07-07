@@ -1,0 +1,50 @@
+---
+pid: 33224
+cwd: "E:\Design\bearand\Fleetx"
+command: "curl.exe -s \"https://mazadi.bearand.com/extend_auctions.php?key=mazad2026\" && cd \"E:\\Design\\bearand\\Fleetx\" && php tests/e2e_end_to_end.php"
+started_at: 2026-07-07T06:30:23.403Z
+running_for_ms: 16004989 
+---
+Extended auctions to 2026-07-14 06:30:23
+Rows updated: 10
+ #1 status=active end=2026-07-14 06:30:23 price=105586.00
+ #2 status=active end=2026-07-14 06:30:23 price=94000.00
+ #3 status=active end=2026-07-14 06:30:23 price=78500.00
+ #4 status=active end=2026-07-14 06:30:23 price=153000.00
+ #5 status=active end=2026-07-14 06:30:23 price=112500.00
+=== FleetX End-to-End ===
+Base: https://mazadi.bearand.com
+Buyer: 0557227651 / e2e_1783405825_7225@fleetx.test
+
+[PASS] Public: index — HTTP 200
+[PASS] Public: login — HTTP 200
+[PASS] Public: register — HTTP 200
+[PASS] Public: auctions — HTTP 200
+[PASS] Public: companies — HTTP 200
+[PASS] Database connected — Users: 45
+Auctions: 30
+Vehicles: 33
+[PASS] Register buyer
+[PASS] Login buyer
+[PASS] Nafath verify
+[PASS] Sanad limit raise — no fatal
+[PASS] Wallet top-up
+[PASS] Notifications API — unread=2
+[PASS] Companies browse
+[PASS] Find auction — id=1
+[PASS] Auction live room
+[PASS] Place bid — تمت مزايدتك بنجاح!
+[PASS] Bid history API
+[PASS] Buyer dashboard
+[PASS] Buyer favorites
+[PASS] Dashboard: buyer — HTTP 200
+[PASS] Dashboard: seller — HTTP 200
+[PASS] Dashboard: inspector — HTTP 200
+[PASS] Demo login: buyer — 0501111111
+[PASS] Demo login: seller — 0500000002
+[PASS] Demo login: inspector — 0503333333
+[PASS] Deployed: add-auction.php — HTTP 302
+[PASS] Deployed: inspector-report.php — HTTP 302
+[PASS] Deployed: deploy_fix.php — HTTP 200
+
+=== RESULT: 28 passed, 0 failed, 0 skipped ===

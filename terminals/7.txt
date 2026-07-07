@@ -1,0 +1,42 @@
+---
+pid: 23368
+cwd: "E:\Design\bearand\Fleetx"
+command: "php \"E:\\Design\\bearand\\Fleetx\\tests\\e2e_end_to_end.php\" 2>&1"
+started_at: 2026-07-06T15:46:53.714Z
+running_for_ms: 69020016 
+---
+=== FleetX End-to-End ===
+Base: https://mazadi.bearand.com
+Buyer: 0531993051 / e2e_1783352814_2410@fleetx.test
+
+[PASS] Public: index — HTTP 200
+[PASS] Public: login — HTTP 200
+[PASS] Public: register — HTTP 200
+[PASS] Public: auctions — HTTP 200
+[PASS] Public: companies — HTTP 200
+[PASS] Database connected — Users: 18
+Auctions: 30
+Vehicles: 30
+[PASS] Register buyer
+[PASS] Login buyer
+[PASS] Nafath verify
+[FAIL] Sanad limit raise — sanad.php needs deploy fix
+[PASS] Wallet top-up
+[PASS] Notifications API — unread=1
+[PASS] Companies browse
+[PASS] Find auction — id=1
+[PASS] Auction live room
+[FAIL] Place bid — مبلغ المزايدة يتجاوز الحد المالي لسند لأمر الخاص بك. يرجى رفع الحد
+[PASS] Bid history API
+[PASS] Buyer dashboard
+[PASS] Buyer watchlist
+[FAIL] Demo login: buyer — run update_db_sanad.php?key=mazad2026 after upload
+[FAIL] Demo login: seller — run update_db_sanad.php?key=mazad2026 after upload
+[FAIL] Demo login: inspector — run update_db_sanad.php?key=mazad2026 after upload
+[FAIL] Deployed: sell-your-car.php — HTTP 404
+[FAIL] Deployed: inspector-report.php — HTTP 404
+[FAIL] Deployed: deploy_fix.php — HTTP 404
+
+=== RESULT: 17 passed, 8 failed, 0 skipped ===
+
+BLOCKER: Upload fixed sanad.php + run update_db_sanad.php?key=mazad2026

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة البائع | FleetX</title>
+  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  </head>
+<body class="page-inner fx-page-shell fx-page-shell--dashboard">
+
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+
+      <!-- Logo -->
+      <a href="/index.php" class="navbar-logo">
+        <img src="/assets/images/logo.png" alt="FleetX Logo">
+      </a>
+
+      <!-- Nav Links -->
+      <ul class="navbar-links" id="navLinks">
+        <li><a href="/auctions.php" class="">المزادات الحية</a></li>
+        <li><a href="/auctions.php?type=instant" class="">الشراء الفوري</a></li>
+        <li><a href="/companies.php" class="">دليل الشركات</a></li>
+        <li><a href="/map.php" class="">خريطة المزادات</a></li>
+
+                <li class="nav-dropdown" id="addDropdown">
+          <a href="#" class="" onclick="toggleDropdown('addDropdown'); return false;">
+            <i class="ph ph-plus-circle" style="font-size:16px;"></i> أضف إعلان
+          </a>
+          <div class="nav-dropdown-content">
+            <a href="/add-auction.php">
+              <i class="ph-fill ph-gavel" style="color:var(--primary); font-size:18px;"></i>
+              <div>
+                <div>جدولة مزاد مباشر</div>
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">حدد وقت البداية والنهاية</div>
+              </div>
+            </a>
+            <a href="/add-auction.php?type=instant">
+              <i class="ph-fill ph-lightning" style="color:#f59e0b; font-size:18px;"></i>
+              <div>
+                <div>بيع فوري</div>
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">سعر ثابت بدون مزايدة</div>
+              </div>
+            </a>
+            <a href="/bulk-upload.php">
+              <i class="ph-fill ph-upload-simple" style="color:#8b5cf6; font-size:18px;"></i>
+              <div>
+                <div>رفع مجمّع Excel</div>
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">رفع أسطول كامل دفعة واحدة</div>
+              </div>
+            </a>
+          </div>
+        </li>
+        
+        <li><a href="/about.php" class="">كيف يعمل</a></li>
+      </ul>
+
+      <!-- Actions -->
+      <div class="navbar-actions">
+
+                  <!-- Notification Bell — count fetched server-side for initial badge, list fetched client-side via JS -->
+                    <div class="notif-dropdown hide-on-mobile" id="notifDropdown">
+            <button class="notif-btn" onclick="toggleDropdown('notifDropdown'); return false;" aria-label="الإشعارات">
+              <i class="ph ph-bell"></i>
+              <span class="notif-badge" id="notifBadge" style="display:none;">
+                0              </span>
+            </button>
+            <div class="notif-panel">
+              <div class="notif-head">
+                <span>الإشعارات</span>
+                <a href="#" onclick="markAllRead(); return false;">تحديد الكل كمقروء</a>
+              </div>
+              <div class="notif-list" id="notifList">
+                <!-- Populated by fetchNotifications() JS -->
+                <div class="fx-notif-loading">جاري التحميل...</div>
+              </div>
+            </div>
+          </div>
+
+          <a href="/seller.php?section=dashboard" class="btn btn-outline btn-sm hide-on-mobile" style="border-radius: var(--radius-round)">
+            <i class="ph ph-squares-four ph-space-left"></i> لوحة البائع          </a>
+          <span class="hide-on-mobile" style="color:rgba(255,255,255,0.6); font-size:13px; font-weight:600; margin:0 4px;">الوطنية للتأجير</span>
+          <a href="/logout.php" class="btn btn-outline btn-sm hide-on-mobile" style="opacity:0.6; margin-right:4px; border-radius: var(--radius-round); border-color: transparent">خروج</a>
+
+        
+        <button class="navbar-toggle" id="navToggle" aria-label="قائمة">
+          <i class="ph ph-list" style="color: #fff; font-size: 24px;"></i>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu">
+    <ul>
+      <li><a href="/auctions.php"><i class="ph ph-gavel"></i> المزادات الحية</a></li>
+      <li><a href="/auctions.php?type=instant"><i class="ph ph-lightning"></i> الشراء الفوري</a></li>
+      <li><a href="/companies.php"><i class="ph ph-buildings"></i> دليل الشركات</a></li>
+      <li><a href="/map.php"><i class="ph ph-map-trifold"></i> خريطة المزادات</a></li>
+            <li><a href="/seller.php?section=dashboard" class="fx-mobile-active"><i class="ph ph-squares-four"></i> لوحة البائع</a></li>
+                  <li><a href="/add-auction.php"><i class="ph ph-plus-circle"></i> جدولة مزاد</a></li>
+      <li><a href="/add-auction.php?type=instant"><i class="ph ph-lightning"></i> بيع فوري</a></li>
+      <li><a href="/bulk-upload.php"><i class="ph ph-upload-simple"></i> رفع مجمّع Excel</a></li>
+            <li><a href="/about.php"><i class="ph ph-question"></i> كيف يعمل</a></li>
+
+              <li style="margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; flex-direction:column; align-items:center;">
+          <div class="mobile-auth-modern">
+            <a href="/seller.php?section=dashboard" class="btn-mobile-auth btn-green-stroke">
+              <i class="ph-fill ph-user" style="font-size:20px; color:var(--primary);"></i> الوطنية للتأجير            </a>
+            <a href="/logout.php" class="btn-mobile-auth btn-white-stroke">
+              <i class="ph-bold ph-sign-out" style="font-size:20px; color:#fff;"></i> تسجيل الخروج
+            </a>
+          </div>
+        </li>
+          </ul>
+  </div>
+</nav>
+
+<script>
+// Dropdown toggle
+function toggleDropdown(id) {
+  const el = document.getElementById(id);
+  document.querySelectorAll('.nav-dropdown.open, .notif-dropdown.open').forEach(d => {
+    if (d.id !== id) d.classList.remove('open');
+  });
+  if (el) el.classList.toggle('open');
+}
+
+// Close on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.nav-dropdown') && !e.target.closest('.notif-dropdown')) {
+    document.querySelectorAll('.nav-dropdown.open, .notif-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+// Mobile toggle
+document.getElementById('navToggle')?.addEventListener('click', function() {
+  document.getElementById('mobileMenu')?.classList.toggle('open');
+});
+
+// ── Live Notifications Polling ──────────────────────────────
+const notifIcons = {
+  bid_outbid:          { icon: 'ph-fill ph-gavel',         bg: 'rgba(239,68,68,0.1)',    color: '#ef4444' },
+  auction_won:         { icon: 'ph-fill ph-trophy',        bg: 'rgba(27,201,118,0.1)',   color: '#16a34a' },
+  vehicle_approved:    { icon: 'ph-fill ph-check-circle',  bg: 'rgba(14,165,233,0.1)',   color: '#0ea5e9' },
+  inspection_assigned: { icon: 'ph-fill ph-magnifying-glass', bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
+  payment:             { icon: 'ph-fill ph-money',         bg: 'rgba(139,92,246,0.1)',   color: '#8b5cf6' },
+  system:              { icon: 'ph-fill ph-bell',          bg: 'rgba(100,116,139,0.1)',  color: '#64748b' },
+};
+
+function renderNotifications(data) {
+  const badge  = document.getElementById('notifBadge');
+  const list   = document.getElementById('notifList');
+  if (!list) return;
+
+  // Update badge
+  if (badge) {
+    if (data.unread_count > 0) {
+      badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  // Render list
+  if (!data.notifications || data.notifications.length === 0) {
+    list.innerHTML = '<div class="fx-notif-empty">لا توجد إشعارات</div>';
+    return;
+  }
+
+  list.innerHTML = data.notifications.map(n => {
+    const ic = notifIcons[n.type] || notifIcons.system;
+    return `
+      <a href="${n.link || '#'}" class="notif-item ${!n.is_read ? 'unread' : ''}" onclick="markRead(${n.id});">
+        <div class="notif-icon" style="background:${ic.bg}; color:${ic.color};">
+          <i class="${ic.icon}"></i>
+        </div>
+        <div class="notif-text">
+          <div class="notif-title">${n.title}</div>
+          <div class="notif-body">${n.body}</div>
+          <div class="notif-time">${n.time_ago}</div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+function fetchNotifications() {
+  fetch('/api/notifications.php?action=list')
+    .then(r => r.json())
+    .then(data => { if (data.success) renderNotifications(data); })
+    .catch(() => {}); // silent fail
+}
+
+function markRead(id) {
+  fetch('/api/notifications.php?action=mark_one&id=' + id).catch(() => {});
+  const item = document.querySelector(`.notif-item.unread[onclick*="${id}"]`);
+  if (item) item.classList.remove('unread');
+}
+
+function markAllRead() {
+  fetch('/api/notifications.php?action=mark_read')
+    .then(() => {
+      document.querySelectorAll('.notif-item.unread').forEach(i => i.classList.remove('unread'));
+      const badge = document.getElementById('notifBadge');
+      if (badge) badge.style.display = 'none';
+    })
+    .catch(() => {});
+}
+
+// Initial fetch + poll every 30s
+fetchNotifications();
+setInterval(fetchNotifications, 30000);
+</script>
+
+<header class="fx-page-hero fx-page-hero--dashboard fx-page-hero--seller">
+  <div class="fx-page-hero__bg" style="background-image:url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&amp;q=80')"></div>
+  <div class="fx-page-hero__gradient"></div>
+  <div class="container fx-page-hero__inner" dir="rtl">
+    <div class="fx-page-hero__row">
+      <div class="fx-page-hero__content">
+                                  <h1 class="fx-page-hero__title">الوطنية للتأجير <span class="verified-badge"><i class="ph-fill ph-seal-check" style="font-size:16px;"></i> بائع موثق</span></h1>
+                          <p class="fx-page-hero__desc">إدارة كاملة لأسطولك ومزاداتك ومستحقاتك المالية</p>
+              </div>
+          </div>
+  </div>
+</header>
+<div class="seller-container fx-dash-page-body">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="seller-sidebar">
+    <div class="seller-profile">
+      <div class="seller-avatar"><i class="ph-fill ph-buildings"></i></div>
+      <div class="seller-company-name">الوطنية للتأجير</div>
+      <span class="subscription-badge sub-enterprise">
+        <i class="ph-fill ph-crown" style="font-size:14px;"></i>
+        باقة المؤسسات      </span>
+            <div class="seller-verified-inline" style="margin-top:8px;">
+        <i class="ph-fill ph-seal-check" style="font-size:16px;"></i> حساب موثق ومعتمد
+      </div>
+          </div>
+    <ul class="seller-nav">
+      <li><a href="?section=dashboard" class="active"><i class="ph ph-chart-bar"></i> لوحة التحكم</a></li>
+      <li><a href="?section=fleet" class=""><i class="ph ph-car"></i> أسطولي المعروض</a></li>
+      <li style="padding: 6px 24px 2px; font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">إضافة إعلان</li>
+      <li><a href="/add-auction.php" class="" style="padding-right:36px;"><i class="ph ph-gavel" style="color:var(--primary);"></i> جدولة مزاد مباشر</a></li>
+      <li><a href="/add-auction.php?type=instant" style="padding-right:36px;"><i class="ph ph-lightning" style="color:#f59e0b;"></i> بيع فوري</a></li>
+      <li><a href="/bulk-upload.php" style="padding-right:36px;"><i class="ph ph-upload-simple" style="color:#8b5cf6;"></i> رفع مجمّع Excel</a></li>
+      <li><a href="?section=payouts" class=""><i class="ph ph-money"></i> المستحقات المالية</a></li>
+      <li><a href="?section=reports" class=""><i class="ph ph-clipboard-text"></i> تقارير الفحص</a></li>
+      <li><a href="?section=subscription" class=""><i class="ph ph-crown"></i> الباقة والاشتراك</a></li>
+      <li><a href="?section=settings" class=""><i class="ph ph-gear"></i> إعدادات الحساب</a></li>
+    </ul>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="seller-main">
+    <div class="fx-dash-mobile-nav">
+      <select onchange="if(this.value) window.location.href=this.value" aria-label="قائمة لوحة البائع">
+        <option value="">انتقل إلى قسم...</option>
+        <option value="?section=dashboard" selected>لوحة التحكم</option>
+        <option value="?section=fleet" >أسطولي المعروض</option>
+        <option value="/add-auction.php">جدولة مزاد مباشر</option>
+        <option value="/add-auction.php?type=instant">بيع فوري</option>
+        <option value="/bulk-upload.php">رفع مجمّع Excel</option>
+        <option value="?section=payouts" >المستحقات المالية</option>
+        <option value="?section=reports" >تقارير الفحص</option>
+        <option value="?section=subscription" >الباقة والاشتراك</option>
+        <option value="?section=settings" >إعدادات الحساب</option>
+      </select>
+    </div>
+
+              <div style="background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; font-weight: 700;">
+        <i class="ph-fill ph-check-circle" style="font-size: 20px;"></i>
+        الشركة موثقة عبر النفاذ الوطني
+      </div>
+        <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION: DASHBOARD                            -->
+    <!-- ══════════════════════════════════════════════ -->
+    
+    <div class="seller-header-bar">
+      <h1 class="seller-section-title"><i class="ph-fill ph-chart-bar" style="color:var(--primary)"></i> لوحة التحكم</h1>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a href="/add-auction.php" class="btn-action-top" style="background:linear-gradient(135deg,#1bc976,#16a360);">
+          <i class="ph ph-gavel" style="color:#fff;"></i> مزاد مباشر
+        </a>
+        <a href="/add-auction.php?type=instant" class="btn-action-top" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+          <i class="ph ph-lightning" style="color:#fff;"></i> بيع فوري
+        </a>
+        <a href="/bulk-upload.php" class="btn-action-top" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+          <i class="ph ph-upload-simple" style="color:#fff;"></i> رفع Excel
+        </a>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-card-icon"><i class="ph-fill ph-car"></i></div>
+        <div class="stat-card-label">مركبات معروضة</div>
+        <div class="stat-card-value">14</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-card-icon"><i class="ph-fill ph-currency-circle-dollar"></i></div>
+        <div class="stat-card-label">إجمالي المبيعات</div>
+        <div class="stat-card-value">0 <span class="unit">ر.س</span></div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-card-icon"><i class="ph-fill ph-hourglass-medium"></i></div>
+        <div class="stat-card-label">مستحقات معلقة</div>
+        <div class="stat-card-value">0 <span class="unit">ر.س</span></div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-card-icon"><i class="ph-fill ph-gavel"></i></div>
+        <div class="stat-card-label">مزادات نشطة</div>
+        <div class="stat-card-value">11 <span class="unit">مزاد</span></div>
+      </div>
+    </div>
+
+    <div class="activity-card" style="margin-bottom:24px;">
+      <h3 class="activity-title"><i class="ph-fill ph-chart-line-up" style="color:var(--primary); font-size:22px;"></i> المبيعات الشهرية (ر.س)</h3>
+      <canvas id="sellerSalesChart" height="80"></canvas>
+    </div>
+
+    <div class="activity-card">
+      <h3 class="activity-title"><i class="ph-fill ph-clock-counter-clockwise" style="color:var(--primary); font-size:22px;"></i> آخر النشاطات</h3>
+      <ul class="activity-list">
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:59:33</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">109,294 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على BMW X5 xDrive 30i 2022</h4>
+            <p>2026-07-07 09:49:19</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">254,500 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:35:53</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">108,212 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على BMW X5 xDrive 30i 2022</h4>
+            <p>2026-07-07 09:32:27</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">254,000 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:30:35</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">107,141 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:30:34</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">106,641 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:26:07</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">105,586 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+                <li class="activity-item">
+          <div class="activity-icon" style="background:#f59e0b1a; color:#f59e0b;"><i class="ph-fill ph-gavel"></i></div>
+          <div class="activity-info">
+            <h4>مزايدة جديدة على تويوتا كامري 2.5L Prestige 2023</h4>
+            <p>2026-07-07 09:17:57</p>
+          </div>
+                    <div class="activity-amount" style="color:#f59e0b;">104,541 <span style="font-size:12px;">ر.س</span></div>
+                  </li>
+              </ul>
+            <a href="?section=fleet" style="display:block; text-align:center; margin-top:16px; color:var(--primary); font-weight:800; font-size:14px;">
+        3 مركبة بانتظار الفحص — عرض الأسطول
+      </a>
+          </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+    (function(){
+      const el = document.getElementById('sellerSalesChart');
+      if (!el || typeof Chart === 'undefined') return;
+      new Chart(el, {
+        type: 'bar',
+        data: {
+          labels: ["Feb 2026","Mar 2026","Apr 2026","May 2026","Jun 2026","Jul 2026"],
+          datasets: [{ label: 'المبيعات', data: [0,0,0,0,0,0], backgroundColor: 'rgba(27,201,118,0.7)', borderRadius: 8 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+      });
+    })();
+    </script>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION: FLEET                                -->
+    <!-- ══════════════════════════════════════════════ -->
+    
+  </main>
+</div>
+
+<footer class="footer-xm">
+  <div class="container">
+    <div class="footer-grid-xm">
+      <!-- Brand & About -->
+      <div>
+        <a href="/index.php" style="display:inline-block; margin-bottom:20px;">
+          <img src="/assets/images/logo.png" alt="FleetX" style="height:44px; filter: brightness(0) invert(1);">
+        </a>
+        <p style="margin-bottom:24px; line-height:1.8; color:#fff; font-size:14px">
+          منصة FleetX هي العلامة التجارية الرائدة لتنظيم وإدارة مزادات سيارات الأساطيل وشركات التأجير في المملكة العربية السعودية. نوفر بيئة تداول ذكية وآمنة وموثوقة بالكامل مدعومة بتقنية الذكاء الاصطناعي.
+        </p>
+        <div style="display:flex; gap:12px">
+          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-x-logo"></i></a>
+          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-linkedin-logo"></i></a>
+          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-facebook-logo"></i></a>
+        </div>
+      </div>
+
+      <!-- Links 1 -->
+      <div>
+        <h4 class="footer-title">المزادات والتداول</h4>
+        <ul class="footer-links-xm">
+          <li><a href="/auctions.php">جميع المزادات النشطة</a></li>
+          <li><a href="/auctions.php?type=live">مزادات التنفيذ الفوري</a></li>
+          <li><a href="/auctions.php?type=instant">الشراء المباشر والفوري</a></li>
+          <li><a href="/about.php">شروط التداول والمشاركة</a></li>
+        </ul>
+      </div>
+
+      <!-- Links 2 -->
+      <div>
+        <h4 class="footer-title">البوابات والحسابات</h4>
+        <ul class="footer-links-xm">
+          <li><a href="/register.php">فتح حساب مشتري فردي</a></li>
+          <li><a href="/seller.php">بوابة البائعين وشركات التأجير</a></li>
+          <li><a href="/buyer.php?section=dashboard">لوحة المشتري</a></li>
+          <li><a href="/login.php">تسجيل الدخول للمنصة</a></li>
+          <li><a href="/add-auction.php">إضافة إعلان / مزاد</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h4 class="footer-title">الرقابة والاعتمادات</h4>
+        <ul class="footer-links-xm">
+          <li><a href="#">تراخيص الهيئة العامة للنقل</a></li>
+          <li><a href="/terms.php">الوثائق القانونية والشروط</a></li>
+          <li><a href="/terms.php">سياسة الخصوصية والاستخدام</a></li>
+          <li><a href="#">إخلاء المسؤولية القانونية</a></li>
+        </ul>
+        <div style="margin-top: 24px; display: flex; gap: 10px;">
+          <div style="width:50px; height:50px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff"><i class="ph ph-shield-check"></i></div>
+           <div style="width:50px; height:50px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff"><i class="ph ph-lock-key"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider & Disclaimer -->
+    <div style="border-top:1px solid rgba(255,255,255,0.04); padding-top:28px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px; font-size:12px; color:#fff;">
+      <div style="flex:1; min-width:300px; line-height:1.7;">
+        <strong style="color:#fff">إخلاء المسؤولية:</strong> المزايدة على السيارات والتجارة بها تتطلب مسؤولية مالية عالية. يُرجى التحقق من التقارير الفنية للسيارة وقراءة كراسة الشروط بعناية قبل دفع التأمين.
+      </div>
+      <div style="text-align:left; min-width:220px; font-family:var(--font-en); display:flex; gap: 6px; align-items: center;">
+        <a href="https://www.bearand.com" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:800; transition:color 0.3s ease;">bearand</a>
+        <span>&copy; 2026 FleetX SA. All Rights Reserved.</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp Floating Widget -->
+<a href="https://wa.me/201066442622" target="_blank" class="whatsapp-float reveal active" title="تواصل معنا عبر واتساب">
+  <i class="ph-fill ph-whatsapp-logo" style="font-size: 32px; color: #fff;"></i>
+</a>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Swiper JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  // Intersection Observer for Reveal Animations
+  function reveal() {
+    var reveals = document.querySelectorAll(".reveal");
+    for (var i = 0; i < reveals.length; i++) {
+      var windowHeight = window.innerHeight;
+      var elementTop = reveals[i].getBoundingClientRect().top;
+      var elementVisible = 50;
+      if (elementTop < windowHeight - elementVisible) {
+        reveals[i].classList.add("active");
+      }
+    }
+  }
+  window.addEventListener("scroll", reveal);
+  reveal(); // Trigger on load
+  
+  // Inject favorites for JS consumption (DB-backed when logged in)
+  window.userFavorites = [];
+  
+  // Sync favorites UI on load
+  function syncFavoritesUI() {
+      if (!window.userFavorites) return;
+      document.querySelectorAll('.card-fav').forEach(btn => {
+          const id = btn.dataset.id;
+          if (id && window.userFavorites.includes(parseInt(id)) || window.userFavorites.includes(id.toString())) {
+              let icon = btn.querySelector('i');
+              if (icon) {
+                  icon.classList.remove('ph');
+                  icon.classList.add('ph-fill');
+                  icon.style.color = 'var(--danger)';
+              }
+          }
+      });
+  }
+  document.addEventListener('DOMContentLoaded', syncFavoritesUI);
+</script>
+<script src="/assets/js/fleetx.js"></script>
+</body>
+</html>

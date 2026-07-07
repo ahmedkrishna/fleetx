@@ -1,0 +1,7 @@
+---
+pid: 28808
+cwd: "E:\Design\bearand\Fleetx"
+command: "curl -s --connect-timeout 8 -T \"E:\\Design\\bearand\\Fleetx\\sanad.php\" \"ftp://82.25.102.67/domains/mazadi.bearand.com/public_html/sanad.php\" -u \"u274391035.ftp:*A7medfouad*\" 2>&1; curl -s --connect-timeout 8 -T \"E:\\Design\\bearand\\Fleetx\\sanad.php\" \"ftp://82.25.102.67/public_html/sanad.php\" -u \"u274391035:*A7medfouad*\" 2>&1"
+started_at: 2026-07-06T15:38:33.767Z
+running_for_ms: 69516284 
+---

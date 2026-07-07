@@ -1,0 +1,15 @@
+---
+pid: 12160
+cwd: "E:\Design\bearand\Fleetx"
+command: "curl.exe -s --ftp-pasv -T \"E:\\Design\\bearand\\Fleetx\\seller.php\" \"ftp://82.198.227.155/seller.php\" --user \"u274391035.mazadi.bearand.com:*A7medfouad*\"; curl.exe -s --ftp-pasv -T \"E:\\Design\\bearand\\Fleetx\\tests\\e2e_end_to_end.php\" \"ftp://82.198.227.155/tests/e2e_end_to_end.php\" --user \"u274391035.mazadi.bearand.com:*A7medfouad*\"; php \"E:\\Design\\bearand\\Fleetx\\tests\\e2e_end_to_end.php\" 2>&1 | Select-Object -Last 8"
+started_at: 2026-07-07T04:13:46.425Z
+running_for_ms: 24200005 
+---
+[PASS] Demo login: buyer — 0501111111
+[PASS] Demo login: seller — 0500000002
+[PASS] Demo login: inspector — 0503333333
+[PASS] Deployed: add-auction.php — HTTP 302
+[PASS] Deployed: inspector-report.php — HTTP 302
+[PASS] Deployed: deploy_fix.php — HTTP 200
+
+=== RESULT: 27 passed, 1 failed, 0 skipped ===

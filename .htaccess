@@ -1,0 +1,37 @@
+Options -Indexes
+
+# PHP Settings
+php_value display_errors 0
+php_flag display_errors Off
+
+# Security Headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "\.(sql|log|env|ini|sh)$">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>
+
+# Protect setup.php after initial run (comment out during setup)
+# <Files "setup.php">
+#   Order Allow,Deny
+#   Deny from all
+# </Files>
+
+# Friendly URLs (optional)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Redirect HTTP to HTTPS (uncomment on production)
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Character Encoding
+AddDefaultCharset UTF-8

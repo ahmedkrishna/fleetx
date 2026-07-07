@@ -1,0 +1,33 @@
+---
+pid: 15160
+cwd: "E:\Design\bearand\Fleetx"
+command: "php \"E:\\Design\\bearand\\Fleetx\\tests\\e2e.php\" 2>&1"
+started_at: 2026-07-06T15:29:50.078Z
+running_for_ms: 70040241 
+---
+=== FleetX E2E Test ===
+Base: https://mazadi.bearand.com
+
+[PASS] Public: index.php — HTTP 200
+[PASS] Public: login — HTTP 200
+[PASS] Public: auctions — HTTP 200
+[PASS] Public: companies — HTTP 200
+[FAIL] Public: sell-your-car — HTTP 404
+[PASS] Database connected — Users: 10
+Auctions: 30
+Vehicles: 30
+[FAIL] Buyer login (0501111111) — HTTP 200
+[FAIL] Buyer page companies.php — HTTP 200
+[PASS] Buyer page buyer.php?section=dashboard — HTTP 200
+[PASS] Buyer page nafath.php — HTTP 200
+[PASS] Buyer page sanad.php — HTTP 200
+[FAIL] Find active auction — none found
+[FAIL] Seller login (0500000002) — HTTP 200
+[PASS] Seller fleet dashboard — HTTP 200
+[PASS] Seller add auction page — HTTP 200
+[FAIL] Inspector login (0503333333) — HTTP 200
+[PASS] Inspector panel — HTTP 200
+[FAIL] Inspector report form — HTTP 404
+[FAIL] Notifications API — HTTP 200
+
+=== SUMMARY: 11 passed, 8 failed / 19 total ===

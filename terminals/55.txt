@@ -1,0 +1,43 @@
+---
+pid: 24440
+cwd: "E:\Design\bearand\Fleetx"
+command: "cd \"E:\\Design\\bearand\\Fleetx\" && php tests/e2e_end_to_end.php 2>&1"
+started_at: 2026-07-07T10:16:04.868Z
+running_for_ms: 2455008  
+---
+=== FleetX End-to-End ===
+Base: https://mazadi.bearand.com
+Buyer: 0549694702 / e2e_1783419368_9488@fleetx.test
+
+[PASS] Public: index — HTTP 200
+[PASS] Public: login — HTTP 200
+[PASS] Public: register — HTTP 200
+[PASS] Public: auctions — HTTP 200
+[PASS] Public: companies — HTTP 200
+[PASS] Database connected — Users: 51
+Auctions: 30
+Vehicles: 33
+[PASS] Register buyer
+[PASS] Login buyer
+[PASS] Nafath verify
+[PASS] Sanad limit raise — no fatal
+[PASS] Wallet top-up
+[PASS] Notifications API — unread=2
+[PASS] Companies browse
+[PASS] Find auction — id=1
+[PASS] Auction live room
+[PASS] Place bid — تمت مزايدتك بنجاح!
+[PASS] Bid history API
+[PASS] Buyer dashboard
+[PASS] Buyer favorites
+[PASS] Dashboard: buyer — HTTP 200
+[PASS] Dashboard: seller — HTTP 200
+[PASS] Dashboard: inspector — HTTP 200
+[PASS] Demo login: buyer — 0501111111
+[PASS] Demo login: seller — 0500000002
+[PASS] Demo login: inspector — 0503333333
+[PASS] Deployed: add-auction.php — HTTP 302
+[PASS] Deployed: inspector-report.php — HTTP 302
+[PASS] Deployed: deploy_fix.php — HTTP 200
+
+=== RESULT: 28 passed, 0 failed, 0 skipped ===
