@@ -46,7 +46,7 @@ $min_increment = $auction['bid_increment'] ?? 500;
   <title><?= $is_instant ? 'الشراء الفوري' : 'غرفة المزايدة' ?>: <?= sanitize($title_car) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--detail">
+<body class="fx-home fx-page-shell fx-page-shell--vehicle">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -57,14 +57,19 @@ $hero_title = $title_car;
 $hero_bg = $coverImage;
 $hero_back_href = $is_instant ? '/auctions.php?type=instant' : '/auctions.php';
 $hero_back_label = '← العودة إلى ' . ($is_instant ? 'الشراء الفوري' : 'المزادات');
-$hero_modifier = 'overlap';
-$hero_eyebrow = $is_instant ? 'شراء فوري' : 'تفاصيل المزاد';
+$hero_modifier = 'light';
+$hero_eyebrow = $is_instant ? 'شراء فوري' : 'تفاصيل المركبة';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . sanitize($auction['vehicle_city'] ?? $auction['city'] ?? 'الرياض') . '</span>';
-$hero_actions_html = '<button class="btn btn-outline" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
+$hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph ph-calendar"></i> ' . sanitize($auction['year'] ?? '2023') . '</span>';
+$hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph ph-gauge"></i> ' . number_format($auction['mileage'] ?? 0) . ' كم</span>';
+if ($is_instant) {
+    $hero_meta_html .= '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-lightning"></i> متاح للشراء الفوري</span>';
+}
+$hero_actions_html = '<button type="button" class="btn btn-outline fx-vehicle-fav-btn" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="container fx-page-body fx-page-body--overlap-lg">
+<div class="container fx-page-body fx-page-body--overlap fx-vehicle-page">
 
   <div class="fx-detail-layout">
     
@@ -76,17 +81,17 @@ include 'includes/page-hero.inc.php';
             ? max(15, (int)($conn->query('SELECT COUNT(*) FROM bids WHERE auction_id=' . intval($auction_id))->fetch_row()[0] ?? 0) * 2 + rand(10, 40))
             : rand(30, 150);
         ?>
-      <div class="fx-live-card fx-panel-first--flush">
+      <div class="fx-live-card fx-panel-first fx-vehicle-gallery-card">
         <div class="fx-live-card-header">
-          <div class="fx-live-card-title"><span class="fx-live-dot"></span> تفاصيل المركبة</div>
+          <div class="fx-live-card-title"><i class="ph-fill ph-images"></i> معرض الصور</div>
           <div class="fx-viewers-badge">
             المشاهدين:
-            <span class="font-en"><i class="ph-fill ph-eye" style="color:var(--primary)"></i> <?= number_format($viewers) ?></span>
+            <span class="font-en"><i class="ph-fill ph-eye"></i> <?= number_format($viewers) ?></span>
           </div>
         </div>
         <div class="mazad-premium-gallery">
           <div class="mpg-main-view">
-            <div class="fx-instant-badge"><i class="ph-fill ph-lightning"></i> متاح للشراء الفوري</div>
+            <?php if ($is_instant): ?><div class="fx-instant-badge"><i class="ph-fill ph-lightning"></i> شراء فوري</div><?php endif; ?>
             <img id="main-gallery-img" src="<?= $gallery_images[0] ?>" alt="صورة رئيسية">
             <div class="mpg-overlay">
               <div class="mpg-badge"><i class="ph-bold ph-camera"></i> <?= count($gallery_images) ?> صور</div>
@@ -107,7 +112,7 @@ include 'includes/page-hero.inc.php';
           <div class="fx-detail-spec__icon"><i class="ph ph-speedometer"></i></div>
           <div>
             <div class="fx-detail-spec__label">الممشى</div>
-            <div class="fx-detail-spec__val font-en"><?= number_format($auction['mileage'] ?? 0) ?> <span style="font-family:var(--font-ar);font-size:12px;">كم</span></div>
+            <div class="fx-detail-spec__val font-en"><?= number_format($auction['mileage'] ?? 0) ?> <span class="fx-detail-unit">كم</span></div>
           </div>
         </div>
         <div class="fx-detail-spec">
@@ -126,7 +131,7 @@ include 'includes/page-hero.inc.php';
         </div>
       </div>
 
-      <div class="fx-detail-block">
+      <div class="fx-detail-block fx-panel-first">
         <h3>نظرة عامة على المركبة</h3>
         <p class="fx-live-desc">
           هذه المركبة معتمدة وخضعت لفحص شامل يتضمن أكثر من 100 نقطة فحص ميكانيكية وكهربائية وللهيكل الداخلي والخارجي. السيارة بحالة ممتازة وخالية من الحوادث الجوهرية.
@@ -134,7 +139,7 @@ include 'includes/page-hero.inc.php';
         <div class="fx-detail-kv">
           <div class="fx-detail-kv-row"><span>سنة الصنع</span><span><?= $auction['year'] ?? '2023' ?></span></div>
           <div class="fx-detail-kv-row"><span>اللون الخارجي</span><span><?= $auction['color'] ?? 'أبيض' ?></span></div>
-          <div class="fx-detail-kv-row"><span>حالة البودي</span><span style="color:#1bc976">سليم (وكالة)</span></div>
+          <div class="fx-detail-kv-row"><span>حالة البودي</span><span class="fx-text-success">سليم (وكالة)</span></div>
           <div class="fx-detail-kv-row"><span>المدينة</span><span><?= sanitize($auction['city'] ?? 'الرياض') ?></span></div>
         </div>
         
@@ -157,7 +162,7 @@ include 'includes/page-hero.inc.php';
         <div class="fx-autodata-box">
             <h4><i class="ph-fill ph-chart-line-up"></i> تقييم AutoData للأسعار</h4>
             <div class="fx-detail-kv-row"><span>السعر التقديري في السوق</span><span class="font-en"><?= number_format($autodata_min) ?> - <?= number_format($autodata_max) ?> ر.س</span></div>
-            <div class="fx-detail-kv-row"><span>هامش الربح المتوقع</span><span style="color:#1bc976">~ <?= number_format($autodata_max - $current_price) ?> ر.س</span></div>
+            <div class="fx-detail-kv-row"><span>هامش الربح المتوقع</span><span class="fx-text-success">~ <?= number_format($autodata_max - $current_price) ?> ر.س</span></div>
         </div>
         <?php endif; ?>
 
@@ -167,10 +172,10 @@ include 'includes/page-hero.inc.php';
     </div>
 
     <div class="fx-pricing-panel">
-      <div class="pricing-card fx-panel-first">
+      <div class="pricing-card fx-panel-first fx-vehicle-pricing-card">
         <div class="fx-detail-spec__label">السعر الإجمالي</div>
         <div class="fx-price-display"><?= number_format($current_price) ?> <span class="unit">ر.س</span></div>
-        <p class="fx-live-desc" style="margin-top:8px;font-size:12px;">شامل ضريبة القيمة المضافة ورسوم النقل</p>
+        <p class="fx-vehicle-price-note">شامل ضريبة القيمة المضافة ورسوم النقل</p>
 
         <div class="finance-badge">
           <i class="ph-fill ph-calculator"></i> تقسيط من <?= number_format(ceil($current_price / 60)) ?> ر.س / شهر
@@ -185,8 +190,8 @@ include 'includes/page-hero.inc.php';
           </button>
         </div>
 
-        <div class="seller-info-card">
-          <div class="fx-detail-spec__icon" style="width:40px;height:40px;border-radius:50%;background:var(--bg-dark);color:#fff;"><i class="ph-fill ph-buildings"></i></div>
+        <div class="seller-info-card fx-vehicle-seller">
+          <div class="fx-detail-spec__icon fx-vehicle-seller__icon"><i class="ph-fill ph-buildings"></i></div>
           <div>
             <div class="fx-detail-spec__label">معروضة من قبل</div>
             <div class="fx-detail-spec__val"><?= sanitize($auction['seller_name'] ?? $auction['seller'] ?? 'الوطنية لتأجير السيارات') ?></div>

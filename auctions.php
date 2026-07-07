@@ -116,7 +116,7 @@ $total_pages = ceil($total_items / $limit);
   <title>المزادات والمركبات المتاحة | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--listing">
+<body class="fx-home fx-page-shell fx-page-shell--search">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -125,22 +125,38 @@ if ($type_filter === 'instant') {
     $hero_title = 'الشراء الفوري';
     $hero_desc = 'تصفح واشترِ المركبات مباشرة بخاصية الشراء الفوري وبدون مزايدة';
     $hero_bg = 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1600&q=80';
+    $hero_eyebrow = 'بحث وتصفح';
 } else {
     $hero_title = 'المزادات الحية';
     $hero_desc = 'شارك في أحدث المزادات الحية ونافس على أفضل المركبات المعروضة الآن، مزايدات لحظية تنافسية!';
     $hero_bg = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&q=80';
+    $hero_eyebrow = 'بحث وتصفح';
 }
-$hero_modifier = 'overlap';
-$hero_bottom_html = '<div class="fx-page-hero__toolbar"><div class="stat-item"><div class="stat-num">' . $total_items . '</div><div class="stat-lbl">نتيجة متاحة</div></div></div>';
+$hero_modifier = 'light';
+$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-list-magnifying-glass"></i> ' . number_format($total_items) . ' نتيجة</span>';
+if ($type_filter === 'live') {
+    $hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph-fill ph-broadcast"></i> ' . $pill_stats['active'] . ' مزاد نشط</span>';
+} else {
+    $hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph-fill ph-lightning"></i> ' . $pill_stats['active'] . ' مركبة متاحة</span>';
+}
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="container fx-page-body fx-page-body--overlap-lg">
-  <div class="auctions-layout">
-    
-    <!-- Sidebar Filters -->
-    <aside class="filter-sidebar">
-    <div class="mobile-sidebar-toggle" onclick="this.parentElement.classList.toggle('expanded')">
+<div class="container fx-page-body fx-page-body--overlap fx-search-page">
+  <div class="fx-search-type-bar">
+    <div class="auctions-tabs fx-home-tabs fx-search-type-tabs">
+      <a href="auctions.php?type=live" class="auctions-tab-btn<?= $type_filter === 'live' ? ' active' : '' ?>"><i class="ph-fill ph-broadcast"></i> المزادات الحية</a>
+      <a href="auctions.php?type=instant" class="auctions-tab-btn<?= $type_filter === 'instant' ? ' active' : '' ?>"><i class="ph-fill ph-lightning"></i> الشراء الفوري</a>
+    </div>
+    <span class="fx-search-result-count"><strong><?= number_format($total_items) ?></strong> نتيجة مطابقة</span>
+  </div>
+
+  <div class="auctions-layout fx-search-layout">
+    <aside class="fx-filter-panel filter-sidebar">
+    <div class="fx-filter-panel__head">
+      <h3><i class="ph-fill ph-funnel"></i> فلاتر البحث</h3>
+    </div>
+    <div class="mobile-sidebar-toggle" onclick="this.closest('.filter-sidebar').classList.toggle('expanded')">
         <span>خيارات البحث المتقدم</span>
         <i class="ph-fill ph-caret-down shine-arrow"></i>
     </div>
@@ -148,13 +164,16 @@ include 'includes/page-hero.inc.php';
       <form action="auctions.php" method="GET" id="filter-form">
         <input type="hidden" name="type" value="<?= $type_filter ?>">
         
-        <div class="filter-group">
-          <label class="filter-title">بحث <i class="ph ph-magnifying-glass"></i></label>
-          <input type="text" name="search" class="form-control" placeholder="ابحث بالاسم..." value="<?= sanitize($search_query) ?>">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">بحث <i class="ph ph-magnifying-glass"></i></label>
+          <div class="fx-filter-search-wrap">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" name="search" class="form-control fx-filter-input" placeholder="ابحث بالاسم أو الماركة..." value="<?= sanitize($search_query) ?>">
+          </div>
         </div>
         <?php if($type_filter === 'live'): ?>
-          <div class="filter-group">
-            <label class="filter-title">حالة المزاد <i class="ph ph-activity"></i></label>
+          <div class="filter-group fx-filter-group">
+            <label class="filter-title fx-filter-title">حالة المزاد <i class="ph ph-activity"></i></label>
             <div class="checkbox-list">
               <label class="checkbox-item"><input type="checkbox" name="status[]" value="active" <?= in_array('active', $status_filter) ? 'checked' : '' ?>> جاري الآن</label>
               <label class="checkbox-item"><input type="checkbox" name="status[]" value="upcoming" <?= in_array('upcoming', $status_filter) ? 'checked' : '' ?>> قادم</label>
@@ -162,9 +181,9 @@ include 'includes/page-hero.inc.php';
             </div>
           </div>
         <?php endif; ?>
-        <div class="filter-group">
-          <label class="filter-title">الماركة <i class="ph ph-car"></i></label>
-          <select name="make" id="sidebarMakeSelect" class="form-control" onchange="updateSidebarModels()" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-family: var(--font-ar); padding: 10px; font-weight: 700;">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">الماركة <i class="ph ph-car"></i></label>
+          <select name="make" id="sidebarMakeSelect" class="form-control fx-filter-select" onchange="updateSidebarModels()">
             <option value="">كل الماركات</option>
             <?php
               $makes = ['تويوتا','هيونداي','نيسان','فورد','شيفروليه','كيا','جمس','مازدا','هوندا','لكزس','مرسيدس','بي ام دبليو','أودي','بورش','جيلي','شانجان','إم جي'];
@@ -175,16 +194,16 @@ include 'includes/page-hero.inc.php';
           </select>
         </div>
 
-        <div class="filter-group">
-          <label class="filter-title">الموديل <i class="ph ph-car-profile"></i></label>
-          <select name="model" id="sidebarModelSelect" class="form-control" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-family: var(--font-ar); padding: 10px; font-weight: 700;">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">الموديل <i class="ph ph-car-profile"></i></label>
+          <select name="model" id="sidebarModelSelect" class="form-control fx-filter-select">
             <option value="">كل الموديلات</option>
           </select>
         </div>
         
-        <div class="filter-group">
-          <label class="filter-title">المدينة <i class="ph ph-map-pin"></i></label>
-          <select name="city" class="form-control" style="width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-family: var(--font-ar); padding: 10px; font-weight: 700;">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">المدينة <i class="ph ph-map-pin"></i></label>
+          <select name="city" class="form-control fx-filter-select">
             <option value="">كل المدن</option>
             <?php
               $cities = ['الرياض','جدة','الدمام','مكة المكرمة','المدينة المنورة','الخبر','أبها','تبوك','الطائف','بريدة','جازان','نجران','حائل','الجبيل','الأحساء'];
@@ -194,27 +213,27 @@ include 'includes/page-hero.inc.php';
             <?php endforeach; ?>
           </select>
         </div>
-        <div class="filter-group">
-          <label class="filter-title">سنة الصنع <i class="ph ph-calendar"></i></label>
-          <div class="range-inputs" style="display:flex; gap:10px;">
-            <select name="year_min" class="form-control" style="flex: 1; min-width: 0; padding: 10px; font-size: 13px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-family: var(--font-en);" dir="ltr">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">سنة الصنع <i class="ph ph-calendar"></i></label>
+          <div class="fx-filter-range">
+            <select name="year_min" class="form-control fx-filter-select fx-filter-select--en" dir="ltr">
               <option value="">من</option>
               <?php for($y=date('Y'); $y>=2000; $y--): ?><option value="<?=$y?>" <?= isset($_GET['year_min']) && $_GET['year_min']==$y?'selected':'' ?>><?=$y?></option><?php endfor; ?>
             </select>
-            <span style="color:var(--text-muted); font-weight:700; display:flex; align-items:center;">-</span>
-            <select name="year_max" class="form-control" style="flex: 1; min-width: 0; padding: 10px; font-size: 13px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); font-family: var(--font-en);" dir="ltr">
+            <span class="fx-filter-range-sep">-</span>
+            <select name="year_max" class="form-control fx-filter-select fx-filter-select--en" dir="ltr">
               <option value="">إلى</option>
               <?php for($y=date('Y'); $y>=2000; $y--): ?><option value="<?=$y?>" <?= isset($_GET['year_max']) && $_GET['year_max']==$y?'selected':'' ?>><?=$y?></option><?php endfor; ?>
             </select>
           </div>
         </div>
         
-        <div class="filter-group">
-          <label class="filter-title">نطاق السعر (ر.س) <i class="ph ph-money"></i></label>
-          <div class="range-inputs" style="display:flex; gap:10px;">
-            <input type="number" name="price_min" class="form-control" placeholder="الأدنى" value="<?= isset($_GET['price_min']) ? $_GET['price_min'] : '' ?>" style="flex: 1; min-width: 0; padding: 10px; font-size: 13px; border-radius: var(--radius-sm); font-family: var(--font-en);" dir="ltr">
-            <span style="color:var(--text-muted); font-weight:700; display:flex; align-items:center;">-</span>
-            <input type="number" name="price_max" class="form-control" placeholder="الأعلى" value="<?= isset($_GET['price_max']) ? $_GET['price_max'] : '' ?>" style="flex: 1; min-width: 0; padding: 10px; font-size: 13px; border-radius: var(--radius-sm); font-family: var(--font-en);" dir="ltr">
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">نطاق السعر (ر.س) <i class="ph ph-money"></i></label>
+          <div class="fx-filter-range">
+            <input type="number" name="price_min" class="form-control fx-filter-input fx-filter-input--en" placeholder="الأدنى" value="<?= isset($_GET['price_min']) ? $_GET['price_min'] : '' ?>" dir="ltr">
+            <span class="fx-filter-range-sep">-</span>
+            <input type="number" name="price_max" class="form-control fx-filter-input fx-filter-input--en" placeholder="الأعلى" value="<?= isset($_GET['price_max']) ? $_GET['price_max'] : '' ?>" dir="ltr">
           </div>
         </div>
         <script>
@@ -269,16 +288,15 @@ include 'includes/page-hero.inc.php';
             }
         });
         </script>
-        <button type="submit" class="btn btn-primary" style="width:100%; border-radius:var(--radius-md);">تطبيق الفلاتر</button>
-        <a href="auctions.php?type=<?= $type_filter ?>" class="btn btn-outline" style="width:100%; border-radius:var(--radius-md); margin-top:10px; text-align:center;">إعادة ضبط</a>
+        <div class="fx-filter-actions">
+          <button type="submit" class="btn btn-primary fx-filter-submit">تطبيق الفلاتر</button>
+          <a href="auctions.php?type=<?= $type_filter ?>" class="btn btn-outline fx-filter-reset">إعادة ضبط</a>
+        </div>
       </form>
     </div></aside>
     
-    <!-- Main Content -->
-    <main>
-      
-            <!-- Section Header -->
-      <div class="fx-toolbar">
+    <main class="fx-search-main">
+      <div class="fx-toolbar fx-search-toolbar">
         <div class="fx-pills filter-pills-group">
             <button type="button" class="fx-pill active">
                 الكل <span class="fx-pill-count"><?= $pill_stats['all'] ?></span>
@@ -290,9 +308,9 @@ include 'includes/page-hero.inc.php';
                 <?= $type_filter === 'instant' ? 'تقسيط' : 'قادم' ?> <span class="fx-pill-count"><?= $pill_stats['upcoming'] ?></span>
             </button>
         </div>
-        <div style="color:var(--text-dark); font-size:13px; font-weight:800; display:flex; align-items:center; gap:10px;">
+        <div class="fx-search-sort">
           <label>ترتيب حسب:</label>
-          <select name="sort_by" form="filter-form" onchange="document.getElementById('filter-form').submit();" class="form-select" style="width:160px; font-weight:700;">
+          <select name="sort_by" form="filter-form" onchange="document.getElementById('filter-form').submit();" class="form-select fx-search-sort-select">
             <option value="all" <?= isset($_GET['sort_by']) && $_GET['sort_by'] == 'all' ? 'selected' : '' ?>>الكل</option>
             <option value="newest" <?= isset($_GET['sort_by']) && $_GET['sort_by'] == 'newest' ? 'selected' : '' ?>>الأحدث</option>
             <option value="price_asc" <?= isset($_GET['sort_by']) && $_GET['sort_by'] == 'price_asc' ? 'selected' : '' ?>>الأقل سعراً</option>
@@ -303,7 +321,7 @@ include 'includes/page-hero.inc.php';
       </div>
 
       <?php if(empty($items)): ?>
-        <div class="fx-empty-state">
+        <div class="fx-empty-state fx-empty-state--search">
           <i class="ph-fill ph-warning-circle"></i>
           <h3>لا توجد نتائج مطابقة</h3>
           <p>حاول تغيير فلاتر البحث والمحاولة مجدداً.</p>
