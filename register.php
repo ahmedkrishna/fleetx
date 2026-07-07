@@ -121,17 +121,28 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
   <meta name="description" content="سجّل في FleetX وابدأ البيع والشراء في مزادات أساطيل السيارات">
   <link rel="stylesheet" href="/assets/css/fleetx.css">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="fx-register-body">
+<body class="fx-register-body fx-register-body--light">
 
+<header class="fx-auth-topbar">
+  <a href="/index.php" class="fx-auth-topbar__logo">
+    <img src="/assets/images/logo.png" alt="FleetX">
+  </a>
+  <a href="/login.php" class="fx-auth-topbar__home"><i class="ph ph-sign-in"></i> تسجيل الدخول</a>
+</header>
+
+<div class="fx-register-shell">
 <div class="reg-container">
-  <div class="reg-logo-wrap">
-    <a href="/index.php"><img src="/assets/images/logo.png" alt="FleetX"></a>
+  <div class="fx-register-hero">
+    <span class="fx-home-eyebrow"><i class="ph-fill ph-user-plus"></i> انضم إلى FleetX</span>
+    <h1 class="fx-register-hero__title">إنشاء حساب جديد</h1>
+    <p class="fx-register-hero__desc">ابدأ البيع أو الشراء في مزادات أساطيل السيارات خلال دقائق</p>
   </div>
 
   <?php if ($success): ?>
   <!-- ═══════ SUCCESS ═══════ -->
-  <div class="reg-card">
+  <div class="reg-card fx-panel-first fx-reg-card--home">
     <div class="success-screen">
       <div class="success-icon">🎉</div>
       <h2 class="success-title">تم إنشاء حسابك بنجاح!</h2>
@@ -170,7 +181,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
   </div>
 
   <!-- ═══════ FORM CARD ═══════ -->
-  <div class="reg-card">
+  <div class="reg-card fx-panel-first fx-reg-card--home">
 
     <?php if ($error): ?>
     <div class="error-box"><i class="ph ph-warning-circle"></i> <?= htmlspecialchars($error) ?></div>
@@ -340,6 +351,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
     </form>
   </div>
   <?php endif; ?>
+</div>
 </div>
 
 <script src="https://unpkg.com/@phosphor-icons/web"></script>

@@ -65,16 +65,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="description" content="سجّل الدخول إلى منصة FleetX لمزادات أساطيل السيارات">
   <link rel="stylesheet" href="/assets/css/fleetx.css">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="fx-auth-body">
+<body class="fx-auth-body fx-auth-body--light">
 
-<div class="fx-auth-wrap">
-  <div class="fx-auth-visual">
+<header class="fx-auth-topbar">
+  <a href="/index.php" class="fx-auth-topbar__logo">
+    <img src="/assets/images/logo.png" alt="FleetX">
+  </a>
+  <a href="/index.php" class="fx-auth-topbar__home"><i class="ph ph-house"></i> الرئيسية</a>
+</header>
+
+<div class="fx-auth-wrap fx-auth-wrap--light">
+  <div class="fx-auth-visual fx-auth-visual--light">
     <div class="fx-auth-visual-content">
-      <img src="/assets/images/logo.png" alt="FleetX" class="fx-auth-logo">
-      <h1 class="fx-auth-tagline">منصة مزادات<br><span>أساطيل السيارات</span><br>الأولى في السعودية</h1>
-      <p class="fx-auth-sub">بيع وشراء سيارات الأساطيل المستعملة<br>بشفافية كاملة وتقارير فحص موثّقة</p>
-      <div class="fx-auth-stats">
+      <span class="fx-home-eyebrow fx-auth-eyebrow"><i class="ph-fill ph-gavel"></i> FleetX</span>
+      <h1 class="fx-auth-tagline fx-auth-tagline--light">منصة مزادات<br><span>أساطيل السيارات</span><br>الأولى في السعودية</h1>
+      <p class="fx-auth-sub fx-auth-sub--light">بيع وشراء سيارات الأساطيل المستعملة بشفافية كاملة وتقارير فحص موثّقة</p>
+      <div class="fx-auth-stats fx-auth-stats--light">
         <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= max(1, $auth_companies) ?>+</div><div class="fx-auth-stat-lbl">شركة معتمدة</div></div>
         <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= max(1, $auth_auctions) ?>+</div><div class="fx-auth-stat-lbl">مزاد منظم</div></div>
         <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= $auth_revenue_display ?></div><div class="fx-auth-stat-lbl">ريال حجم التداول</div></div>
@@ -82,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
-  <div class="fx-auth-form-panel">
-    <div class="fx-auth-box">
+  <div class="fx-auth-form-panel fx-auth-form-panel--light">
+    <div class="fx-auth-box fx-panel-first fx-auth-box--card">
       <h1 class="fx-auth-title">مرحباً بك</h1>
       <p class="fx-auth-subtitle">اختر نوع حسابك للمتابعة</p>
 
@@ -93,17 +101,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="fx-type-selector" id="typeSelector">
         <div class="fx-type-card <?= ($selected_type==='company') ? 'active' : '' ?>" onclick="selectType('company')" id="card-company">
-          <span class="fx-type-icon">🏢</span>
+          <span class="fx-type-icon"><i class="ph-fill ph-buildings"></i></span>
           <div class="fx-type-name">شركة</div>
           <div class="fx-type-desc">بائع / مؤجر</div>
         </div>
         <div class="fx-type-card <?= ($selected_type==='trader') ? 'active' : '' ?>" onclick="selectType('trader')" id="card-trader">
-          <span class="fx-type-icon">🛒</span>
+          <span class="fx-type-icon"><i class="ph-fill ph-shopping-cart"></i></span>
           <div class="fx-type-name">تاجر</div>
           <div class="fx-type-desc">مشتري / وكيل</div>
         </div>
         <div class="fx-type-card" onclick="guestBrowse()" id="card-guest">
-          <span class="fx-type-icon">👁️</span>
+          <span class="fx-type-icon"><i class="ph-fill ph-eye"></i></span>
           <div class="fx-type-name">زائر</div>
           <div class="fx-type-desc">تصفح فقط</div>
         </div>
@@ -124,19 +132,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input class="fx-form-input" type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
 
-        <button type="submit" class="fx-btn-auth">
-          <i class="ph-fill ph-sign-in" style="margin-left:6px;"></i>
+        <button type="submit" class="fx-btn-auth btn btn-primary">
+          <i class="ph-fill ph-sign-in"></i>
           <span id="submit-label">تسجيل الدخول</span>
         </button>
       </form>
 
       <div class="fx-auth-divider"><span>ليس لديك حساب؟</span></div>
 
-      <a href="/register.php" class="btn btn-outline" style="width:100%; justify-content:center; border-radius:14px; padding:14px; font-size:15px; box-sizing:border-box;">
+      <a href="/register.php" class="btn btn-outline fx-auth-signup-btn">
         إنشاء حساب جديد
       </a>
 
-      <p class="guest-link">أو <a href="/index.php?guest=1">تصفح المنصة بدون تسجيل</a></p>
+      <p class="fx-auth-guest-link">أو <a href="/index.php?guest=1">تصفح المنصة بدون تسجيل</a></p>
 
     </div>
   </div>

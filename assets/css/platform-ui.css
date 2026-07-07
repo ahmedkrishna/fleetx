@@ -8485,3 +8485,191 @@ a.auctions-tab-btn {
 @media (max-width: 768px) {
   .fx-map-container--home #map { height: 480px; }
 }
+
+/* ==========================================================================
+   PHASE 15 — Login & signup (homepage light theme)
+   ========================================================================== */
+
+.fx-auth-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+.fx-auth-topbar__logo img { height: 36px; display: block; }
+.fx-auth-topbar__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #334155;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border-light);
+  background: #fff;
+  transition: var(--transition);
+}
+.fx-auth-topbar__home:hover {
+  color: var(--primary);
+  border-color: rgba(27, 201, 118, 0.35);
+}
+
+/* Login — light split layout */
+.fx-auth-body--light {
+  background: #f8fafc;
+  min-height: 100vh;
+}
+.fx-auth-wrap--light {
+  min-height: 100vh;
+  padding-top: 64px;
+}
+.fx-auth-visual--light {
+  background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
+  padding: 48px 40px;
+}
+.fx-auth-visual--light::before {
+  background-image: url('/assets/images/fleetxhero1.png');
+  opacity: 0.18;
+  background-size: cover;
+  background-position: center;
+}
+.fx-auth-eyebrow { margin-bottom: 16px; }
+.fx-auth-tagline--light {
+  color: #0f172a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.fx-auth-sub--light {
+  color: #475569;
+  font-weight: 600;
+}
+.fx-auth-stats--light .fx-auth-stat-num {
+  color: var(--primary);
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+  display: inline-block;
+  min-width: 64px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+.fx-auth-stats--light .fx-auth-stat-lbl {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.fx-auth-form-panel--light {
+  background: #f8fafc;
+  padding: 48px 32px;
+}
+.fx-auth-box--card {
+  max-width: 440px;
+  padding: 32px 28px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+.fx-type-icon i {
+  font-size: 28px;
+  color: var(--primary);
+}
+.fx-type-card.active .fx-type-icon i { color: #047857; }
+.fx-btn-auth.btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-round);
+  padding: 15px;
+  font-size: 16px;
+  font-weight: 900;
+}
+.fx-auth-signup-btn {
+  width: 100%;
+  justify-content: center;
+  border-radius: var(--radius-round);
+  padding: 14px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+.fx-auth-guest-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.fx-auth-guest-link a {
+  color: var(--primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* Register — light centered flow */
+.fx-register-body--light {
+  background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 40%, #f8fafc 100%);
+  align-items: flex-start;
+  padding: 88px 20px 48px;
+}
+.fx-register-shell {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.fx-register-hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.fx-register-hero__title {
+  font-size: clamp(26px, 4vw, 32px);
+  font-weight: 900;
+  color: #0f172a;
+  margin: 12px 0 8px;
+}
+.fx-register-hero__desc {
+  font-size: 15px;
+  color: #475569;
+  margin: 0;
+  line-height: 1.7;
+}
+.fx-reg-card--home {
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+.fx-register-body--light .step-dot.active {
+  background: var(--primary);
+  color: #000;
+  box-shadow: 0 0 0 4px rgba(27, 201, 118, 0.15);
+}
+.fx-register-body--light .account-type-card:hover {
+  border-color: rgba(27, 201, 118, 0.45);
+  background: rgba(27, 201, 118, 0.04);
+}
+.fx-register-body--light .account-type-card.active {
+  border-color: var(--primary);
+  background: rgba(27, 201, 118, 0.06);
+  box-shadow: 0 8px 24px rgba(27, 201, 118, 0.1);
+}
+.fx-register-body--light .btn-next {
+  border-radius: var(--radius-round);
+}
+.fx-register-body--light .form-input:focus,
+.fx-register-body--light .otp-box:focus {
+  box-shadow: 0 0 0 3px rgba(27, 201, 118, 0.12);
+}
+
+@media (max-width: 768px) {
+  .fx-auth-topbar { padding: 12px 16px; }
+  .fx-auth-wrap--light { padding-top: 56px; }
+  .fx-auth-form-panel--light { padding: 32px 20px; }
+  .fx-auth-box--card { padding: 24px 20px; }
+  .fx-register-body--light { padding-top: 76px; }
+}
