@@ -49,6 +49,12 @@ $viewers = max(12, $bid_viewers * 3 + rand(8, 24));
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>غرفة المزاد المباشر: <?= sanitize($title_car) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <style>
+    @media (max-width: 992px) {
+      .fx-page-shell--live .fx-live-room > .live-gallery-panel,
+      .fx-page-shell--live .fx-live-room > .pbb-board { order: 0 !important; }
+    }
+  </style>
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--live">
 
