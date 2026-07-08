@@ -42,3 +42,4 @@ $admin_active = $admin_active ?? '';
     </a>
   </nav>
 </aside>
+<div class="admin-sidebar-overlay" id="admin-sidebar-overlay" aria-hidden="true"></div>

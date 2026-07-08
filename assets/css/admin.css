@@ -167,9 +167,20 @@ body.admin-body {
 .action-menu-item:hover { background: var(--glass-bg); color: var(--white); }
 .action-menu-item.danger:hover { color: var(--danger); }
 
+.admin-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, 0.45);
+}
+.admin-sidebar-overlay.is-visible { display: block; }
+
 @media (max-width: 992px) {
   .admin-sidebar {
     transform: translateX(260px);
+    z-index: 1000;
+    box-shadow: -8px 0 32px rgba(15, 23, 42, 0.12);
   }
   .admin-sidebar.open {
     transform: translateX(0);
@@ -178,4 +189,13 @@ body.admin-body {
     margin-right: 0;
     padding: var(--space-4);
   }
+  .admin-sidebar-toggle,
+  #sidebar-toggle {
+    display: inline-flex !important;
+  }
+  body.admin-nav-open { overflow: hidden; }
+}
+
+@media (max-width: 576px) {
+  .admin-content { padding: 12px; }
 }

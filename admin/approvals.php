@@ -65,7 +65,7 @@ $admin_active = 'approvals';
 <main class="admin-content">
   <div class="admin-topbar">
     <div style="display:flex;align-items:center;gap:16px">
-      <button id="sidebar-toggle" class="btn btn-secondary btn-sm" style="display:none" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">
         <i class="fas fa-bars"></i>
       </button>
       <h2 class="admin-page-title">موافقات الإعلانات</h2>

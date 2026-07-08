@@ -103,7 +103,7 @@ $admin_active = 'inspections';
   <!-- Top Bar -->
   <div class="admin-topbar" style="background:#FFFFFF;border-bottom:1px solid var(--navy-mid)">
     <div style="display:flex;align-items:center;gap:var(--space-4)">
-      <button id="sidebar-toggle" class="btn btn-secondary btn-sm" style="display:none" onclick="document.getElementById('admin-sidebar').classList.toggle('open')">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">
         <i class="fas fa-bars"></i>
       </button>
       <h2 style="font-size:var(--font-size-xl);color:#1E293B">إدارة الفحوصات</h2>

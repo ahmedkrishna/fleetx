@@ -9447,3 +9447,125 @@ a.auctions-tab-btn {
     gap: 12px;
   }
 }
+
+/* ==========================================================================
+   PHASE 19 — Admin panel + standalone pages mobile
+   ========================================================================== */
+
+body.admin-body { overflow-x: hidden; }
+
+/* Admin tables: horizontal scroll on narrow screens */
+.admin-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-table { min-width: 640px; }
+
+/* Admin topbar + welcome */
+.admin-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.welcome-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4, 16px);
+}
+
+/* User tabs horizontal scroll */
+.tabs-row > div:first-child {
+  display: flex;
+  gap: var(--space-2, 8px);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  padding-bottom: 2px;
+}
+.user-tab-btn { flex-shrink: 0; white-space: nowrap; }
+
+/* Sidebar toggle visible on mobile */
+.admin-sidebar-toggle,
+#sidebar-toggle { display: none; }
+@media (max-width: 992px) {
+  .admin-sidebar-toggle,
+  #sidebar-toggle { display: inline-flex !important; }
+  .admin-topbar > div { flex: 1 1 100%; }
+  .admin-topbar .admin-search-bar {
+    max-width: none !important;
+    width: 100%;
+  }
+  .welcome-bar {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .welcome-bar .btn { width: 100%; justify-content: center; }
+  .tabs-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tabs-row .admin-search-bar {
+    max-width: none !important;
+    width: 100%;
+  }
+  .modal-container,
+  .modal-box {
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+  }
+  .admin-form-grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 576px) {
+  .admin-content { padding: 12px !important; }
+  .admin-page-title,
+  .admin-topbar h2 { font-size: 18px !important; }
+  .kpi-value { font-size: 22px; }
+}
+
+/* ── Standalone: Nafath ── */
+.fx-verify-page {
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+@media (max-width: 480px) {
+  .fx-nafath-number { font-size: 44px; padding: 14px; }
+  .fx-nafath-title { font-size: 20px; }
+  .fx-nafath-logo { width: 88px; height: 88px; }
+  .fx-verify-success { flex-direction: column; text-align: center; font-size: 14px; }
+}
+
+/* ── Standalone: Onboarding ── */
+.onboarding-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+.onboarding-container {
+  padding: max(24px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+  align-items: flex-start;
+}
+@media (max-width: 480px) {
+  .onboarding-card { padding: 28px 20px; }
+  .oc-title { font-size: 19px; }
+  .fx-onboarding-tagline { font-size: 15px; }
+}
+
+/* ── Standalone: Sanad ── */
+.fx-sanad-container {
+  padding: max(20px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+  align-items: flex-start;
+}
+@media (max-width: 480px) {
+  .fx-sanad-header h2 { font-size: 22px; }
+  .sanad-title { font-size: 18px; flex-wrap: wrap; }
+  .sanad-doc { padding: 18px 14px; }
+  .preset-btn span { font-size: 16px; }
+  .fx-alert-success { flex-direction: column; text-align: center; }
+}
