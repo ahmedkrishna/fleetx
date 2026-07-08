@@ -2,6 +2,7 @@ import { chromium, devices } from 'playwright';
 
 const BASE = process.env.FLEETX_BASE || 'https://mazadi.bearand.com';
 const OUT = 'tests/screenshots';
+const FULL_PAGE_SHOTS = process.env.FULL_PAGE_SHOTS === '1';
 const PAGES = [
   {
     name: 'vehicle-details',
@@ -93,10 +94,12 @@ function report(ok, label, detail = '') {
   }
 }
 
-const browser = await chromium.launch({ headless: true });
 const fs = await import('fs');
 if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
 
+const browser = await chromium.launch({ headless: true });
+
+try {
 for (const vp of viewports) {
   const context = await browser.newContext({
     viewport: { width: vp.width, height: vp.height },
@@ -109,9 +112,10 @@ for (const vp of viewports) {
     const tag = `${p.name}/${vp.label}`;
     try {
       const res = await page.goto(`${p.url}${p.url.includes('?') ? '&' : '?'}v=${Date.now()}`, {
-        waitUntil: 'networkidle',
-        timeout: 45000,
+        waitUntil: 'load',
+        timeout: 30000,
       });
+      await page.waitForTimeout(500);
       report(res?.ok(), `${tag} HTTP`, String(res?.status()));
 
       const counts = await p.checks(page);
@@ -145,8 +149,8 @@ for (const vp of viewports) {
         report(barHidden, `${tag} mobile bid bar hidden on desktop`);
       }
 
-      const shot = `${OUT}/${p.name}-${vp.label}.png`;
-      await page.screenshot({ path: shot, fullPage: true });
+      const shot = `${OUT}/${p.name}-${vp.label}${FULL_PAGE_SHOTS ? '' : '-viewport'}.png`;
+      await page.screenshot({ path: shot, fullPage: FULL_PAGE_SHOTS });
       console.log(`[SHOT] ${shot}`);
     } catch (e) {
       report(false, `${tag} run`, e.message);
@@ -155,7 +159,9 @@ for (const vp of viewports) {
 
   await context.close();
 }
+} finally {
+  await browser.close();
+}
 
-await browser.close();
 console.log(`\n=== VIEWPORT TEST: ${pass} passed, ${fail} failed ===`);
 process.exit(fail > 0 ? 1 : 0);
