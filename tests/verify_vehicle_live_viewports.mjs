@@ -127,9 +127,16 @@ for (const vp of viewports) {
       }
 
       if (p.name === 'auction-live' && vp.isMobile) {
-        const orderStr = (layout.order || []).join(' | ');
-        const galleryBeforeBidding = orderStr.indexOf('live-gallery-panel') < orderStr.indexOf('pbb-board');
-        report(galleryBeforeBidding, `${tag} gallery before bidding`, orderStr);
+        const visual = await page.evaluate(() => {
+          const gallery = document.querySelector('.live-gallery-panel');
+          const panel = document.querySelector('.pbb-board');
+          return {
+            galleryTop: Math.round(gallery?.getBoundingClientRect().top ?? 0),
+            panelTop: Math.round(panel?.getBoundingClientRect().top ?? 0),
+          };
+        });
+        const galleryBeforeBidding = visual.galleryTop < visual.panelTop;
+        report(galleryBeforeBidding, `${tag} gallery before bidding`, JSON.stringify(visual));
         report(layout.mobileBarVisible === true, `${tag} mobile bid bar visible`);
       }
 
