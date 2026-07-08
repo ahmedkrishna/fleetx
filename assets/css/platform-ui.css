@@ -9699,9 +9699,9 @@ body.admin-body { overflow-x: hidden; }
 
 /* Live room: gallery before bidding panel on mobile */
 @media (max-width: 992px) {
-  .fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 1; }
+  .fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 1 !important; }
   .fx-page-shell--live .fx-live-room > .pbb-board,
-  .fx-page-shell--live .fx-live-room > .fx-live-bidding-panel { order: 2; }
+  .fx-page-shell--live .fx-live-room > .fx-live-bidding-panel { order: 2 !important; }
 }
 
 /* Vehicle detail: gallery → pricing → specs → overview on narrow screens */

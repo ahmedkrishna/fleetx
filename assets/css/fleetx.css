@@ -2672,3 +2672,9 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, 
   border: 1px solid var(--border-light);
   box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
 }
+
+/* Auction live: gallery before bidding on mobile (fleetx.css wins over @import cache) */
+@media (max-width: 992px) {
+  body.fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 1 !important; }
+  body.fx-page-shell--live .fx-live-room > .pbb-board { order: 2 !important; }
+}

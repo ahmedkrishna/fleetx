@@ -108,7 +108,10 @@ for (const vp of viewports) {
   for (const p of PAGES) {
     const tag = `${p.name}/${vp.label}`;
     try {
-      const res = await page.goto(p.url, { waitUntil: 'networkidle', timeout: 45000 });
+      const res = await page.goto(`${p.url}${p.url.includes('?') ? '&' : '?'}v=${Date.now()}`, {
+        waitUntil: 'networkidle',
+        timeout: 45000,
+      });
       report(res?.ok(), `${tag} HTTP`, String(res?.status()));
 
       const counts = await p.checks(page);
