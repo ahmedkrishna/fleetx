@@ -161,42 +161,25 @@ body.fx-home-index .hiw-tab-col:first-child {
 .fx-hero-bg-image--fleet1 {
   position: absolute;
   left: 50%;
-  bottom: 12px;
+  bottom: 0;
   top: auto;
   right: auto;
   z-index: 2;
-  width: min(38%, 460px);
-  height: min(30vh, 260px);
-  max-height: 260px;
-  background-image: url('/assets/images/fleetxhero1.png');
-  background-size: contain;
-  background-position: center bottom;
-  background-repeat: no-repeat;
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
   opacity: 0;
   transform: translateX(-50%) translateY(48px) scale(0.94);
   will-change: transform, opacity;
   animation: fx-hero-bg-float-in 1.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@media (min-width: 769px) {
-  .fx-hero-bg-stage {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-  }
-
-  .fx-hero-bg-image--fleet1 {
-    position: relative;
-    left: auto;
-    bottom: auto;
-    flex: 0 0 auto;
-    width: min(36%, 420px);
-    height: min(28vh, 240px);
-    max-height: 240px;
-    margin-bottom: 8px;
-    transform: translateY(48px) scale(0.94);
-    animation-name: fx-hero-bg-float-in-desktop;
-  }
+.fx-hero-bg-image--fleet1 img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
 }
 
 @keyframes fx-hero-bg-float-in {
@@ -207,17 +190,6 @@ body.fx-home-index .hiw-tab-col:first-child {
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
-  }
-}
-
-@keyframes fx-hero-bg-float-in-desktop {
-  0% {
-    opacity: 0;
-    transform: translateY(48px) scale(0.94);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -311,12 +283,14 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
     right: 0;
     width: 100%;
     max-width: none;
-    height: 52%;
-    max-height: none;
-    transform: translateY(80px) scale(0.97);
+    transform: translateY(48px) scale(0.94);
     animation-name: fx-hero-bg-float-in-mobile;
-    background-size: 100% auto !important;
-    background-position: center bottom !important;
+  }
+
+  .fx-hero-bg-image--fleet1 img {
+    width: 100%;
+    height: auto;
+    max-width: none;
   }
 
   .fx-hero-section--fleet1 {
@@ -350,13 +324,7 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   }
 }
 
-@media (max-width: 480px) {
-  .fx-hero-bg-image--fleet1 {
-    height: 48%;
-    background-size: 100% auto !important;
-    background-position: center bottom !important;
-  }
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .fx-hero-bg-image--fleet1 {
@@ -367,7 +335,7 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 
   @media (min-width: 769px) {
     .fx-hero-bg-image--fleet1 {
-      transform: none;
+      transform: translateX(-50%);
     }
   }
 
