@@ -288,7 +288,7 @@ include 'includes/page-hero.inc.php';
 
       </div>
 
-      <div class="form-group" style="margin-top:24px">
+      <div class="form-group fx-seller-form-section">
         <label class="form-label">صورة السيارة</label>
         <div class="fx-image-type-row">
           <label><input type="radio" name="image_type" value="link" checked onchange="toggleImageTypeInstant(this.value)"> استخدام رابط</label>
@@ -300,7 +300,8 @@ include 'includes/page-hero.inc.php';
         </div>
         
         <div id="image_upload_input_instant" style="display:none;">
-          <input type="file" name="image_files[]" class="form-input" accept="image/*" multiple><div style="font-size:12px; color:var(--text-muted); margin-top:8px;">يمكنك تحديد أكثر من صورة بالضغط على زر Ctrl (في ويندوز) أو Command (في ماك).</div>
+          <input type="file" name="image_files[]" class="form-input fx-file-input" accept="image/*" multiple>
+          <div class="fx-form-hint">يمكنك تحديد أكثر من صورة بالضغط على زر Ctrl (في ويندوز) أو Command (في ماك).</div>
         </div>
         
         <script>
@@ -316,14 +317,14 @@ include 'includes/page-hero.inc.php';
         </script>
       </div>
 
-      <div class="form-group" style="margin-top:24px">
+      <div class="form-group fx-seller-form-section">
         <label class="form-label">وصف وتفاصيل إضافية</label>
         <textarea name="description" class="form-input" rows="4" placeholder="اكتب أي معلومات أخرى تفيد المشتري بخصوص حالة السيارة..."></textarea>
       </div>
 
       <div class="fx-seller-form-actions">
         <a href="/seller.php" class="btn btn-outline-dark">إلغاء</a>
-        <button type="submit" class="btn btn-primary" style="padding:14px 40px">إدراج للبيع الفوري الآن</button>
+        <button type="submit" class="btn btn-primary fx-seller-submit-btn">إدراج للبيع الفوري الآن</button>
       </div>
 
     </form>

@@ -9372,6 +9372,124 @@ a.auctions-tab-btn {
   }
 }
 
+/* ==========================================================================
+   PHASE 20 — Inspector + add-auction mobile polish
+   ========================================================================== */
+
+/* Inspector dashboard */
+.fx-inspector-section-title {
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0 0 18px;
+  color: var(--text-dark);
+}
+.fx-page-shell--inspector .fx-insp-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+}
+.fx-page-shell--inspector .fx-insp-card {
+  border-radius: var(--radius-xl);
+}
+.fx-page-shell--inspector .fx-empty-state {
+  padding: 48px 20px;
+  text-align: center;
+}
+
+/* Stats: 3×140px min caused horizontal overflow on ~375px screens */
+@media (max-width: 640px) {
+  .fx-inspector-page .fx-insp-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 400px) {
+  .fx-inspector-page .fx-insp-stats {
+    grid-template-columns: 1fr;
+  }
+  .fx-insp-card-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fx-insp-badge { align-self: flex-start; }
+  .fx-insp-actions {
+    flex-direction: column;
+  }
+  .fx-insp-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Inspector report form */
+@media (max-width: 480px) {
+  .fx-page-shell--inspector-report .report-card {
+    padding: 20px 16px;
+  }
+  .fx-page-shell--inspector-report .fx-report-title {
+    font-size: 20px;
+  }
+  .fx-page-shell--inspector-report .fx-report-meta {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
+/* Add-auction / seller form */
+.fx-page-shell--seller-form .fx-seller-form-wrap {
+  margin-top: 0;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.fx-seller-form-section { margin-top: 24px; }
+.fx-form-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.fx-file-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.fx-seller-submit-btn {
+  padding: 14px 28px;
+  font-weight: 800;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.4;
+}
+.fx-page-shell--seller-form .form-input,
+.fx-page-shell--seller-form .form-select,
+.fx-page-shell--seller-form textarea.form-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 576px) {
+  .fx-page-shell--seller-form .fx-seller-form-box {
+    padding: 22px 16px;
+    border-radius: var(--radius-lg);
+  }
+  .fx-seller-form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    margin-top: 28px;
+    gap: 10px;
+  }
+  .fx-seller-form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .fx-image-type-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+/* Footer / WhatsApp clearance */
+.fx-page-shell--seller-form .fx-page-body--overlap,
+.fx-page-shell--inspector .fx-inspector-page {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
 /* Map filter collapse on mobile */
 .fx-map-filter-head-actions {
   display: flex;

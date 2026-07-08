@@ -84,7 +84,7 @@ include 'includes/page-hero.inc.php';
     <div class="fx-insp-stat"><div class="num"><?= $completed_count ?></div><div class="lbl">تقارير مكتملة</div></div>
   </div>
 
-  <h2 style="font-size:20px; font-weight:900; margin-bottom:18px;">طلبات الفحص النشطة</h2>
+  <h2 class="fx-inspector-section-title">طلبات الفحص النشطة</h2>
 
   <?php if (empty($inspections)): ?>
   <div class="fx-empty-state">
