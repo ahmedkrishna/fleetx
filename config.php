@@ -18,7 +18,7 @@ define('DB_NAME',    'u274391035_db_BbBE85ay');
 define('SITE_URL',   'https://mazadi.bearand.com');
 define('SITE_NAME',  'FleetX');
 define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '20');
+define('FLEETX_CSS_VER', '21');
 
 function fleetx_css_href(): string {
     return '/assets/css/fleetx.css?v=' . FLEETX_CSS_VER;

@@ -50,6 +50,7 @@ $files = @(
     'assets/css/theme-restore.css',
     'assets/css/homepage-polish.css',
     'assets/css/subpage-polish.css',
+    'assets/css/site-polish.css',
     'auction-live.php',
     'auctions.php',
     'companies.php',
