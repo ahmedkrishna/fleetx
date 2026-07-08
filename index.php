@@ -69,7 +69,7 @@ if ($total_sales_value >= 1000000000) {
     <canvas id="heroParticlesCanvas" class="fx-hero-particles-canvas"></canvas>
     <picture class="fx-hero-bg-image fx-hero-bg-image--fleet1">
       <source media="(max-width: 768px)" srcset="/assets/images/fleetxhero-mobile.png">
-      <img src="/assets/images/fleetxhero-desktop.png" alt="" decoding="async" width="2227" height="1253">
+      <img src="/assets/images/fleetxhero-desktop.png" alt="" decoding="async" width="2227" height="1253" class="fx-hero-bg-img">
     </picture>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
