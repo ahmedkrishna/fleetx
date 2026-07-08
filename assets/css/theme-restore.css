@@ -1,0 +1,266 @@
+/* ==========================================================================
+   PHASE 23 — Homepage white hero + sub-page dark overlay heroes
+   ========================================================================== */
+
+/* ── Homepage: light navbar over white fleet1 hero ─────────────────────── */
+body.fx-home-index .navbar {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: none !important;
+}
+body.fx-home-index .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+body.fx-home-index .navbar-links a {
+  color: #334155 !important;
+}
+body.fx-home-index .navbar-links a:hover,
+body.fx-home-index .navbar-links a.active {
+  color: #0f172a !important;
+}
+body.fx-home-index .navbar-toggle {
+  color: #0f172a !important;
+}
+body.fx-home-index .btn-nav-login {
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Fleet1 white hero: enforce dark text (fleetx.css .hero-title defaults to white) */
+body.fx-home-index .fx-hero-content--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-content {
+  color: #0f172a !important;
+}
+body.fx-home-index .fx-hero-title--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-title {
+  color: #0f172a !important;
+  text-shadow: none !important;
+}
+body.fx-home-index .fx-hero-subtitle--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
+  color: var(--primary) !important;
+  text-shadow: none !important;
+}
+body.fx-home-index .fx-hero-tagline--fleet1 {
+  color: #047857 !important;
+}
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-title--fleet1,
+  body.fx-home-index .fx-hero-content--fleet1 .hero-title {
+    color: #0f172a !important;
+  }
+  body.fx-home-index .fx-hero-subtitle--fleet1,
+  body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
+    color: var(--primary) !important;
+  }
+}
+
+/* ── Sub-pages: dark glass navbar ───────────────────────────────────────── */
+body.fx-home.fx-page-shell .navbar {
+  background: rgba(6, 12, 22, 0.58) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: none !important;
+}
+body.fx-home.fx-page-shell .navbar.scrolled {
+  background: rgba(6, 12, 22, 0.94) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+}
+body.fx-home.fx-page-shell .navbar-links a {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+body.fx-home.fx-page-shell .navbar-links a:hover,
+body.fx-home.fx-page-shell .navbar-links a.active {
+  color: #fff !important;
+}
+body.fx-home.fx-page-shell .navbar-toggle {
+  color: #fff !important;
+}
+body.fx-home.fx-page-shell .btn-nav-login {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+/* ── Sub-page heroes: dark base + stronger overlay ─────────────────────── */
+.fx-page-hero {
+  background: var(--bg-dark) !important;
+  color: #fff;
+  padding: 130px 0 60px !important;
+  border-radius: 0 0 60px 60px !important;
+  overflow: clip;
+  position: relative;
+}
+.fx-page-hero__bg {
+  opacity: 0.32 !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  filter: brightness(0.55) saturate(0.85);
+}
+.fx-page-hero__overlay-dark {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(6, 12, 22, 0.72) 0%, rgba(6, 12, 22, 0.88) 55%, rgba(6, 12, 22, 0.96) 100%);
+}
+.fx-page-hero__overlay-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.fx-page-hero__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 12, 22, 0.35) 0%, rgba(6, 12, 22, 0.75) 100%) !important;
+  opacity: 1 !important;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+.fx-page-hero__inner {
+  position: relative;
+  z-index: 3;
+}
+.fx-page-hero__title {
+  color: #fff !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+}
+.fx-page-hero__desc {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+.fx-page-hero__eyebrow {
+  color: var(--primary) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.fx-page-hero__chip {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+}
+.fx-page-hero__chip--accent {
+  background: rgba(27, 201, 118, 0.18) !important;
+  border-color: rgba(27, 201, 118, 0.4) !important;
+}
+.fx-page-hero__toolbar {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px);
+}
+.fx-back-link {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+.fx-back-link:hover {
+  color: var(--primary) !important;
+}
+.fx-page-hero__actions .btn-outline,
+.fx-page-hero .fx-vehicle-fav-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(8px);
+}
+.fx-page-hero__actions .btn-outline:hover,
+.fx-page-hero .fx-vehicle-fav-btn:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Vehicle / live cover heroes — extra dark scrim on car photos */
+.fx-page-hero--cover .fx-page-hero__bg {
+  opacity: 0.38 !important;
+  filter: brightness(0.42) saturate(0.75) blur(0);
+}
+.fx-page-hero--cover .fx-page-hero__overlay-dark {
+  background:
+    linear-gradient(180deg, rgba(6, 12, 22, 0.78) 0%, rgba(6, 12, 22, 0.9) 50%, rgba(6, 12, 22, 0.97) 100%);
+}
+.fx-page-hero--compact {
+  padding: 118px 0 52px !important;
+}
+
+/* Undo accidental light hero styling everywhere */
+.fx-page-hero--light {
+  background: var(--bg-dark) !important;
+  border-radius: 0 0 60px 60px !important;
+  padding: 130px 0 60px !important;
+}
+.fx-page-hero--light .fx-page-hero__title { color: #fff !important; }
+.fx-page-hero--light .fx-page-hero__desc { color: rgba(255, 255, 255, 0.82) !important; }
+
+/* Page shells */
+.fx-page-shell,
+.fx-page-shell--listing,
+.fx-page-shell--search,
+.fx-page-shell--vehicle,
+.fx-page-shell--map,
+.fx-page-shell--live,
+.fx-page-shell--checkout,
+.fx-page-shell--profile,
+.fx-page-shell--legal,
+.fx-page-shell--detail,
+.fx-page-shell--buyer,
+.fx-page-shell--seller,
+.fx-companies-shell,
+.fx-company-profile-shell {
+  background: var(--bg-light) !important;
+}
+
+/* Vehicle detail + auction live polish */
+.fx-page-shell--vehicle .fx-page-body--overlap,
+.fx-page-shell--live .fx-page-body--overlap {
+  margin-top: -56px;
+  position: relative;
+  z-index: 10;
+}
+.fx-page-shell--vehicle .fx-detail-layout,
+.fx-page-shell--live .fx-live-room {
+  gap: 24px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 992px) {
+  .fx-page-hero {
+    padding: 110px 0 48px !important;
+    border-radius: 0 0 40px 40px !important;
+  }
+  .fx-page-hero--compact {
+    padding: 104px 0 44px !important;
+  }
+  .fx-page-hero--cover .fx-page-hero__meta {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fx-page-hero {
+    padding: 100px 0 40px !important;
+    border-radius: 0 0 28px 28px !important;
+  }
+  .fx-page-hero__title {
+    font-size: 26px !important;
+  }
+  .fx-page-hero__chip {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+  .fx-page-hero--compact {
+    padding: 96px 0 36px !important;
+  }
+  .fx-page-shell--vehicle .fx-page-body--overlap,
+  .fx-page-shell--live .fx-page-body--overlap {
+    margin-top: -40px;
+  }
+}

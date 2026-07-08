@@ -9,6 +9,9 @@
 @import url('https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css');
 @import url('https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css');
 @import url('platform-ui.css?v=22');
+@import url('theme-restore.css?v=5');
+@import url('homepage-polish.css?v=11');
+@import url('subpage-polish.css?v=4');
 
 /* Phosphor Icons Base */
 .ph {
@@ -2391,8 +2394,7 @@ html, body {
         gap: 15px !important;
     }
     .live-bidding-panel {
-        
-        max-
+        max-width: 100%;
         box-sizing: border-box !important;
         height: auto !important;
         min-height: 500px !important;
@@ -2416,8 +2418,7 @@ html, body {
 @media (max-width: 768px) {
     .mobile-sidebar-toggle {
         display: flex !important;
-        
-        max-
+        max-width: 100%;
         box-sizing: border-box !important;
         justify-content: space-between !important;
         align-items: center !important;
@@ -2677,4 +2678,24 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, 
 @media (max-width: 992px) {
   body.fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 0 !important; }
   body.fx-page-shell--live .fx-live-room > .pbb-board { order: 0 !important; }
+}
+
+/* Homepage white fleet1 hero — dark text (after .hero-title { color:#fff }) */
+body.fx-home-index .fx-hero-content--fleet1 {
+  color: #0f172a !important;
+}
+body.fx-home-index .fx-hero-title--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-title,
+body.fx-home-index .fx-hero-content .hero-title {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+body.fx-home-index .fx-hero-subtitle--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
+  color: var(--primary) !important;
+  text-shadow: none !important;
+}
+body.fx-home-index .fx-hero-tagline--fleet1 {
+  color: #047857 !important;
 }

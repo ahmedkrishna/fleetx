@@ -1,0 +1,402 @@
+/* ==========================================================================
+   Sub-page & auth UI polish — Phase 25 + UI fixes
+   ========================================================================== */
+
+/* Sub-pages: logo-dark.png on dark glass navbar */
+body.fx-home.fx-page-shell .navbar-logo img {
+  filter: none;
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+body.fx-home-index .navbar-logo img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Mobile nav: icon colors match link text */
+#mobileMenu a .ph,
+#mobileMenu a i.ph {
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 20px;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+#mobileMenu a:hover .ph,
+#mobileMenu a.fx-mobile-active .ph,
+#mobileMenu a:hover i.ph,
+#mobileMenu a.fx-mobile-active i.ph {
+  color: var(--primary) !important;
+}
+
+#mobileMenu .btn-login--green-stroke .ph,
+#mobileMenu .btn-login--green-stroke:hover .ph {
+  color: inherit !important;
+}
+
+#mobileMenu .btn-primary .ph,
+#mobileMenu .fx-mobile-register .ph {
+  color: #fff !important;
+}
+
+/* Vehicle details + auction live: fit page width (desktop + mobile) */
+.fx-page-shell--vehicle,
+.fx-page-shell--live {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+.fx-page-shell--vehicle .fx-page-body,
+.fx-page-shell--live .fx-page-body {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+.fx-page-shell--vehicle .fx-vehicle-page,
+.fx-page-shell--live .fx-live-room-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.fx-page-shell--vehicle .fx-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 24px;
+  align-items: start;
+}
+
+.fx-page-shell--live .fx-live-room {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  gap: 24px;
+  align-items: start;
+}
+
+.fx-page-shell--vehicle .fx-detail-layout > *,
+.fx-page-shell--live .fx-live-room > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.fx-page-shell--vehicle .mazad-premium-gallery,
+.fx-page-shell--live .mazad-premium-gallery,
+.fx-page-shell--vehicle .fx-vehicle-gallery-card,
+.fx-page-shell--live .fx-vehicle-gallery-card,
+.fx-page-shell--vehicle .fx-live-bidding-panel,
+.fx-page-shell--live .pbb-board,
+.fx-page-shell--live .fx-live-bidding-panel,
+.fx-page-shell--vehicle .fx-detail-block,
+.fx-page-shell--live .fx-detail-block,
+.fx-page-shell--vehicle .fx-detail-specs,
+.fx-page-shell--vehicle .pricing-card,
+.fx-page-shell--vehicle .fx-pricing-panel {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.fx-page-shell--vehicle .mpg-thumbs-strip,
+.fx-page-shell--live .mpg-thumbs-strip {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  padding-inline: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fx-page-shell--vehicle .mpg-main-view,
+.fx-page-shell--live .mpg-main-view {
+  max-width: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.fx-page-shell--vehicle .mpg-main-view img,
+.fx-page-shell--live .mpg-main-view img {
+  max-width: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.fx-page-shell--vehicle .fx-pricing-panel,
+.fx-page-shell--live .live-gallery-panel {
+  min-width: 0;
+  width: 100%;
+}
+
+.fx-page-shell--vehicle .fx-page-hero__inner,
+.fx-page-shell--live .fx-page-hero__inner {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
+.fx-page-shell--vehicle .pbb-input-row,
+.fx-page-shell--live .pbb-input-row,
+.fx-page-shell--vehicle .pbb-quick-grid,
+.fx-page-shell--live .pbb-quick-grid {
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .fx-page-shell--vehicle .fx-detail-layout,
+  .fx-page-shell--live .fx-live-room {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .fx-page-shell--vehicle .fx-pricing-panel {
+    position: static !important;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .fx-page-shell--vehicle .fx-page-body,
+  .fx-page-shell--live .fx-page-body,
+  .fx-page-shell--vehicle .fx-page-hero__inner,
+  .fx-page-shell--live .fx-page-hero__inner {
+    padding-inline: 16px;
+  }
+
+  .fx-page-shell--vehicle .fx-detail-layout,
+  .fx-page-shell--live .fx-live-room {
+    gap: 16px;
+  }
+
+  .fx-page-shell--vehicle .fx-detail-specs {
+    grid-template-columns: 1fr;
+  }
+
+  .fx-page-shell--vehicle .fx-pricing-panel,
+  .fx-page-shell--live .fx-live-bidding-panel,
+  .fx-page-shell--live .pbb-board {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .fx-page-shell--live .pbb-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fx-page-shell--vehicle .mpg-thumb,
+  .fx-page-shell--live .mpg-thumb {
+    width: 76px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+}
+
+/* Global: all pages use same content grid as navbar */
+.fx-page-shell .container,
+.fx-page-body {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+/* Terms / legal overlap with hero */
+.fx-page-shell--legal .fx-page-body--overlap {
+  margin-top: -48px;
+  padding-bottom: 80px;
+}
+
+.fx-page-shell--legal .fx-terms-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+
+/* Wallet topup — tokenized typography */
+.fx-wallet-balance__label {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.fx-wallet-balance__amount {
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--text-dark);
+  font-family: var(--font-en);
+}
+
+.fx-wallet-balance__unit {
+  font-size: 14px;
+  font-family: var(--font-ar);
+  color: var(--primary);
+}
+
+.fx-wallet-balance__icon {
+  font-size: 48px;
+  color: var(--primary);
+  opacity: 0.5;
+}
+
+.fx-wallet-form-title {
+  font-size: 18px;
+  margin-bottom: 14px;
+  color: var(--text-dark);
+  font-weight: 900;
+}
+
+.fx-wallet-pkg-unit {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.fx-wallet-input-spaced {
+  margin-bottom: 18px;
+}
+
+/* Inspector report — avoid duplicate hero title weight */
+.fx-page-shell--inspector-report .fx-report-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin: 0 0 8px;
+}
+
+/* Mobile navbar guest CTAs — match desktop green stroke */
+#mobileMenu .fx-mobile-login,
+#mobileMenu .fx-mobile-register {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: var(--radius-round);
+  box-sizing: border-box;
+}
+
+#mobileMenu .fx-mobile-login.btn-login--green-stroke {
+  background: transparent !important;
+  border: 2px solid var(--primary);
+}
+
+#mobileMenu .fx-mobile-register {
+  display: inline-flex;
+}
+
+/* Auth pages — slim topbar consistency */
+.fx-auth-topbar {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+.fx-auth-topbar__home {
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.fx-auth-topbar__home:hover {
+  color: var(--primary);
+  transform: translateX(-2px);
+}
+
+/* Onboarding / verify flows — shared mini header */
+.fx-flow-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  box-sizing: border-box;
+}
+
+.fx-flow-topbar__logo img {
+  height: 32px;
+  display: block;
+}
+
+.fx-flow-topbar__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.fx-flow-topbar__link:hover {
+  color: var(--primary);
+}
+
+/* Bulk upload action row */
+.fx-bulk-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fx-bulk-actions .btn {
+  border-radius: var(--radius-round);
+  padding: 12px 28px;
+  font-size: 14px;
+}
+
+/* Footer social icons — CSS hover instead of inline JS */
+.footer-social-xm a {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.footer-social-xm a:hover {
+  transform: translateY(-3px);
+  opacity: 1;
+}
+
+.fx-btn-round {
+  border-radius: var(--radius-round) !important;
+}
+
+.fx-btn-lg {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.fx-onboarding-tagline--center {
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.fx-verify-page .fx-flow-topbar,
+.fx-onboarding-body .fx-flow-topbar,
+.fx-sanad-page .fx-flow-topbar {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--border-light);
+}
+
+@media (max-width: 768px) {
+  .fx-page-shell--legal .fx-page-body--overlap {
+    margin-top: -32px;
+  }
+}

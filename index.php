@@ -54,92 +54,229 @@ if ($total_sales_value >= 1000000000) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>منصة FleetX | مزادات السيارات الاحترافية للأساطيل</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   </head>
-<body class="fx-home">
+<body class="fx-home fx-home-index">
 
 <!-- Navbar template -->
 <?php include 'includes/navbar.php'; ?>
 
-<!-- ── Hero Section ── -->
+<!-- ── Hero Section (white fleet1 theme) ── -->
 <div class="fx-hero-wrap fx-hero-wrap--fleet1">
 <div class="hero-wrapper fx-hero-wrapper--fleet1">
+  <div class="fx-hero-bg-stage" aria-hidden="true">
+    <canvas id="heroParticlesCanvas" class="fx-hero-particles-canvas"></canvas>
+    <div class="fx-hero-bg-image fx-hero-bg-image--fleet1"></div>
+  </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div id="bidding-signs-container" class="fx-hero-layer fx-hero-layer--signs"></div>
 
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
-      <div class="hero-tagline fx-hero-tagline--fleet1">
-        <span id="heroTaglineTypewriter">أول منصة مزادات أساطيل ذكية وموثوقة بالمملكة</span>
-      </div>
+      <p class="hero-subtitle fx-hero-subtitle--fleet1" id="heroSubtitle"></p>
 
       <h1 class="hero-title fx-hero-title--fleet1">
-        <span id="heroMainTitle">أضخم مزادات أساطيل السيارات</span>
+        <span id="heroMainTitle" class="fx-hero-typewriter-text"></span><span id="heroTypeCursor" class="fx-hero-typewriter-cursor" aria-hidden="true"></span>
       </h1>
-
-      <p class="hero-subtitle fx-hero-subtitle--fleet1">تجربة مزايدة حية وسلسة لسيارات الشركات والجهات الحكومية — مع تقارير فحص فنية موثقة وشفافية كاملة.</p>
-
-      <div class="fx-cta-row fx-cta-row--fleet1">
-        <a href="/map.php" class="btn btn-primary fx-cta-btn">
-          خريطة المزادات <i class="ph ph-map-pin ph-space-left"></i>
-        </a>
-        <a href="/auctions.php" class="btn btn-outline fx-cta-btn fx-cta-btn--outline-dark">
-          تصفح المزادات الحية
-        </a>
-      </div>
     </div>
 
     <script>
       (function() {
-        const titles = [
-          'أضخم مزادات أساطيل السيارات',
-          'تنفيذ فوري وشفافية تامة',
-          'مزايدة ذكية ومضمونة'
+        const slides = [
+          {
+            title: 'أضخم مزادات أساطيل السيارات',
+            subtitle: 'أول منصة مزادات أساطيل ذكية وموثوقة بالمملكة'
+          },
+          {
+            title: 'تنفيذ فوري وشفافية تامة',
+            subtitle: 'تقنية متطورة لضمان أفضل العوائد لمركباتك'
+          },
+          {
+            title: 'مزايدة ذكية ومضمونة',
+            subtitle: 'تكامل مباشر مع النفاذ الوطني وأعلى معايير الأمان'
+          }
         ];
-        const subtitles = [
-          'أول منصة مزادات أساطيل ذكية وموثوقة بالمملكة',
-          'تقنية متطورة لضمان أفضل العوائد لمركباتك',
-          'تكامل مباشر مع النفاذ الوطني وأعلى معايير الأمان'
-        ];
+        const TYPE_MS = 52;
+        const ERASE_MS = 26;
         let currentIndex = 0;
-        let typeWriterTimeout;
+        let cycling = false;
 
-        function typeWriter(text, elementId, speed) {
-          const el = document.getElementById(elementId);
-          if (!el) return;
-          el.innerHTML = '';
+        function setCursorActive(active) {
+          const cursor = document.getElementById('heroTypeCursor');
+          if (cursor) cursor.classList.toggle('is-active', active);
+        }
+
+        function eraseText(el, done) {
+          const chars = Array.from(el.textContent || '');
+          function step() {
+            if (!chars.length) {
+              done();
+              return;
+            }
+            chars.pop();
+            el.textContent = chars.join('');
+            setTimeout(step, ERASE_MS);
+          }
+          step();
+        }
+
+        function typeText(el, text, done) {
+          el.textContent = '';
+          setCursorActive(true);
+          const chars = Array.from(text);
           let i = 0;
-          function type() {
-            if (i < text.length) {
-              el.innerHTML += text.charAt(i);
-              i++;
-              typeWriterTimeout = setTimeout(type, speed || 45);
+          function step() {
+            if (i < chars.length) {
+              el.textContent += chars[i++];
+              setTimeout(step, TYPE_MS);
+            } else {
+              setCursorActive(false);
+              if (done) done();
             }
           }
-          type();
+          step();
+        }
+
+        function showSlide(index, animateTitle) {
+          const titleEl = document.getElementById('heroMainTitle');
+          const subtitleEl = document.getElementById('heroSubtitle');
+          if (!titleEl || !subtitleEl) return;
+
+          const slide = slides[index];
+          if (animateTitle) {
+            eraseText(titleEl, function() {
+              typeText(titleEl, slide.title, function() {
+                subtitleEl.classList.remove('is-fading');
+                subtitleEl.textContent = slide.subtitle;
+                cycling = false;
+              });
+            });
+          } else {
+            typeText(titleEl, slide.title, function() {
+              subtitleEl.textContent = slide.subtitle;
+            });
+          }
         }
 
         function updateHeroText() {
-          const titleEl = document.querySelector('.hero-title');
-          if (!titleEl) return;
-          titleEl.style.opacity = '0';
+          if (cycling) return;
+          cycling = true;
+          const subtitleEl = document.getElementById('heroSubtitle');
+          if (subtitleEl) subtitleEl.classList.add('is-fading');
           setTimeout(function() {
-            currentIndex = (currentIndex + 1) % titles.length;
-            document.getElementById('heroMainTitle').innerText = titles[currentIndex];
-            titleEl.style.opacity = '1';
-            clearTimeout(typeWriterTimeout);
-            typeWriter(subtitles[currentIndex], 'heroTaglineTypewriter', 45);
-          }, 400);
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex, true);
+          }, 320);
         }
 
         window.addEventListener('load', function() {
-          typeWriter(subtitles[0], 'heroTaglineTypewriter', 45);
+          showSlide(0, false);
           setInterval(updateHeroText, 7000);
         });
       })();
     </script>
-  </section>
 
+    <script>
+      (function() {
+        const canvas = document.getElementById('heroParticlesCanvas');
+        const stage = document.querySelector('.fx-hero-bg-stage');
+        if (!canvas || !stage) return;
+
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) return;
+
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animId = 0;
+
+        const HERO_PARTICLE_ZONE = 0.75;
+
+        class Particle {
+          constructor(w, h) { this.reset(w, h); }
+          zoneH(h) { return h * HERO_PARTICLE_ZONE; }
+          reset(w, h) {
+            const maxY = this.zoneH(h);
+            this.x = Math.random() * w;
+            this.y = Math.random() * maxY;
+            this.size = Math.random() * 2 + 1;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = (Math.random() - 0.5) * 0.5;
+            this.isNumber = Math.random() > 0.78;
+            this.val = Math.floor(Math.random() * 10);
+          }
+          draw() {
+            ctx.fillStyle = this.isNumber ? 'rgba(27, 201, 118, 0.22)' : 'rgba(27, 201, 118, 0.08)';
+            if (this.isNumber) {
+              ctx.font = 'bold 20px Outfit, Tajawal, sans-serif';
+              ctx.fillText(String(this.val), this.x, this.y);
+            } else {
+              ctx.beginPath();
+              ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          update(w, h) {
+            const maxY = this.zoneH(h);
+            this.x += this.vx;
+            this.y += this.vy;
+            if (this.y < 0) {
+              this.y = 0;
+              this.vy = Math.abs(this.vy);
+            } else if (this.y > maxY) {
+              this.y = maxY;
+              this.vy = -Math.abs(this.vy);
+            }
+            if (this.x < -24 || this.x > w + 24) {
+              this.reset(w, h);
+            }
+          }
+        }
+
+        function resize() {
+          const rect = stage.getBoundingClientRect();
+          const w = Math.max(1, Math.floor(rect.width));
+          const h = Math.max(1, Math.floor(rect.height));
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = w + 'px';
+          canvas.style.height = h + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          const count = Math.min(88, Math.max(36, Math.floor((w * h) / 11000)));
+          particles = Array.from({ length: count }, function() { return new Particle(w, h); });
+        }
+
+        function tick() {
+          const rect = stage.getBoundingClientRect();
+          const w = rect.width;
+          const h = rect.height;
+          const zoneH = h * HERO_PARTICLE_ZONE;
+          ctx.clearRect(0, 0, w, h);
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(0, 0, w, zoneH);
+          ctx.clip();
+          particles.forEach(function(p) {
+            p.update(w, h);
+            p.draw();
+          });
+          ctx.restore();
+          animId = requestAnimationFrame(tick);
+        }
+
+        resize();
+        tick();
+        window.addEventListener('resize', resize);
+        document.addEventListener('visibilitychange', function() {
+          if (document.hidden) {
+            cancelAnimationFrame(animId);
+          } else {
+            tick();
+          }
+        });
+      })();
+    </script>
+  </section>
 </div>
 </div>
 
@@ -170,7 +307,7 @@ if ($db_connected) {
 <!-- ── Section 2: Auctions ── -->
 <section class="reveal fx-home-auctions">
   <div class="container">
-    <div class="fx-home-section-intro">
+    <div class="fx-home-section-intro fx-home-section-intro--center">
       <span class="fx-home-eyebrow"><i class="ph-fill ph-gavel"></i> أحدث العروض</span>
       <h2 class="section-title">استكشف المركبات المتاحة</h2>
       <p class="section-subtitle">تصفح أحدث مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
@@ -311,10 +448,16 @@ if ($db_connected) {
   }
 
   function switchHiwTab(e, type, step) {
+    activateHiwStep(type, step, e && e.currentTarget);
+  }
+
+  function activateHiwStep(type, step, clickedTab) {
     const tabsContainer = document.getElementById(type + '-tabs');
     if (!tabsContainer) return;
-    tabsContainer.querySelectorAll('.b-tab').forEach(t => t.classList.remove('active'));
-    e.currentTarget.classList.add('active');
+
+    tabsContainer.querySelectorAll('.b-tab').forEach((t, i) => {
+      t.classList.toggle('active', clickedTab ? t === clickedTab : (i + 1 === step));
+    });
 
     document.querySelectorAll(`[id^="${type}-step-"]`).forEach(c => {
       c.style.display = 'none';
@@ -329,13 +472,13 @@ if ($db_connected) {
   }
 </script>
 
-<!-- ── Section 3: How It Works (classic light sticky) ── -->
-<section class="fx-hiw-section fx-hiw-section--classic">
+<!-- ── Section 3: How It Works (v1 dark sticky browser tabs) ── -->
+<section class="fx-hiw-section fx-hiw-section--dark">
   <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers">
     <div class="container container--full">
-      <div class="hiw-classic-head">
-        <h2 class="hiw-classic-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
-        <p class="hiw-classic-sub">للمشترين الأفراد والشركات المعتمدة</p>
+      <div class="hiw-dark-head">
+        <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
+        <p class="hiw-dark-sub">للمشترين الأفراد والشركات المعتمدة</p>
       </div>
 
       <div class="browser-tabs-container">
@@ -344,7 +487,7 @@ if ($db_connected) {
           <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
           <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
         </div>
-        <div class="browser-content hiw-panel hiw-panel--light">
+        <div class="browser-content hiw-panel">
           <div id="buyer-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
               <i class="ph ph-identification-card hiw-tab-icon"></i>
@@ -352,7 +495,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">سجّل حسابك في 3 خطوات سريعة عبر منصة نفاذ الوطني الموحّد لضمان أعلى معايير الأمان والثقة في التعاملات.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?w=600&q=80" class="hiw-tab-img" alt="التسجيل" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=600&q=80" class="hiw-tab-img" alt="التسجيل" loading="lazy">
             </div>
           </div>
 
@@ -363,7 +506,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">أودع مبلغ التأمين المطلوب في محفظتك الرقمية عبر قنوات الدفع المتعددة للبدء في المزايدة المباشرة.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1616081467471-a47ea1fc7fcc?w=600&q=80" class="hiw-tab-img" alt="المحفظة" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&q=80" class="hiw-tab-img" alt="المحفظة" loading="lazy">
             </div>
           </div>
 
@@ -374,7 +517,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">سجّل في المزاد المختار، وحدّد صفتك القانونية، وشارك في غرفة المزاد الحية للفوز بالمركبات.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1600860548174-569420dd7b89?w=600&q=80" class="hiw-tab-img" alt="المزايدة والفوز" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=600&q=80" class="hiw-tab-img" alt="المزايدة والفوز" loading="lazy">
             </div>
           </div>
         </div>
@@ -384,9 +527,9 @@ if ($db_connected) {
 
   <div id="sellers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--sellers">
     <div class="container container--full">
-      <div class="hiw-classic-head">
-        <h2 class="hiw-classic-title">كيف تبدأ كـ <span class="fx-text-primary">بائع معتمد؟</span></h2>
-        <p class="hiw-classic-sub">لشركات التأجير والأساطيل</p>
+      <div class="hiw-dark-head">
+        <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">بائع معتمد؟</span></h2>
+        <p class="hiw-dark-sub">لشركات التأجير والأساطيل</p>
       </div>
 
       <div class="browser-tabs-container">
@@ -395,7 +538,7 @@ if ($db_connected) {
           <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
           <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
         </div>
-        <div class="browser-content hiw-panel hiw-panel--light">
+        <div class="browser-content hiw-panel">
           <div id="seller-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
               <i class="ph ph-buildings hiw-tab-icon"></i>
@@ -403,7 +546,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">سجّل شركتك وأرفق السجل التجاري ليتم تدقيقها واعتماد حسابك كبائع موثوق خلال 48 ساعة عمل.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" class="hiw-tab-img" alt="توثيق الشركة" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80" class="hiw-tab-img" alt="توثيق الشركة" loading="lazy">
             </div>
           </div>
 
@@ -414,7 +557,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">اختر باقة الاشتراك المناسبة لحجم أسطولك، وأودع رسوم التفعيل للبدء في الاستفادة من أدوات البيع.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80" class="hiw-tab-img" alt="شحن الحساب" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80" class="hiw-tab-img" alt="شحن الحساب" loading="lazy">
             </div>
           </div>
 
@@ -425,7 +568,7 @@ if ($db_connected) {
               <p class="hiw-tab-desc">أضف تفاصيل مركباتك وتقارير الفحص، وأطلق مزادك لتتلقى العروض من آلاف المشترين المعتمدين.</p>
             </div>
             <div class="hiw-tab-col">
-              <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
+              <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
             </div>
           </div>
         </div>
@@ -477,38 +620,86 @@ function closeHiwModal() {
 document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal(); });
 </script>
 
-<!-- ── Section 4: Why FleetX (flex hover cards) ── -->
-<section class="reveal fx-home-services">
+<!-- ── Section 4: Why FleetX (modern bento showcase) ── -->
+<section class="fx-why-fleetx reveal" id="why-fleetx">
+  <div class="fx-why-fleetx__mesh" aria-hidden="true">
+    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--1"></span>
+    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--2"></span>
+    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--3"></span>
+    <span class="fx-why-fleetx__grid"></span>
+  </div>
+
   <div class="container">
-    <div class="fx-home-section-intro fx-home-section-intro--center">
-      <span class="fx-home-eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
-      <h2 class="section-title">خدمات مزادات ذكية ومتكاملة</h2>
-      <p class="section-subtitle">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي</p>
-    </div>
+    <header class="fx-why-fleetx__head reveal">
+      <div class="fx-why-fleetx__head-copy">
+        <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
+        <h2 class="fx-why-fleetx__title">منصة مزادات أسطولية<br><span>مصممة للثقة والسرعة</span></h2>
+        <p class="fx-why-fleetx__lead">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي — بتجربة رقمية واحدة متكاملة.</p>
+      </div>
+      <div class="fx-why-fleetx__head-badges" aria-hidden="true">
+        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-seal-check"></i><span>فحص معتمد</span></div>
+        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-fingerprint"></i><span>نفاذ وطني</span></div>
+        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-lightning"></i><span>مزايدة ذكية</span></div>
+      </div>
+    </header>
 
-    <div class="services-flex-container">
-      <div class="service-flex-card-new service-card-1 reveal">
-        <div class="service-content service-content--stack">
-          <i class="ph ph-clipboard-text icon-grad"></i>
+    <div class="fx-why-bento">
+      <article class="fx-why-card fx-why-card--spotlight reveal">
+        <div class="fx-why-card__glow" aria-hidden="true"></div>
+        <div class="fx-why-card__spotlight-no">100<span>+</span></div>
+        <div class="fx-why-card__body">
+          <div class="fx-why-card__icon fx-why-card__icon--lg"><i class="ph ph-clipboard-text"></i></div>
           <h3>تقرير فحص 100+ نقطة</h3>
-          <p>جميع السيارات المعروضة تخضع لفحص فني شامل يغطي الهيكل والميكانيكا والكهرباء معتمد من قبل خبراء المنصة.</p>
+          <p>جميع المركبات تخضع لفحص فني شامل يغطي الهيكل والميكانيكا والكهرباء — معتمد من خبراء المنصة قبل عرضها في المزاد.</p>
+          <ul class="fx-why-card__checks">
+            <li><i class="ph-fill ph-check-circle"></i> فحص هيكل وميكانيكا</li>
+            <li><i class="ph-fill ph-check-circle"></i> تقرير رقمي موثق</li>
+          </ul>
         </div>
-      </div>
+      </article>
 
-      <div class="service-flex-card-new service-card-2 service-flex-card-new--delay-1 reveal">
-        <div class="service-content service-content--stack">
-          <i class="ph ph-shield-check icon-grad"></i>
-          <h3>بيئة موثقة بالكامل</h3>
-          <p>نحن نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع بوابة النفاذ الوطني الموحد لضمان جدية المزايدات.</p>
-        </div>
-      </div>
+      <article class="fx-why-card fx-why-card--trust reveal">
+        <div class="fx-why-card__ring" aria-hidden="true"></div>
+        <div class="fx-why-card__icon"><i class="ph ph-shield-check"></i></div>
+        <h3>بيئة موثقة بالكامل</h3>
+        <p>نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع النفاذ الوطني الموحد لضمان جدية كل مزايدة.</p>
+        <span class="fx-why-card__pill"><i class="ph-fill ph-fingerprint"></i> نفاذ وطني</span>
+      </article>
 
-      <div class="service-flex-card-new service-card-3 service-flex-card-new--delay-2 reveal">
-        <div class="service-content service-content--stack">
-          <i class="ph ph-robot icon-grad"></i>
-          <h3>نظام المزايدة التلقائية</h3>
-          <p>حدد سقف ميزانيتك للسيارة، وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة لحين الوصول لحدك الأقصى.</p>
+      <article class="fx-why-card fx-why-card--ai reveal">
+        <div class="fx-why-card__icon fx-why-card__icon--ai"><i class="ph ph-robot"></i></div>
+        <h3>نظام المزايدة التلقائية</h3>
+        <p>حدد سقف ميزانيتك وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة حتى حدك الأقصى.</p>
+        <span class="fx-why-card__pill fx-why-card__pill--ai"><i class="ph-fill ph-lightning"></i> مزايدة ذكية</span>
+      </article>
+
+      <div class="fx-why-journey reveal">
+        <div class="fx-why-journey__head">
+          <h3>رحلة الصفقة من البداية للتسليم</h3>
+          <p>أربع مراحل مترابطة داخل منصة واحدة — بدون تعقيد أو أطراف خارجية.</p>
         </div>
+        <ol class="fx-why-journey__steps">
+          <li>
+            <span class="fx-why-journey__icon"><i class="ph ph-magnifying-glass"></i></span>
+            <strong>فحص شامل</strong>
+            <small>تقييم فني دقيق</small>
+          </li>
+          <li>
+            <span class="fx-why-journey__icon"><i class="ph ph-gavel"></i></span>
+            <strong>مزاد حي</strong>
+            <small>مزايدة شفافة فورية</small>
+          </li>
+          <li>
+            <span class="fx-why-journey__icon"><i class="ph ph-hand-coins"></i></span>
+            <strong>تسوية آمنة</strong>
+            <small>دفع ومحفظة موثقة</small>
+          </li>
+          <li>
+            <span class="fx-why-journey__icon"><i class="ph ph-truck"></i></span>
+            <strong>تسليم موثق</strong>
+            <small>إغلاق صفقة منظم</small>
+          </li>
+        </ol>
       </div>
     </div>
   </div>
@@ -899,7 +1090,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         ? (window.lastSignPos === 'top' ? (window.lastSignPos = 'bottom', Math.floor(Math.random() * 6) + 70) : (window.lastSignPos = 'top', Math.floor(Math.random() * 6) + 10))
         : Math.floor(Math.random() * 60) + 20;
       sign.style.top = topPos + '%';
-      const tilt = Math.floor(Math.random() * 15) + 5;
+      const tilt = Math.floor(Math.random() * 8) + 2;
       sign.style.setProperty('--tilt', (isLeft ? -tilt : tilt) + 'deg');
       const bid = bids[Math.floor(Math.random() * bids.length)];
       sign.innerHTML = '<div class="paddle-stick"></div><div class="paddle-board"><i class="ph-fill ph-gavel"></i><div class="paddle-board-text"><span class="paddle-board-label">' + bid.text + '<br>على ' + bid.car + '</span><span class="paddle-board-amount">' + bid.amount + '</span></div></div>';

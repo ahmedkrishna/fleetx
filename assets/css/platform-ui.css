@@ -7294,7 +7294,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .fx-hero-title--fleet1 {
   color: #0f172a;
-  text-shadow: 0 2px 12px rgba(255, 255, 255, 0.8);
+  text-shadow: none;
 }
 .fx-hero-subtitle--fleet1 {
   color: #334155;
@@ -7532,7 +7532,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .fx-hero-title--fleet1 {
   color: #0c1222;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 16px rgba(255, 255, 255, 0.65);
+  text-shadow: none;
 }
 .fx-hero-subtitle--fleet1 {
   color: #1e293b;
