@@ -131,56 +131,47 @@ body.fx-home-index .hiw-tab-col:first-child {
   text-align: right;
 }
 
-/* ── Hero: static desktop/mobile backgrounds + typewriter title ─────── */
-.fx-hero-wrapper--fleet1 {
+/* ── Hero: full-screen desktop/mobile backgrounds + typewriter title ── */
+body.fx-home-index .fx-hero-wrap--fleet1 {
+  background: #fff !important;
+}
+
+body.fx-home-index .fx-hero-wrapper--fleet1 {
   position: relative;
+  min-height: 100svh;
+  background-color: #fff !important;
   background-image: none !important;
   background-size: unset !important;
   background-position: unset !important;
-  overflow: visible !important;
+  overflow: hidden !important;
 }
 
 .fx-hero-bg-stage {
   position: absolute;
   inset: 0;
   z-index: 0;
-  overflow: visible;
+  overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
 }
 
 .fx-hero-bg-image--fleet1 {
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  top: auto;
-  right: auto;
-  z-index: 2;
-  display: block;
-  margin: 0;
-  padding: 0;
-  line-height: 0;
-  transform: translateX(-50%);
-}
-
-.fx-hero-bg-image--fleet1 img {
-  display: block;
-  width: 2227px;
-  height: 1253px;
-  max-width: none !important;
-  max-height: none !important;
-}
-
-@media (min-width: 769px) {
-  .fx-hero-section--fleet1 {
-    min-height: clamp(720px, 92vh, 1320px) !important;
-    padding-bottom: 80px !important;
-  }
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  background-image: url('/assets/images/fleetxhero-desktop.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .fx-hero-section--fleet1 {
   position: relative;
   z-index: 3;
+  min-height: 100svh !important;
   padding-top: 96px !important;
   padding-bottom: 40px !important;
 }
@@ -256,30 +247,21 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   opacity: 0;
 }
 
-/* Mobile: fleetxhero-mobile.png at native dimensions, full-width fit */
+/* Mobile: fleetxhero-mobile.png full-screen cover */
 @media (max-width: 768px) {
-  .fx-hero-wrapper--fleet1 {
-    min-height: auto;
+  body.fx-home-index .fx-hero-wrapper--fleet1 {
+    min-height: 100svh;
     padding-bottom: 0 !important;
   }
 
   .fx-hero-bg-image--fleet1 {
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-width: none;
-    transform: none;
-  }
-
-  .fx-hero-bg-image--fleet1 img {
-    width: 100%;
-    height: auto;
-    max-width: none !important;
-    aspect-ratio: 1472 / 2350;
+    background-image: url('/assets/images/fleetxhero-mobile.png');
+    background-size: cover;
+    background-position: center center;
   }
 
   .fx-hero-section--fleet1 {
-    min-height: auto !important;
+    min-height: 100svh !important;
     padding-top: 88px !important;
     padding-bottom: 24px !important;
   }

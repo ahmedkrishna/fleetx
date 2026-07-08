@@ -66,10 +66,7 @@ if ($total_sales_value >= 1000000000) {
 <div class="fx-hero-wrap fx-hero-wrap--fleet1">
 <div class="hero-wrapper fx-hero-wrapper--fleet1">
   <div class="fx-hero-bg-stage" aria-hidden="true">
-    <picture class="fx-hero-bg-image fx-hero-bg-image--fleet1">
-      <source media="(max-width: 768px)" srcset="/assets/images/fleetxhero-mobile.png">
-      <img src="/assets/images/fleetxhero-desktop.png" alt="" decoding="async" width="2227" height="1253">
-    </picture>
+    <div class="fx-hero-bg-image fx-hero-bg-image--fleet1"></div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
