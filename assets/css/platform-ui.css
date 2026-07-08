@@ -9687,3 +9687,156 @@ body.admin-body { overflow-x: hidden; }
   .preset-btn span { font-size: 16px; }
   .fx-alert-success { flex-direction: column; text-align: center; }
 }
+
+/* ==========================================================================
+   PHASE 21 — Vehicle detail + auction-live mobile polish
+   ========================================================================== */
+
+.fx-page-shell--vehicle,
+.fx-page-shell--live {
+  overflow-x: hidden;
+}
+
+/* Live room: gallery before bidding panel (override global pbb order:-1) */
+@media (max-width: 992px) {
+  .fx-page-shell--live .fx-live-room .live-gallery-panel { order: 1; }
+  .fx-page-shell--live .fx-live-room .fx-live-bidding-panel { order: 2; }
+}
+
+/* Vehicle detail: gallery → pricing → specs → overview on narrow screens */
+@media (max-width: 992px) {
+  .fx-page-shell--vehicle .fx-detail-layout > div:first-child { display: contents; }
+  .fx-page-shell--vehicle .fx-vehicle-gallery-card { order: 1; }
+  .fx-page-shell--vehicle .fx-pricing-panel { order: 2; }
+  .fx-page-shell--vehicle .fx-detail-specs { order: 3; }
+  .fx-page-shell--vehicle .fx-detail-block { order: 4; }
+  .fx-page-shell--vehicle .fx-vehicle-page {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Gallery card header + thumb strip */
+@media (max-width: 576px) {
+  .fx-page-shell--vehicle .fx-vehicle-gallery-card .fx-live-card-header,
+  .fx-page-shell--live .fx-vehicle-gallery-card .fx-live-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 16px 16px 0;
+  }
+  .fx-page-shell--vehicle .fx-vehicle-gallery-card .mazad-premium-gallery,
+  .fx-page-shell--live .fx-vehicle-gallery-card .mazad-premium-gallery {
+    padding: 0 16px 16px;
+  }
+  .fx-page-shell--vehicle .fx-vehicle-gallery-card .fx-viewers-badge,
+  .fx-page-shell--live .fx-vehicle-gallery-card .fx-viewers-badge {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .mpg-thumb {
+    width: 84px;
+    height: 56px;
+    border-radius: 10px;
+    scroll-snap-align: start;
+  }
+  .mpg-thumbs-strip {
+    gap: 8px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding: 0 4px 6px;
+  }
+  .mpg-status-badge,
+  .fx-instant-badge {
+    top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    font-size: 11px;
+  }
+  .fx-page-shell--vehicle .fx-detail-block,
+  .fx-page-shell--live .fx-detail-block.fx-panel-first {
+    padding: 20px 16px;
+  }
+  .fx-page-shell--vehicle .fx-vehicle-pricing-card {
+    padding: 20px 16px;
+  }
+  .fx-page-shell--vehicle .trust-badge {
+    font-size: 13px;
+    gap: 8px;
+  }
+  .fx-page-shell--vehicle .finance-badge {
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Hero meta chips: horizontal scroll when dense */
+@media (max-width: 480px) {
+  .fx-page-shell--vehicle .fx-page-hero--light .fx-page-hero__meta,
+  .fx-page-shell--live .fx-page-hero--light .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-inline: -4px;
+    padding-inline: 4px;
+  }
+  .fx-page-shell--vehicle .fx-page-hero--light .fx-page-hero__meta::-webkit-scrollbar,
+  .fx-page-shell--live .fx-page-hero--light .fx-page-hero__meta::-webkit-scrollbar {
+    display: none;
+  }
+  .fx-page-shell--vehicle .fx-page-hero--light .fx-page-hero__chip,
+  .fx-page-shell--live .fx-page-hero--light .fx-page-hero__chip {
+    flex-shrink: 0;
+  }
+  .fx-page-shell--vehicle .fx-page-hero--light .fx-vehicle-fav-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Auction live bidding panel compact */
+@media (max-width: 576px) {
+  .fx-page-shell--live .fx-live-bidding-panel {
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    gap: 14px;
+  }
+  .fx-page-shell--live .pbb-top {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .fx-page-shell--live .pbb-timer {
+    justify-content: center;
+  }
+  .fx-page-shell--live .pbb-history-title {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .fx-page-shell--live .pbb-history-list {
+    max-height: 160px;
+  }
+  .fx-page-shell--live .pbb-price-val {
+    font-size: clamp(28px, 8vw, 36px);
+  }
+  .fx-page-shell--live .pbb-ai-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+/* Fixed mobile bid bar on very narrow screens */
+@media (max-width: 400px) {
+  .fx-page-shell--live .fx-mobile-bid-inner {
+    gap: 10px;
+  }
+  .fx-page-shell--live .fx-mobile-bid-btn {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  .fx-page-shell--live .fx-mobile-bid-price strong {
+    font-size: 17px;
+  }
+}
