@@ -9210,3 +9210,240 @@ a.auctions-tab-btn {
   .fx-bulk-steps { grid-template-columns: 1fr !important; }
   .fx-page-hero--light .fx-page-hero__chip { font-size: 12px; padding: 8px 12px; }
 }
+
+/* ==========================================================================
+   PHASE 18 — Mobile polish (375px audit fixes)
+   ========================================================================== */
+
+/* Dashboards: hide sidebar, show mobile nav select */
+@media (max-width: 991px) {
+  .fx-profile-sidebar--home.fx-buyer-sidebar,
+  .fx-profile-sidebar--home.fx-seller-sidebar {
+    display: none;
+  }
+  .fx-dash-mobile-nav {
+    display: block;
+    order: -1;
+  }
+}
+
+/* Buyer card grids */
+.fx-dash-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+}
+
+/* Wallet action buttons */
+.fx-wallet-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+.fx-wallet-card-actions .wallet-btn {
+  flex: 1;
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* Seller integration form */
+.fx-integration-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.fx-integration-field { flex: 1; min-width: 200px; }
+.fx-integration-field--wide { flex: 2; min-width: 240px; }
+.fx-integration-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+.fx-integration-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  box-sizing: border-box;
+}
+.fx-integration-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.fx-integration-actions .fx-integration-input { flex: 1; min-width: 160px; direction: ltr; text-align: left; }
+.fx-integration-btn { white-space: nowrap; }
+
+/* Checkout payment rows */
+@media (max-width: 576px) {
+  .payment-option {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .fx-checkout-option-price { text-align: right; }
+}
+
+/* Auction live: safe area for fixed bid bar + WhatsApp */
+@media (max-width: 992px) {
+  .fx-page-shell--live .fx-live-room-page {
+    padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  }
+  .fx-page-shell--live .whatsapp-float {
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* About timeline illustration overflow */
+@media (max-width: 480px) {
+  .v-illustration {
+    overflow: hidden;
+    min-height: 180px;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+  .v-illustration .layer-sub1,
+  .v-illustration .layer-sub2 {
+    transform: scale(0.82);
+  }
+  .fx-page-shell--legal .fx-about-seller-gap,
+  .fx-about-seller-gap { margin-top: 48px !important; }
+}
+
+/* Homepage HIW tabs scroll */
+@media (max-width: 480px) {
+  .fx-hiw-section--classic .browser-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 12px;
+    gap: 4px;
+  }
+  .fx-hiw-section--classic .b-tab {
+    flex: 0 0 auto;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+  .fx-home-quick-stats {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fx-home-quick-stat { justify-content: center; }
+}
+
+/* Footer disclaimer row */
+.fx-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+  color: #fff;
+}
+.fx-footer-disclaimer {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.7;
+}
+.fx-footer-disclaimer strong { color: #fff; }
+.fx-footer-copy {
+  text-align: left;
+  min-width: 0;
+  font-family: var(--font-en);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .fx-footer-disclaimer,
+  .fx-footer-copy {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+/* Map filter collapse on mobile */
+.fx-map-filter-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.fx-map-filter-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-round);
+  border: 1px solid var(--border-light);
+  background: #fff;
+  font-family: var(--font-ar);
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--text-dark);
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .fx-map-filter-toggle { display: inline-flex; }
+  .fx-map-sidebar:not(.is-open) .filter-group,
+  .fx-map-sidebar:not(.is-open) .fx-filter-group { display: none; }
+  .fx-map-sidebar.is-open .filter-group,
+  .fx-map-sidebar.is-open .fx-filter-group { display: block; }
+  .fx-map-container--home #map,
+  .fx-map-container #map { min-height: 360px; }
+}
+
+/* Company profile tabs scroll affordance */
+.fx-tabs-bar {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+  gap: 8px;
+}
+.fx-tab-btn { scroll-snap-align: start; flex-shrink: 0; }
+
+/* Event countdown compact */
+@media (max-width: 480px) {
+  .fx-countdown-row { gap: 4px; }
+  .fx-countdown-val {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* Verification flow cards */
+@media (max-width: 480px) {
+  .onboarding-card,
+  .fx-nafath-card,
+  .sanad-card {
+    padding: 24px 16px;
+  }
+}
+
+/* Integration row stack */
+@media (max-width: 576px) {
+  .fx-integration-row { flex-direction: column; }
+  .fx-integration-field,
+  .fx-integration-field--wide { min-width: 0; width: 100%; }
+  .fx-integration-actions { flex-direction: column; }
+  .fx-integration-btn { width: 100%; justify-content: center; }
+}
+
+/* Payout table header wrap */
+@media (max-width: 480px) {
+  .payout-table-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px;
+  }
+}

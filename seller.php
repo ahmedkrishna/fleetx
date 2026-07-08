@@ -636,19 +636,19 @@ include 'includes/page-hero.inc.php';
             أدخل رقم الشاسيه (VIN) أو رقم اللوحة لجلب بيانات المركبة كاملة من مركز المعلومات الوطني (موجز/علم) لتسهيل عملية إضافة المركبة.
         </p>
         
-        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-            <div style="flex: 1;">
-                <label style="display:block; margin-bottom: 8px; font-weight: bold;">نوع البحث</label>
-                <select id="integrationType" class="form-control" style="width: 100%; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+        <div class="fx-integration-row">
+            <div class="fx-integration-field">
+                <label class="fx-integration-label">نوع البحث</label>
+                <select id="integrationType" class="form-control fx-integration-input">
                     <option value="vin">رقم الشاسيه (VIN)</option>
                     <option value="plate">رقم اللوحة</option>
                 </select>
             </div>
-            <div style="flex: 2;">
-                <label style="display:block; margin-bottom: 8px; font-weight: bold;">القيمة (رقم الشاسيه أو اللوحة)</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="integrationValue" class="form-control" placeholder="مثال: 1HGCM82633A..." style="flex: 1; padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-light); direction: ltr; text-align: left;" />
-                    <button class="btn btn-primary" onclick="fetchVehicleData()" style="padding: 12px 24px; border-radius: var(--radius-md); font-weight: bold;">
+            <div class="fx-integration-field fx-integration-field--wide">
+                <label class="fx-integration-label">القيمة (رقم الشاسيه أو اللوحة)</label>
+                <div class="fx-integration-actions">
+                    <input type="text" id="integrationValue" class="form-control fx-integration-input" placeholder="مثال: 1HGCM82633A..." />
+                    <button type="button" class="btn btn-primary fx-integration-btn" onclick="fetchVehicleData()">
                         <i class="ph ph-magnifying-glass"></i> جلب البيانات
                     </button>
                 </div>
@@ -659,7 +659,7 @@ include 'includes/page-hero.inc.php';
             <h4 style="margin-bottom: 15px; color: #0ea5e9; display: flex; align-items: center; gap: 8px;">
                 <i class="ph-fill ph-check-circle"></i> تم العثور على المركبة
             </h4>
-            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+            <div class="stats-grid fx-seller-stats fx-seller-stats--3">
                 <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                     <span style="display:block; font-size:12px; color:gray; margin-bottom:4px;">الشركة والموديل</span>
                     <strong id="fetchedMakeModel" style="font-size:16px;">--</strong>

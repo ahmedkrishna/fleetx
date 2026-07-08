@@ -194,7 +194,12 @@ include 'includes/page-hero.inc.php';
           
           <div class="fx-map-filter-head">
             <h3><i class="ph ph-faders"></i> تصفية متقدمة</h3>
-            <a href="?type=<?= $type_filter ?? '' ?>" class="fx-map-filter-reset" title="إعادة ضبط"><i class="ph ph-trash"></i></a>
+            <div class="fx-map-filter-head-actions">
+              <button type="button" class="fx-map-filter-toggle" aria-expanded="false" onclick="var s=this.closest('.fx-map-sidebar'); s.classList.toggle('is-open'); this.setAttribute('aria-expanded', s.classList.contains('is-open'));">
+                <i class="ph ph-faders"></i> الفلاتر
+              </button>
+              <a href="?type=<?= $type_filter ?? '' ?>" class="fx-map-filter-reset" title="إعادة ضبط"><i class="ph ph-trash"></i></a>
+            </div>
           </div>
 
           <div class="filter-group fx-filter-group">

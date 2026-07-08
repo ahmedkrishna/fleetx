@@ -57,11 +57,11 @@
     </div>
 
     <!-- Divider & Disclaimer -->
-    <div style="border-top:1px solid rgba(255,255,255,0.04); padding-top:28px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:20px; font-size:12px; color:#fff;">
-      <div style="flex:1; min-width:300px; line-height:1.7;">
-        <strong style="color:#fff">إخلاء المسؤولية:</strong> المزايدة على السيارات والتجارة بها تتطلب مسؤولية مالية عالية. يُرجى التحقق من التقارير الفنية للسيارة وقراءة كراسة الشروط بعناية قبل دفع التأمين.
+    <div class="fx-footer-bottom">
+      <div class="fx-footer-disclaimer">
+        <strong>إخلاء المسؤولية:</strong> المزايدة على السيارات والتجارة بها تتطلب مسؤولية مالية عالية. يُرجى التحقق من التقارير الفنية للسيارة وقراءة كراسة الشروط بعناية قبل دفع التأمين.
       </div>
-      <div style="text-align:left; min-width:220px; font-family:var(--font-en); display:flex; gap: 6px; align-items: center;">
+      <div class="fx-footer-copy">
         <a href="https://www.bearand.com" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:800; transition:color 0.3s ease;">bearand</a>
         <span>&copy; <?= date('Y') ?> FleetX SA. All Rights Reserved.</span>
       </div>

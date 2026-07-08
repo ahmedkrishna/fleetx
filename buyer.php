@@ -460,7 +460,7 @@ include 'includes/page-hero.inc.php';
           <a href="/auctions.php" class="btn btn-primary" style="margin-top:24px; border-radius:30px; padding:12px 30px; font-weight:800;">تصفح المزادات</a>
         </div>
       <?php else: ?>
-        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:24px;">
+        <div class="fx-dash-card-grid">
           <?php foreach ($user_bids as $bid):
             $bid_img = (!empty($bid['image_url']) && strlen($bid['image_url']) > 4) ? $bid['image_url'] : getCarImage($bid['make'] ?? 'default');
             $is_winning = $bid['is_winning'] ?? ($bid['amount'] >= $bid['current_price']);
@@ -554,7 +554,7 @@ include 'includes/page-hero.inc.php';
           <a href="/auctions.php" class="btn btn-primary" style="margin-top:24px; border-radius:30px; padding:12px 30px; font-weight:800;">تصفح المزادات</a>
         </div>
       <?php else: ?>
-        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap:24px;">
+        <div class="fx-dash-card-grid">
           <?php foreach ($purchases as $p):
             $p_img = (!empty($p['image_url']) && strlen($p['image_url']) > 4) ? $p['image_url'] : getCarImage($p['make'] ?? 'default');
           ?>
@@ -667,7 +667,7 @@ include 'includes/page-hero.inc.php';
           <i class="ph-fill ph-wallet bg-icon" style="color:#fff;"></i>
           <h4 class="wallet-balance-label">الرصيد المتاح</h4>
           <div class="wallet-balance-amount"><?= number_format($wallet_bal) ?> <span>ر.س</span></div>
-          <div style="display: flex; gap: 12px; position:relative; z-index:2;">
+          <div class="fx-wallet-card-actions">
             <button class="wallet-btn" onclick="openTopupModal()">
               شحن الرصيد <i class="ph ph-plus" style="color:#fff; font-size:16px;"></i>
             </button>
