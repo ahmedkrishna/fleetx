@@ -84,6 +84,21 @@ const viewports = [
 let pass = 0;
 let fail = 0;
 
+async function gotoWithRetry(page, url, attempts = 3) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await page.goto(url, { waitUntil: 'load', timeout: 30000 });
+      await page.waitForTimeout(400);
+      return res;
+    } catch (err) {
+      lastErr = err;
+      if (i < attempts) await page.waitForTimeout(800 * i);
+    }
+  }
+  throw lastErr;
+}
+
 function report(ok, label, detail = '') {
   if (ok) {
     pass++;
@@ -111,11 +126,7 @@ for (const vp of viewports) {
   for (const p of PAGES) {
     const tag = `${p.name}/${vp.label}`;
     try {
-      const res = await page.goto(`${p.url}${p.url.includes('?') ? '&' : '?'}v=${Date.now()}`, {
-        waitUntil: 'load',
-        timeout: 30000,
-      });
-      await page.waitForTimeout(500);
+      const res = await gotoWithRetry(page, `${p.url}${p.url.includes('?') ? '&' : '?'}v=${Date.now()}`);
       report(res?.ok(), `${tag} HTTP`, String(res?.status()));
 
       const counts = await p.checks(page);
@@ -125,9 +136,16 @@ for (const vp of viewports) {
       report(!layout.overflow?.overflows, `${tag} no horizontal overflow`, JSON.stringify(layout.overflow));
 
       if (p.name === 'vehicle-details' && vp.isMobile) {
-        const orderStr = (layout.order || []).join(' | ');
-        const galleryBeforePricing = orderStr.indexOf('fx-vehicle-gallery-card') < orderStr.indexOf('fx-pricing-panel');
-        report(galleryBeforePricing, `${tag} gallery before pricing`, orderStr);
+        const visual = await page.evaluate(() => {
+          const gallery = document.querySelector('.fx-vehicle-gallery-card');
+          const pricing = document.querySelector('.fx-pricing-panel');
+          return {
+            galleryTop: Math.round(gallery?.getBoundingClientRect().top ?? 0),
+            pricingTop: Math.round(pricing?.getBoundingClientRect().top ?? 0),
+          };
+        });
+        const galleryBeforePricing = visual.galleryTop < visual.pricingTop;
+        report(galleryBeforePricing, `${tag} gallery before pricing`, JSON.stringify(visual));
       }
 
       if (p.name === 'auction-live' && vp.isMobile) {
@@ -139,7 +157,7 @@ for (const vp of viewports) {
             panelTop: Math.round(panel?.getBoundingClientRect().top ?? 0),
           };
         });
-        const galleryBeforeBidding = visual.galleryTop < visual.panelTop;
+        const galleryBeforeBidding = visual.galleryTop > 0 && visual.galleryTop < visual.panelTop;
         report(galleryBeforeBidding, `${tag} gallery before bidding`, JSON.stringify(visual));
         report(layout.mobileBarVisible === true, `${tag} mobile bid bar visible`);
       }
