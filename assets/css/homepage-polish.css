@@ -168,6 +168,92 @@ body.fx-home-index .fx-hero-wrapper--fleet1 {
   background-repeat: no-repeat;
 }
 
+/* ── Hero auction chart — forex-style lines under artwork ─────────────── */
+.fx-hero-auction-chart {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: clamp(140px, 28vh, 300px);
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, #000 62%, transparent 100%);
+}
+
+.fx-hero-chart__glow {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 70%;
+  background: radial-gradient(ellipse 80% 100% at 50% 100%, rgba(27, 201, 118, 0.08) 0%, transparent 70%);
+}
+
+.fx-hero-chart__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fx-hero-chart__legend {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 18px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 11px;
+  font-weight: 800;
+  color: #334155;
+  z-index: 3;
+}
+
+.fx-hero-chart__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.fx-hero-chart__key i {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  display: block;
+}
+
+.fx-hero-chart__key--green i { background: #1bc976; }
+.fx-hero-chart__key--blue i { background: #0ea5e9; }
+.fx-hero-chart__key--navy i { background: #1e3a5f; }
+
+.fx-hero-chart__scanner {
+  position: absolute;
+  top: 12%;
+  bottom: 28%;
+  right: 8%;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, transparent, rgba(27, 201, 118, 0.55), transparent);
+  animation: fx-hero-chart-scan 3.8s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes fx-hero-chart-scan {
+  0%, 100% { transform: translateX(0); opacity: 0.45; }
+  50% { transform: translateX(-28px); opacity: 0.9; }
+}
+
 .fx-hero-section--fleet1 {
   position: relative;
   z-index: 3;
@@ -290,6 +376,29 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   .fx-hero-subtitle--fleet1 {
     font-size: 13px !important;
     max-width: 92% !important;
+  }
+
+  .fx-hero-auction-chart {
+    height: clamp(120px, 24vh, 220px);
+  }
+
+  .fx-hero-chart__legend {
+    bottom: 10px;
+    gap: 8px 12px;
+    padding: 5px 10px;
+    font-size: 10px;
+    max-width: 92%;
+  }
+
+  .fx-hero-chart__scanner {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-hero-chart__scanner {
+    animation: none;
+    opacity: 0.35;
   }
 }
 

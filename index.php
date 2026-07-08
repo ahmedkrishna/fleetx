@@ -67,6 +67,16 @@ if ($total_sales_value >= 1000000000) {
 <div class="hero-wrapper fx-hero-wrapper--fleet1">
   <div class="fx-hero-bg-stage" aria-hidden="true">
     <div class="fx-hero-bg-image fx-hero-bg-image--fleet1"></div>
+    <div class="fx-hero-auction-chart">
+      <div class="fx-hero-chart__glow"></div>
+      <canvas id="heroAuctionChart" class="fx-hero-chart__canvas"></canvas>
+      <div class="fx-hero-chart__legend">
+        <span class="fx-hero-chart__key fx-hero-chart__key--green"><i></i> مزايدات حية</span>
+        <span class="fx-hero-chart__key fx-hero-chart__key--blue"><i></i> حركة السوق</span>
+        <span class="fx-hero-chart__key fx-hero-chart__key--navy"><i></i> قيمة الأسطول</span>
+      </div>
+      <div class="fx-hero-chart__scanner"></div>
+    </div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
@@ -169,6 +179,180 @@ if ($total_sales_value >= 1000000000) {
         window.addEventListener('load', function() {
           showSlide(0, false);
           setInterval(updateHeroText, 7000);
+        });
+      })();
+    </script>
+
+    <script>
+      (function() {
+        const canvas = document.getElementById('heroAuctionChart');
+        const host = document.querySelector('.fx-hero-auction-chart');
+        if (!canvas || !host) return;
+
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const ctx = canvas.getContext('2d');
+        const SERIES = [
+          { color: '#1bc976', fill: 'rgba(27, 201, 118, 0.14)', vol: 0.018, bias: 0.52 },
+          { color: '#0ea5e9', fill: 'rgba(14, 165, 233, 0.11)', vol: 0.014, bias: 0.48 },
+          { color: '#1e3a5f', fill: 'rgba(30, 58, 95, 0.09)', vol: 0.011, bias: 0.44 }
+        ];
+        const COUNT = 96;
+        let w = 0;
+        let h = 0;
+        let dpr = 1;
+        let frame = 0;
+        let animId = 0;
+        const lines = SERIES.map(function(s, i) {
+          const pts = [];
+          let v = s.bias;
+          for (let n = 0; n < COUNT; n++) {
+            v += (Math.random() - 0.5) * s.vol * 2;
+            v = Math.max(0.14, Math.min(0.86, v));
+            pts.push(v);
+          }
+          return { cfg: s, pts: pts, offset: i * 0.6 };
+        });
+
+        function resize() {
+          const rect = host.getBoundingClientRect();
+          w = Math.max(1, Math.floor(rect.width));
+          h = Math.max(1, Math.floor(rect.height));
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = w + 'px';
+          canvas.style.height = h + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function yAt(norm) {
+          const pad = h * 0.14;
+          return pad + (1 - norm) * (h - pad * 2);
+        }
+
+        function drawGrid() {
+          ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)';
+          ctx.lineWidth = 1;
+          for (let i = 1; i < 5; i++) {
+            const y = (h / 5) * i;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+            ctx.stroke();
+          }
+          for (let i = 1; i < 10; i++) {
+            const x = (w / 10) * i;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+            ctx.globalAlpha = 0.45;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        function drawSeries(line, pulse) {
+          const step = w / (COUNT - 1);
+          const pts = line.pts;
+          ctx.beginPath();
+          ctx.moveTo(0, yAt(pts[0]));
+          for (let i = 1; i < COUNT; i++) {
+            const x = i * step;
+            const cx = (i - 0.5) * step;
+            const cy = (yAt(pts[i - 1]) + yAt(pts[i])) / 2;
+            ctx.quadraticCurveTo(cx, cy, x, yAt(pts[i]));
+          }
+          ctx.lineTo(w, h);
+          ctx.lineTo(0, h);
+          ctx.closePath();
+          ctx.fillStyle = line.cfg.fill;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(0, yAt(pts[0]));
+          for (let i = 1; i < COUNT; i++) {
+            const x = i * step;
+            const cx = (i - 0.5) * step;
+            const cy = (yAt(pts[i - 1]) + yAt(pts[i])) / 2;
+            ctx.quadraticCurveTo(cx, cy, x, yAt(pts[i]));
+          }
+          ctx.strokeStyle = line.cfg.color;
+          ctx.lineWidth = 2.25;
+          ctx.lineJoin = 'round';
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          if (pulse) {
+            const lx = w - 2;
+            const ly = yAt(pts[COUNT - 1]);
+            ctx.beginPath();
+            ctx.arc(lx, ly, 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = line.cfg.color;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(lx, ly, 9 + Math.sin(frame * 0.08 + line.offset) * 2, 0, Math.PI * 2);
+            ctx.strokeStyle = line.cfg.color;
+            ctx.globalAlpha = 0.35;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+          }
+        }
+
+        function stepData() {
+          lines.forEach(function(line) {
+            const last = line.pts[line.pts.length - 1];
+            let next = last + (Math.random() - 0.46) * line.cfg.vol;
+            next += (line.cfg.bias - next) * 0.04;
+            next = Math.max(0.12, Math.min(0.88, next));
+            line.pts.shift();
+            line.pts.push(next);
+          });
+        }
+
+        function paint(staticMode) {
+          ctx.clearRect(0, 0, w, h);
+          drawGrid();
+          lines.forEach(function(line, idx) {
+            drawSeries(line, !staticMode && idx === 0);
+          });
+          if (!staticMode) {
+            const scanX = w * (0.72 + Math.sin(frame * 0.012) * 0.08);
+            const grad = ctx.createLinearGradient(scanX - 40, 0, scanX + 40, 0);
+            grad.addColorStop(0, 'rgba(27, 201, 118, 0)');
+            grad.addColorStop(0.5, 'rgba(27, 201, 118, 0.12)');
+            grad.addColorStop(1, 'rgba(27, 201, 118, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(scanX - 40, 0, 80, h);
+          }
+        }
+
+        function loop() {
+          frame++;
+          if (frame % 2 === 0) stepData();
+          paint(false);
+          animId = requestAnimationFrame(loop);
+        }
+
+        resize();
+        if (reduced) {
+          paint(true);
+        } else {
+          loop();
+        }
+
+        window.addEventListener('resize', function() {
+          resize();
+          if (reduced) paint(true);
+        });
+
+        document.addEventListener('visibilitychange', function() {
+          if (reduced) return;
+          if (document.hidden) {
+            cancelAnimationFrame(animId);
+          } else {
+            loop();
+          }
         });
       })();
     </script>
