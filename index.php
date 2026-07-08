@@ -66,15 +66,12 @@ if ($total_sales_value >= 1000000000) {
 <div class="fx-hero-wrap fx-hero-wrap--fleet1">
 <div class="hero-wrapper fx-hero-wrapper--fleet1">
   <div class="fx-hero-bg-stage" aria-hidden="true">
-    <canvas id="heroParticlesCanvas" class="fx-hero-particles-canvas"></canvas>
     <picture class="fx-hero-bg-image fx-hero-bg-image--fleet1">
       <source media="(max-width: 768px)" srcset="/assets/images/fleetxhero-mobile.png">
-      <img src="/assets/images/fleetxhero-desktop.png" alt="" decoding="async" width="2227" height="1253" class="fx-hero-bg-img">
+      <img src="/assets/images/fleetxhero-desktop.png" alt="" decoding="async" width="2227" height="1253">
     </picture>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
-    <div id="bidding-signs-container" class="fx-hero-layer fx-hero-layer--signs"></div>
-
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
       <p class="hero-subtitle fx-hero-subtitle--fleet1" id="heroSubtitle"></p>
 
@@ -175,107 +172,6 @@ if ($total_sales_value >= 1000000000) {
         window.addEventListener('load', function() {
           showSlide(0, false);
           setInterval(updateHeroText, 7000);
-        });
-      })();
-    </script>
-
-    <script>
-      (function() {
-        const canvas = document.getElementById('heroParticlesCanvas');
-        const stage = document.querySelector('.fx-hero-bg-stage');
-        if (!canvas || !stage) return;
-
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduced) return;
-
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let animId = 0;
-
-        const HERO_PARTICLE_ZONE = 0.75;
-
-        class Particle {
-          constructor(w, h) { this.reset(w, h); }
-          zoneH(h) { return h * HERO_PARTICLE_ZONE; }
-          reset(w, h) {
-            const maxY = this.zoneH(h);
-            this.x = Math.random() * w;
-            this.y = Math.random() * maxY;
-            this.size = Math.random() * 2 + 1;
-            this.vx = (Math.random() - 0.5) * 0.5;
-            this.vy = (Math.random() - 0.5) * 0.5;
-            this.isNumber = Math.random() > 0.78;
-            this.val = Math.floor(Math.random() * 10);
-          }
-          draw() {
-            ctx.fillStyle = this.isNumber ? 'rgba(27, 201, 118, 0.22)' : 'rgba(27, 201, 118, 0.08)';
-            if (this.isNumber) {
-              ctx.font = 'bold 20px Outfit, Tajawal, sans-serif';
-              ctx.fillText(String(this.val), this.x, this.y);
-            } else {
-              ctx.beginPath();
-              ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-              ctx.fill();
-            }
-          }
-          update(w, h) {
-            const maxY = this.zoneH(h);
-            this.x += this.vx;
-            this.y += this.vy;
-            if (this.y < 0) {
-              this.y = 0;
-              this.vy = Math.abs(this.vy);
-            } else if (this.y > maxY) {
-              this.y = maxY;
-              this.vy = -Math.abs(this.vy);
-            }
-            if (this.x < -24 || this.x > w + 24) {
-              this.reset(w, h);
-            }
-          }
-        }
-
-        function resize() {
-          const rect = stage.getBoundingClientRect();
-          const w = Math.max(1, Math.floor(rect.width));
-          const h = Math.max(1, Math.floor(rect.height));
-          const dpr = Math.min(window.devicePixelRatio || 1, 2);
-          canvas.width = Math.floor(w * dpr);
-          canvas.height = Math.floor(h * dpr);
-          canvas.style.width = w + 'px';
-          canvas.style.height = h + 'px';
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          const count = Math.min(88, Math.max(36, Math.floor((w * h) / 11000)));
-          particles = Array.from({ length: count }, function() { return new Particle(w, h); });
-        }
-
-        function tick() {
-          const rect = stage.getBoundingClientRect();
-          const w = rect.width;
-          const h = rect.height;
-          const zoneH = h * HERO_PARTICLE_ZONE;
-          ctx.clearRect(0, 0, w, h);
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(0, 0, w, zoneH);
-          ctx.clip();
-          particles.forEach(function(p) {
-            p.update(w, h);
-            p.draw();
-          });
-          ctx.restore();
-          animId = requestAnimationFrame(tick);
-        }
-
-        resize();
-        tick();
-        window.addEventListener('resize', resize);
-        document.addEventListener('visibilitychange', function() {
-          if (document.hidden) {
-            cancelAnimationFrame(animId);
-          } else {
-            tick();
-          }
         });
       })();
     </script>
@@ -1071,43 +967,6 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         clock.querySelector('[data-unit="secs"]').innerText = secs.toString().padStart(2, '0');
       });
     }, 1000);
-
-    // Bidding signs animation
-    const bids = [
-      { text: 'مزايدة جديدة', amount: '150,000 ريال', car: 'تويوتا لاندكروزر', url: '/event.php?id=1' },
-      { text: 'سعر حصري', amount: '85,000 ريال', car: 'هيونداي سوناتا', url: '/vehicle-details.php?id=2' },
-      { text: 'مزايدة قوية', amount: '210,000 ريال', car: 'لكزس LX', url: '/event.php?id=3' },
-      { text: 'فرصة ذهبية', amount: '45,000 ريال', car: 'تويوتا كامري', url: '/vehicle-details.php?id=4' },
-      { text: 'شراء فوري', amount: '320,000 ريال', car: 'مرسيدس S-Class', url: '/vehicle-details.php?id=5' },
-      { text: 'مزايدة نارية', amount: '110,000 ريال', car: 'نيسان باترول', url: '/event.php?id=6' }
-    ];
-
-    function spawnBiddingSign() {
-      const container = document.getElementById('bidding-signs-container');
-      if (!container) return;
-      const sign = document.createElement('div');
-      const isMobile = window.innerWidth <= 768;
-      const isLeft = Math.random() > 0.5;
-      sign.className = 'bidding-sign ' + (isLeft ? 'left-side' : 'right-side');
-      let topPos = isMobile
-        ? (window.lastSignPos === 'top' ? (window.lastSignPos = 'bottom', Math.floor(Math.random() * 6) + 70) : (window.lastSignPos = 'top', Math.floor(Math.random() * 6) + 10))
-        : Math.floor(Math.random() * 60) + 20;
-      sign.style.top = topPos + '%';
-      const tilt = Math.floor(Math.random() * 8) + 2;
-      sign.style.setProperty('--tilt', (isLeft ? -tilt : tilt) + 'deg');
-      const bid = bids[Math.floor(Math.random() * bids.length)];
-      sign.innerHTML = '<div class="paddle-stick"></div><div class="paddle-board"><i class="ph-fill ph-gavel"></i><div class="paddle-board-text"><span class="paddle-board-label">' + bid.text + '<br>على ' + bid.car + '</span><span class="paddle-board-amount">' + bid.amount + '</span></div></div>';
-      sign.style.cursor = 'pointer';
-      sign.onclick = function() { window.location.href = bid.url || '/auctions.php'; };
-      container.appendChild(sign);
-      setTimeout(function() { sign.classList.add('show'); }, 100);
-      setTimeout(function() {
-        sign.classList.remove('show');
-        setTimeout(function() { sign.remove(); }, 600);
-      }, 5000);
-    }
-    setInterval(spawnBiddingSign, 5000);
-    setTimeout(spawnBiddingSign, 800);
 
   });
 </script>
