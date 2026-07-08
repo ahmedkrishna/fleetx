@@ -1066,7 +1066,7 @@ input:checked + .slider:before { transform: translateX(20px); }
     grid-template-columns: 1fr;
     padding-bottom: 120px;
   }
-  .pbb-board {
+  .live-room-container .pbb-board {
     position: static;
     order: -1;
   }
@@ -9697,10 +9697,11 @@ body.admin-body { overflow-x: hidden; }
   overflow-x: hidden;
 }
 
-/* Live room: gallery before bidding panel (override global pbb order:-1) */
+/* Live room: gallery before bidding panel on mobile */
 @media (max-width: 992px) {
-  .fx-page-shell--live .fx-live-room .live-gallery-panel { order: 1; }
-  .fx-page-shell--live .fx-live-room .fx-live-bidding-panel { order: 2; }
+  .fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 1; }
+  .fx-page-shell--live .fx-live-room > .pbb-board,
+  .fx-page-shell--live .fx-live-room > .fx-live-bidding-panel { order: 2; }
 }
 
 /* Vehicle detail: gallery → pricing → specs → overview on narrow screens */
