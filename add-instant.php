@@ -177,22 +177,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>إضافة سيارة للبيع الفوري | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--seller-form">
 
-<!-- Navbar -->
 <?php include 'includes/navbar.php'; ?>
 
-<!-- Page Header -->
-<header class="page-header">
-  <div class="page-header-bg" style="background-image:url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1600&q=80')"></div>
-  <div class="container">
-    <div class="fx-seller-kicker">بوابة البائعين</div>
-    <h1 style="margin:0">إضافة سيارة للبيع الفوري المباشر</h1>
-    <p style="color:var(--text-light-muted); font-size:16px; margin-top:6px; max-width:600px">اعرض سيارة أسطولك بسعر محدد مسبقاً للشراء الفوري السريع دون مزايدات.</p>
-  </div>
-</header>
+<?php
+$hero_title = 'إضافة سيارة للبيع الفوري المباشر';
+$hero_desc = 'اعرض سيارة أسطولك بسعر محدد مسبقاً للشراء الفوري السريع دون مزايدات.';
+$hero_bg = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'بوابة البائعين';
+$hero_back_href = '/seller.php';
+$hero_back_label = '← العودة للوحة البائع';
+include 'includes/page-hero.inc.php';
+?>
 
-<div class="container fx-seller-form-wrap">
+<div class="container fx-page-body fx-page-body--overlap fx-seller-form-wrap">
   
   <div class="fx-seller-form-box">
     

@@ -133,24 +133,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
   <meta name="description" content="ارفع أسطولك بالكامل دفعة واحدة عبر ملف Excel أو CSV">
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="fx-bulk-page page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--bulk">
 <?php include 'includes/navbar.php'; ?>
 
-<div class="fx-bulk-wrap">
+<?php
+$hero_title = 'رفع مجمّع للأسطول';
+$hero_desc = 'أضف مئات السيارات دفعة واحدة عبر ملف Excel أو CSV';
+$hero_bg = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'بوابة البائعين';
+$hero_back_href = '/seller.php';
+$hero_back_label = '← العودة للوحة البائع';
+$hero_actions_html = '<a href="/seller.php?section=fleet" class="btn btn-outline"><i class="ph ph-car ph-space-left"></i> عرض الأسطول الحالي</a>';
+include 'includes/page-hero.inc.php';
+?>
 
-  <!-- Header -->
-  <div class="fx-bulk-hdr">
-    <div>
-      <div class="fx-bulk-breadcrumb">
-        <a href="/seller.php">لوحة التحكم</a> / <span>رفع مجمّع</span>
-      </div>
-      <h1 class="fx-bulk-title">رفع مجمّع للأسطول 📦</h1>
-      <p class="fx-bulk-sub">أضف مئات السيارات دفعة واحدة عبر ملف Excel أو CSV</p>
-    </div>
-    <a href="/seller.php?section=fleet" class="btn btn-outline" style="border-radius:50px; padding:10px 20px; font-size:14px;">
-      <i class="ph ph-car"></i> عرض الأسطول الحالي
-    </a>
-  </div>
+<div class="container fx-page-body fx-page-body--overlap fx-bulk-wrap">
 
   <!-- Alert message -->
   <?php if ($msg): ?>
@@ -253,6 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
   <!-- Column Reference -->
   <div class="fx-cols-card">
     <h2><i class="ph-fill ph-table" style="color:#0ea5e9;"></i> أعمدة الملف المطلوبة</h2>
+    <div class="fx-table-scroll">
     <table class="fx-cols-table">
       <thead>
         <tr>
@@ -291,12 +290,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
         <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- Preview (shows after successful upload) -->
   <?php if (!empty($preview_rows)): ?>
   <div class="fx-preview-card visible">
     <h2><i class="ph-fill ph-table" style="color:var(--primary);"></i> معاينة البيانات المُضافة (<?= count($preview_rows) ?> سيارة)</h2>
+    <div class="fx-table-scroll">
     <table class="fx-preview-table">
       <thead>
         <tr>
@@ -318,6 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
         <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
     <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
       <a href="/seller.php?section=fleet" class="btn btn-primary" style="border-radius:50px; padding:12px 28px; font-size:14px;">
         <i class="ph ph-car"></i> عرض الأسطول الكامل
@@ -407,7 +409,7 @@ function parseCsvPreview(file) {
 
     let html = `<div class="fx-preview-card visible" id="previewCard">
       <h2><i class="ph-fill ph-table" style="color:var(--primary);"></i> معاينة الملف (${lines.length - 1} سيارة)</h2>
-      <table class="fx-preview-table"><thead><tr>`;
+      <div class="fx-table-scroll"><table class="fx-preview-table"><thead><tr>`;
     headers.forEach(h => { html += `<th>${h.trim()}</th>`; });
     html += `</tr></thead><tbody>`;
     rows.forEach(row => {
@@ -415,7 +417,7 @@ function parseCsvPreview(file) {
       html += '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
     });
     if (lines.length - 1 > 5) html += `<tr><td colspan="${headers.length}" style="text-align:center; color:var(--text-muted); font-size:12px;">... و${lines.length - 6} سيارة أخرى</td></tr>`;
-    html += `</tbody></table></div>`;
+    html += `</tbody></table></div></div>`;
 
     const existing = document.getElementById('previewCard');
     if (existing) existing.remove();
@@ -449,7 +451,7 @@ function parseExcelPreview(file) {
 
       let html = `<div class="fx-preview-card visible" id="previewCard">
         <h2><i class="ph-fill ph-table" style="color:var(--primary);"></i> معاينة ملف Excel (${jsonRows.length - 1} سيارة)</h2>
-        <table class="fx-preview-table"><thead><tr>`;
+        <div class="fx-table-scroll"><table class="fx-preview-table"><thead><tr>`;
       headers.forEach(h => { html += `<th>${(h||'').toString().trim()}</th>`; });
       html += `</tr></thead><tbody>`;
       rows.forEach(row => {
@@ -463,7 +465,7 @@ function parseExcelPreview(file) {
       if (jsonRows.length - 1 > 5) {
         html += `<tr><td colspan="${headers.length}" style="text-align:center; color:var(--text-muted); font-size:12px;">... و${jsonRows.length - 6} سيارة أخرى</td></tr>`;
       }
-      html += `</tbody></table></div>`;
+      html += `</tbody></table></div></div>`;
 
       const existing = document.getElementById('previewCard');
       if (existing) existing.remove();

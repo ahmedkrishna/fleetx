@@ -55,23 +55,25 @@ if ($db_connected) {
   <title>لوحة الفحص | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--inspector">
 
 <?php include 'includes/navbar.php'; ?>
 
-<section class="fx-insp-hero">
-  <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-    <div>
-      <h1 style="font-size:26px; font-weight:900; margin:0;">لوحة الفاحصين</h1>
-      <p style="opacity:0.75; font-size:14px; margin-top:8px;">مرحباً <?= sanitize($_SESSION['user_name']) ?> — إدارة طلبات الفحص والتقارير</p>
-    </div>
-    <?php if ($role === 'admin'): ?>
-    <a href="/admin/inspections.php" class="btn btn-outline" style="border-color:rgba(255,255,255,0.3); color:#fff;">لوحة الإدارة</a>
-    <?php endif; ?>
-  </div>
-</section>
+<?php
+$hero_title = 'لوحة الفاحصين';
+$hero_desc = 'مرحباً ' . sanitize($_SESSION['user_name']) . ' — إدارة طلبات الفحص والتقارير';
+$hero_bg = 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'الفحص الفني';
+$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-hourglass"></i> ' . (int)$pending_count . ' بانتظار الفحص</span>'
+    . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-check-circle"></i> ' . (int)$completed_count . ' مكتمل</span>';
+$hero_actions_html = ($role === 'admin')
+    ? '<a href="/admin/inspections.php" class="btn btn-outline"><i class="ph ph-shield-check ph-space-left"></i> لوحة الإدارة</a>'
+    : '';
+include 'includes/page-hero.inc.php';
+?>
 
-<div class="container" style="padding-bottom: 64px;">
+<div class="container fx-page-body fx-page-body--overlap fx-inspector-page">
   <?php if (isset($_GET['msg']) && $_GET['msg'] === 'success'): ?>
   <div class="fx-alert-success">تم اعتماد التقرير وإشعار البائع بنجاح!</div>
   <?php endif; ?>

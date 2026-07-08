@@ -36,7 +36,7 @@ $hero_title = 'دليل الشركات المعتمدة';
 $hero_eyebrow = 'شركاء FleetX';
 $hero_desc = 'شركات تأجير موثّقة • تقارير فحص معتمدة • أسعار شفافة';
 $hero_bg = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80';
-$hero_modifier = 'overlap';
+$hero_modifier = 'light';
 $hero_bottom_html = '
   <div class="fx-page-hero__toolbar">
     <div class="stat-item"><div class="stat-num">' . count($companies) . '+</div><div class="stat-lbl">شركة معتمدة</div></div>
@@ -54,7 +54,7 @@ $hero_bottom_html = '
   <meta name="description" content="تصفح شركات التأجير المعتمدة على FleetX">
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-companies-shell">
+<body class="fx-home fx-page-shell fx-companies-shell">
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 

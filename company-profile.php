@@ -66,7 +66,7 @@ $hero_bg = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&
 $hero_back_href = '/companies.php';
 $hero_back_label = '← العودة لدليل الشركات';
 $hero_desc = 'تصفح مزادات ومركبات الشركة المعتمدة على منصة FleetX';
-$hero_modifier = 'overlap';
+$hero_modifier = 'light';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . htmlspecialchars($company['city'] ?? 'المملكة') . '</span>
   <span class="fx-page-hero__chip"><i class="ph-fill ph-star"></i> ' . number_format(floatval($company['rating'] ?? 4.5), 1) . ' تقييم</span>';
@@ -90,7 +90,7 @@ $hero_bottom_html = '
   <meta name="description" content="تصفح مزادات وسيارات <?= htmlspecialchars($company['company_name']) ?> على FleetX">
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-company-profile-shell">
+<body class="fx-home fx-page-shell fx-company-profile-shell">
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 

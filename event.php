@@ -61,7 +61,7 @@ $hero_title = $event['title'];
 $hero_bg = 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80';
 $hero_back_href = '/auctions.php';
 $hero_back_label = '← العودة لقاعة المزادات';
-$hero_modifier = 'overlap';
+$hero_modifier = 'light';
 $hero_eyebrow = 'حدث مزاد نشط';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph-fill ph-buildings"></i> ' . sanitize($event['seller'] ?? ($event['seller_company'] ?? 'الوطنية للتأجير')) . '</span>
@@ -89,7 +89,7 @@ $hero_actions_html = '
   <title><?= sanitize($title) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--listing">
+<body class="fx-home fx-page-shell fx-page-shell--listing">
 
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>

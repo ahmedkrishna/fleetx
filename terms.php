@@ -4,7 +4,8 @@ $hero_title = 'الشروط والأحكام';
 $hero_bg = 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=80';
 $hero_back_href = '/index.php';
 $hero_back_label = '← العودة للرئيسية';
-$hero_modifier = 'compact';
+$hero_modifier = 'light';
+$hero_eyebrow = 'الشروط والسياسات';
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -14,7 +15,7 @@ $hero_modifier = 'compact';
   <title>الشروط والأحكام | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner fx-page-shell fx-page-shell--legal">
+<body class="fx-home fx-page-shell fx-page-shell--legal">
 
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>

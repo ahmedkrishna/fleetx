@@ -73,6 +73,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
 
 // Check for saved flag
 $show_saved_toast = isset($_GET['saved']) && $_GET['saved'] == '1';
+
+// Hero quick stats
+$buyer_wallet_hero = $_SESSION['wallet_balance'] ?? 0;
+$buyer_active_bids_hero = 0;
+$buyer_won_hero = 0;
+if ($db_connected) {
+    $hb = $conn->prepare('SELECT COUNT(DISTINCT b.auction_id) FROM bids b JOIN auctions a ON b.auction_id = a.id WHERE b.user_id = ? AND a.status IN ("active","live")');
+    if ($hb) {
+        $hb->bind_param('i', $user_id);
+        $hb->execute();
+        $buyer_active_bids_hero = (int)($hb->get_result()->fetch_row()[0] ?? 0);
+    }
+    $hw = $conn->prepare('SELECT COUNT(*) FROM auctions WHERE winner_id = ?');
+    if ($hw) {
+        $hw->bind_param('i', $user_id);
+        $hw->execute();
+        $buyer_won_hero = (int)($hw->get_result()->fetch_row()[0] ?? 0);
+    }
+    $hws = $conn->prepare('SELECT wallet_balance FROM users WHERE id = ?');
+    if ($hws) {
+        $hws->bind_param('i', $user_id);
+        $hws->execute();
+        if ($wrow = $hws->get_result()->fetch_row()) {
+            $buyer_wallet_hero = (float)($wrow[0] ?? $buyer_wallet_hero);
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -82,7 +109,7 @@ $show_saved_toast = isset($_GET['saved']) && $_GET['saved'] == '1';
   <title>لوحة المشتري | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
   </head>
-<body class="page-inner fx-page-shell fx-page-shell--dashboard">
+<body class="fx-home fx-page-shell fx-page-shell--buyer">
 <?php include 'includes/navbar.php'; ?>
 
 <?php if ($show_saved_toast): ?>
@@ -93,24 +120,30 @@ $show_saved_toast = isset($_GET['saved']) && $_GET['saved'] == '1';
 <?php endif; ?>
 
 <?php
-$hero_title = 'مرحباً بك، ' . $user_name;
+$hero_title = 'مرحباً بك، ' . sanitize($user_name);
 $hero_desc = 'تابع مزايداتك، مشترياتك، ومحفظتك من مكان واحد';
 $hero_bg = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80';
-$hero_modifier = 'dashboard';
-$hero_extra_class = 'fx-page-hero--buyer';
+$hero_modifier = 'light';
+$hero_eyebrow = 'لوحة المشتري';
+$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-wallet"></i> ' . number_format((float)$buyer_wallet_hero) . ' ر.س محفظة</span>'
+    . '<span class="fx-page-hero__chip"><i class="ph-fill ph-gavel"></i> ' . (int)$buyer_active_bids_hero . ' مزايدة نشطة</span>'
+    . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-trophy"></i> ' . (int)$buyer_won_hero . ' مزاد فائز</span>';
+$hero_actions_html = '<a href="/auctions.php" class="btn btn-primary"><i class="ph ph-gavel ph-space-left"></i> تصفح المزادات</a>'
+    . '<a href="/companies.php" class="btn btn-outline"><i class="ph ph-buildings ph-space-left"></i> دليل الشركات</a>';
 include 'includes/page-hero.inc.php';
 ?>
 
-<div class="buyer-container fx-dash-page-body">
+<div class="container fx-page-body fx-page-body--overlap fx-buyer-page">
+  <div class="fx-buyer-layout">
 
   <!-- ── SIDEBAR ──────────────────────────────────────────── -->
-  <aside class="buyer-sidebar">
-    <div class="buyer-user-info">
-      <div class="buyer-user-avatar"><i class="ph-fill ph-user"></i></div>
-      <h3 style="font-size: 20px; font-weight: 900; color: var(--text-dark); margin: 0 0 4px;"><?= sanitize($user_name) ?></h3>
+  <aside class="fx-profile-sidebar fx-profile-sidebar--home fx-buyer-sidebar">
+    <div class="fx-buyer-profile">
+      <div class="fx-buyer-avatar"><i class="ph-fill ph-user"></i></div>
+      <div class="fx-buyer-name"><?= sanitize($user_name) ?></div>
       <div class="buyer-role-badge">مشتري معتمد</div>
     </div>
-    <ul class="buyer-nav">
+    <ul class="fx-profile-nav fx-buyer-nav">
       <li><a href="/companies.php"><i class="ph ph-buildings"></i> دليل الشركات</a></li>
       <li><a href="?section=dashboard" class="<?= $section==='dashboard'?'active':'' ?>"><i class="ph ph-squares-four"></i> لوحة التحكم</a></li>
       <li><a href="?section=bids" class="<?= $section==='bids'?'active':'' ?>"><i class="ph ph-gavel"></i> مزايداتي</a></li>
@@ -118,11 +151,12 @@ include 'includes/page-hero.inc.php';
       <li><a href="?section=favorites" class="<?= $section==='favorites'?'active':'' ?>"><i class="ph ph-heart"></i> المفضلة</a></li>
       <li><a href="?section=wallet" class="<?= $section==='wallet'?'active':'' ?>"><i class="ph ph-wallet"></i> المحفظة</a></li>
       <li><a href="?section=settings" class="<?= $section==='settings'?'active':'' ?>"><i class="ph ph-gear"></i> إعدادات الحساب</a></li>
+      <li><a href="/logout.php" class="danger"><i class="ph ph-sign-out"></i> تسجيل خروج</a></li>
     </ul>
   </aside>
 
   <!-- ── MAIN CONTENT ─────────────────────────────────────── -->
-  <main class="buyer-main">
+  <main class="fx-buyer-main">
     <div class="fx-dash-mobile-nav">
       <select onchange="if(this.value) window.location.href=this.value" aria-label="قائمة لوحة المشتري">
         <option value="">انتقل إلى قسم...</option>
@@ -137,7 +171,7 @@ include 'includes/page-hero.inc.php';
     </div>
 
     <!-- Header Bar -->
-    <div class="buyer-header-bar">
+    <div class="buyer-header-bar fx-buyer-card">
       <h1 class="buyer-title">
         <?php
           switch($section) {
@@ -175,25 +209,25 @@ include 'includes/page-hero.inc.php';
     ?>
 
     <?php if (!$nafath_verified): ?>
-      <div style="background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 16px; border-radius: var(--radius-md); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between;">
-        <div style="display: flex; align-items: center; gap: 12px; font-weight: 700;">
-          <i class="ph-fill ph-warning-circle" style="font-size: 24px;"></i>
+      <div class="fx-dash-alert fx-dash-alert--danger">
+        <div class="fx-dash-alert__body">
+          <i class="ph-fill ph-warning-circle"></i>
           <span>حسابك غير موثق في نفاذ. لن تتمكن من المزايدة حتى تقوم بالتوثيق.</span>
         </div>
-        <a href="/nafath.php" class="btn btn-primary" style="background: var(--danger); border-color: var(--danger); padding: 8px 16px;">توثيق الآن</a>
+        <a href="/nafath.php" class="btn btn-primary fx-dash-alert__btn">توثيق الآن</a>
       </div>
     <?php else: ?>
-      <div style="display: flex; gap: 16px; margin-bottom: 24px;">
-        <div style="flex: 1; background: rgba(16,185,129,0.1); border: 1px solid var(--success); color: var(--success); padding: 12px 16px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 10px; font-weight: 700;">
-          <i class="ph-fill ph-check-circle" style="font-size: 20px;"></i>
-          موثق عبر نفاذ
+      <div class="fx-buyer-status-row">
+        <div class="fx-dash-alert fx-dash-alert--success fx-buyer-status-chip">
+          <i class="ph-fill ph-check-circle"></i>
+          <span>موثق عبر نفاذ</span>
         </div>
-        <div style="flex: 1; background: rgba(17,94,89,0.1); border: 1px solid #115e59; color: #115e59; padding: 12px 16px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; font-weight: 700;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <i class="ph-fill ph-file-text" style="font-size: 20px;"></i>
-            حد سند لأمر: <?= number_format($sanad_limit) ?> ر.س
+        <div class="fx-buyer-sanad-chip">
+          <div class="fx-buyer-sanad-chip__body">
+            <i class="ph-fill ph-file-text"></i>
+            <span>حد سند لأمر: <?= number_format($sanad_limit) ?> ر.س</span>
           </div>
-          <a href="/sanad.php" style="color: #115e59; text-decoration: underline; font-size: 13px;">تعديل الحد</a>
+          <a href="/sanad.php" class="fx-buyer-sanad-link">تعديل الحد</a>
         </div>
       </div>
     <?php endif; ?>
@@ -243,7 +277,7 @@ include 'includes/page-hero.inc.php';
     ?>
 
       <!-- Stat Cards -->
-      <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="stat-grid fx-buyer-stats">
         <div class="stat-card">
           <div class="stat-icon" style="background: rgba(99,102,241,0.1); color: #6366f1;">
             <i class="ph ph-hash"></i>
@@ -824,6 +858,7 @@ include 'includes/page-hero.inc.php';
     <?php endif; ?>
 
   </main>
+  </div>
 </div>
 
 <?php include 'includes/footer.php'; ?>

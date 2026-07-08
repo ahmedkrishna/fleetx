@@ -37,14 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title><?= $page_title ?></title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--wallet">
 <?php include 'includes/navbar.php'; ?>
 
-<div class="fx-wallet-page">
-  <div style="text-align:center; margin-bottom:32px;">
-    <h1 style="font-size:30px; margin-bottom:12px; color:var(--text-dark); font-weight:900;">شحن المحفظة الرقمية</h1>
-    <p style="color:var(--text-muted);">أودع مبالغ في محفظتك لاستخدامها كتأمين للمزايدة أو للشراء الفوري.</p>
-  </div>
+<?php
+$hero_title = 'شحن المحفظة الرقمية';
+$hero_desc = 'أودع مبالغ في محفظتك لاستخدامها كتأمين للمزايدة أو للشراء الفوري.';
+$hero_bg = 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'المحفظة';
+$hero_back_href = '/profile.php?tab=wallet';
+$hero_back_label = '← العودة لحسابي';
+include 'includes/page-hero.inc.php';
+?>
+
+<div class="container fx-page-body fx-page-body--overlap fx-wallet-page">
 
   <div class="fx-wallet-card">
     <div class="fx-wallet-balance">

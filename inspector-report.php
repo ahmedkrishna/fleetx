@@ -130,11 +130,22 @@ $estimated = estimateAutoDataPrice($inspection['make'], $inspection['model'], $i
   <title>تقرير الفحص | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--inspector-report">
 <?php include 'includes/navbar.php'; ?>
 
-<div class="report-wrap">
-  <a href="/inspector.php" class="fx-report-back">← العودة لطلبات الفحص</a>
+<?php
+$report_vehicle = sanitize($inspection['make'] . ' ' . $inspection['model'] . ' ' . $inspection['year']);
+$hero_title = 'تقرير فحص: ' . $report_vehicle;
+$hero_desc = 'البائع: ' . sanitize($inspection['seller_name']) . ' | المدينة: ' . sanitize($inspection['city'] ?? '—');
+$hero_bg = 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = 'تقرير الفحص';
+$hero_back_href = '/inspector.php';
+$hero_back_label = '← العودة لطلبات الفحص';
+include 'includes/page-hero.inc.php';
+?>
+
+<div class="container fx-page-body fx-page-body--overlap report-wrap">
 
   <div class="report-card">
     <div class="report-header">

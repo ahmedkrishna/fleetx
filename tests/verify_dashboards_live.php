@@ -62,18 +62,17 @@ check('Buyer demo login', $loginCode === 200);
 
 [$buyerCode, $buyer] = fetch($base, 'buyer.php', $jar);
 check('Buyer dashboard HTTP 200', $buyerCode === 200);
-check('Buyer fx-page-shell--dashboard', str_contains($buyer, 'fx-page-shell--dashboard'));
-check('Buyer fx-page-hero--dashboard', str_contains($buyer, 'fx-page-hero--dashboard'));
-check('Buyer fx-page-hero--buyer', str_contains($buyer, 'fx-page-hero--buyer'));
-check('Buyer sidebar present', str_contains($buyer, 'buyer-sidebar'));
-check('Buyer main content', str_contains($buyer, 'buyer-main'));
+check('Buyer fx-home shell', str_contains($buyer, 'fx-home') && str_contains($buyer, 'fx-page-shell--buyer'));
+check('Buyer light hero', str_contains($buyer, 'fx-page-hero--light'));
+check('Buyer sidebar present', str_contains($buyer, 'fx-buyer-sidebar'));
+check('Buyer main content', str_contains($buyer, 'fx-buyer-main'));
 check('Buyer hero welcome text', str_contains($buyer, 'مرحباً بك'));
 check('Buyer mobile nav', str_contains($buyer, 'fx-dash-mobile-nav'));
 
 $sections = ['dashboard', 'bids', 'favorites', 'wallet', 'settings'];
 foreach ($sections as $sec) {
     [$c, $html] = fetch($base, "buyer.php?section=$sec", $jar);
-    check("Buyer section: $sec", $c === 200 && str_contains($html, 'fx-page-shell--dashboard'));
+    check("Buyer section: $sec", $c === 200 && str_contains($html, 'fx-page-shell--buyer'));
 }
 
 @unlink($jar);
@@ -83,18 +82,17 @@ check('Seller demo login', $loginCode2 === 200);
 
 [$sellerCode, $seller] = fetch($base, 'seller.php', $jar2);
 check('Seller dashboard HTTP 200', $sellerCode === 200);
-check('Seller fx-page-shell--dashboard', str_contains($seller, 'fx-page-shell--dashboard'));
-check('Seller fx-page-hero--dashboard', str_contains($seller, 'fx-page-hero--dashboard'));
-check('Seller fx-page-hero--seller', str_contains($seller, 'fx-page-hero--seller'));
-check('Seller sidebar present', str_contains($seller, 'seller-sidebar'));
-check('Seller main content', str_contains($seller, 'seller-main'));
-check('Seller verified badge or company', str_contains($seller, 'verified-badge') || str_contains($seller, 'seller-company-name'));
+check('Seller fx-home shell', str_contains($seller, 'fx-home') && str_contains($seller, 'fx-page-shell--seller'));
+check('Seller light hero', str_contains($seller, 'fx-page-hero--light'));
+check('Seller sidebar present', str_contains($seller, 'fx-seller-sidebar'));
+check('Seller main content', str_contains($seller, 'fx-seller-main'));
+check('Seller verified badge or company', str_contains($seller, 'verified-badge') || str_contains($seller, 'fx-seller-company-name'));
 check('Seller mobile nav', str_contains($seller, 'fx-dash-mobile-nav'));
 
 $sellerSections = ['dashboard', 'fleet', 'payouts', 'settings'];
 foreach ($sellerSections as $sec) {
     [$c, $html] = fetch($base, "seller.php?section=$sec", $jar2);
-    check("Seller section: $sec", $c === 200 && str_contains($html, 'fx-page-shell--dashboard'));
+    check("Seller section: $sec", $c === 200 && str_contains($html, 'fx-page-shell--seller'));
 }
 
 @unlink($jar2);

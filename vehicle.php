@@ -30,29 +30,23 @@ $title = $vehicle['make'] . ' ' . $vehicle['model'] . ' ' . $vehicle['year'];
   <title>تقرير الفحص المعتمد: <?= sanitize($title) ?> | FleetX</title>
   <link rel="stylesheet" href="/assets/css/fleetx.css">
 </head>
-<body class="page-inner">
+<body class="fx-home fx-page-shell fx-page-shell--vehicle-report">
 
-<!-- Navbar template -->
 <?php include 'includes/navbar.php'; ?>
 
-<!-- Dark Header -->
-<header class="page-header no-print">
-  <div class="page-header-bg" style="background-image:url('<?= $vehicle['image_url'] ?>'); filter:blur(10px) brightness(0.25)"></div>
-  <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px">
-      <div>
-        <a href="/auctions.php" class="fx-back-link" style="font-size:14px;">← العودة للمزادات</a>
-        <h1 style="margin:0">تقرير الفحص الموثق الشامل</h1>
-        <p style="color:var(--text-light-muted); font-size:16px; margin-top:6px">مرجع تقرير فني معتمد لأساطيل السيارات المستعملة بالمملكة.</p>
-      </div>
-      <div>
-         <button class="btn btn-primary font-en" onclick="window.print()" style="display:inline-flex; align-items:center; gap:8px;"><i class="ph ph-download-simple"></i> Print Report / PDF</button>
-      </div>
-    </div>
-  </div>
-</header>
+<?php
+$hero_title = 'تقرير الفحص الموثق الشامل';
+$hero_desc = 'مرجع تقرير فني معتمد لأساطيل السيارات المستعملة بالمملكة.';
+$hero_bg = $vehicle['image_url'] ?? 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80';
+$hero_modifier = 'light';
+$hero_eyebrow = sanitize($title);
+$hero_back_href = '/auctions.php';
+$hero_back_label = '← العودة للمزادات';
+$hero_actions_html = '<button type="button" class="btn btn-primary no-print" onclick="window.print()"><i class="ph ph-download-simple ph-space-left"></i> Print Report / PDF</button>';
+include 'includes/page-hero.inc.php';
+?>
 
-<div class="container fx-content-overlap" style="margin-top:-30px;">
+<div class="container fx-page-body fx-page-body--overlap">
   
   <div class="fx-vehicle-report">
     

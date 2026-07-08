@@ -8924,3 +8924,289 @@ a.auctions-tab-btn {
   .fx-dash-alert { flex-direction: column; align-items: stretch; }
   .fx-dash-alert__btn { text-align: center; }
 }
+
+/* ==========================================================================
+   PHASE 17 — Site-wide theme unification + mobile responsiveness
+   ========================================================================== */
+
+/* Shared light shells */
+.fx-page-shell--buyer,
+.fx-page-shell--seller-form,
+.fx-page-shell--bulk,
+.fx-page-shell--wallet,
+.fx-page-shell--inspector,
+.fx-page-shell--inspector-report,
+.fx-page-shell--vehicle-report {
+  background: #f8fafc;
+}
+.fx-page-shell--legal,
+.fx-companies-shell,
+.fx-company-profile-shell {
+  background: #f8fafc;
+}
+
+/* Global table scroll (mobile) */
+.fx-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.fx-table-scroll table { min-width: 560px; }
+
+/* Prevent horizontal page overflow */
+.fx-home.fx-page-shell,
+.page-inner.fx-page-shell {
+  overflow-x: hidden;
+}
+.fx-home .container {
+  max-width: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* ── Buyer dashboard (mirror seller) ── */
+.fx-page-shell--buyer .fx-page-body--overlap { margin-top: -48px; }
+.fx-buyer-page { padding: 0 0 80px; }
+.fx-buyer-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.fx-buyer-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+.fx-buyer-profile {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+}
+.fx-buyer-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+}
+.fx-buyer-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+.fx-buyer-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.buyer-header-bar.fx-buyer-card {
+  padding: 20px 24px;
+  margin-bottom: 0;
+}
+.fx-buyer-stats .stat-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+.fx-buyer-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.fx-buyer-status-chip {
+  flex: 1;
+  min-width: 200px;
+  justify-content: flex-start;
+}
+.fx-buyer-sanad-chip {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: rgba(17, 94, 89, 0.08);
+  border: 1px solid rgba(17, 94, 89, 0.2);
+  color: #115e59;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+}
+.fx-buyer-sanad-chip__body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fx-buyer-sanad-link {
+  color: #115e59;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* ── Seller forms + bulk upload ── */
+.fx-page-shell--seller-form .fx-page-body--overlap,
+.fx-page-shell--bulk .fx-page-body--overlap {
+  margin-top: -48px;
+  padding-bottom: 80px;
+}
+.fx-page-shell--seller-form .fx-seller-form-box,
+.fx-page-shell--bulk .fx-cols-card,
+.fx-page-shell--bulk .fx-upload-card,
+.fx-page-shell--bulk .fx-template-card,
+.fx-page-shell--bulk .fx-preview-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-xl);
+}
+.fx-page-shell--bulk .fx-bulk-steps {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.fx-page-shell--bulk .fx-bulk-step {
+  min-width: 0;
+}
+
+/* ── Wallet topup ── */
+.fx-page-shell--wallet .fx-page-body--overlap { margin-top: -48px; }
+.fx-page-shell--wallet .fx-wallet-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+.fx-page-shell--wallet .fx-wallet-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-xl);
+}
+
+/* ── Inspector pages ── */
+.fx-page-shell--inspector .fx-page-body--overlap,
+.fx-page-shell--inspector-report .fx-page-body--overlap {
+  margin-top: -48px;
+  padding-bottom: 80px;
+}
+.fx-inspector-page .fx-insp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.fx-page-shell--inspector-report .report-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.fx-page-shell--inspector-report .report-card {
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius-xl);
+}
+
+/* ── Vehicle inspection report ── */
+.fx-page-shell--vehicle-report .fx-page-body--overlap { margin-top: -48px; padding-bottom: 80px; }
+.fx-page-shell--vehicle-report .fx-vehicle-report {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+  padding: 28px;
+}
+
+/* ── Legal / about / companies mobile ── */
+.fx-page-shell--legal .fx-about-seller-gap { gap: 48px; }
+.fx-page-hero--light .fx-page-hero__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+.fx-page-hero--light .fx-page-hero__toolbar .stat-item {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  min-width: 120px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+.fx-companies-chips .filter-chips {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.fx-company-profile-shell .fx-bank-strip {
+  word-break: break-all;
+}
+
+/* ── Payout / fleet tables on dashboards ── */
+.payout-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.payout-table { min-width: 640px; }
+
+/* ── Buyer dashboard stat grid (remove inline override) ── */
+.fx-buyer-stats.stat-grid,
+.stat-grid.fx-buyer-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .fx-buyer-layout { grid-template-columns: 1fr; }
+  .fx-profile-sidebar--home.fx-buyer-sidebar { position: static; }
+  .fx-buyer-stats.stat-grid,
+  .stat-grid.fx-buyer-stats { grid-template-columns: repeat(2, 1fr); }
+  .fx-page-hero--light .fx-page-hero__actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .buyer-header-bar,
+  .seller-header-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 14px;
+  }
+  .fx-seller-actions-top,
+  .buyer-header-bar .btn,
+  .buyer-header-bar .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (max-width: 768px) {
+  .fx-buyer-stats.stat-grid,
+  .stat-grid.fx-buyer-stats,
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .fx-buyer-status-row { flex-direction: column; }
+  .fx-buyer-sanad-chip { flex-direction: column; align-items: flex-start; }
+  .fx-page-shell--legal .fx-about-features { grid-template-columns: 1fr; }
+  .fx-page-shell--legal .vector-timeline { padding: 0 8px; }
+  .fx-companies-chips { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .fx-companies-chips .filter-chips { flex-wrap: nowrap; padding-bottom: 4px; }
+  .fx-page-hero--light .fx-page-hero__title { font-size: clamp(22px, 6vw, 32px); }
+  .fx-page-hero--light .fx-page-hero__row { flex-direction: column; align-items: flex-start; }
+  .fleet-grid { grid-template-columns: 1fr !important; }
+  .plans-grid { grid-template-columns: 1fr !important; }
+  .form-grid { grid-template-columns: 1fr !important; }
+  .report-scores { grid-template-columns: repeat(2, 1fr) !important; }
+  .payout-hero { flex-direction: column; gap: 20px; text-align: center; }
+  .fx-report-heading { flex-direction: column; gap: 16px; }
+  .fx-score-summary { flex-direction: column; text-align: center; }
+  .fx-check-grid { grid-template-columns: 1fr !important; }
+  .fx-seller-form-grid { grid-template-columns: 1fr !important; }
+  .fx-bulk-steps { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .fx-bulk-steps { grid-template-columns: 1fr !important; }
+  .fx-page-hero--light .fx-page-hero__chip { font-size: 12px; padding: 8px 12px; }
+}
