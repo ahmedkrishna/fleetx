@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'config.php';
 ?>
 <!DOCTYPE html>
@@ -8,15 +7,19 @@ require_once 'config.php';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>التسجيل | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-onboarding-body">
+
+<header class="fx-flow-topbar">
+  <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
+  <a href="/index.php" class="fx-flow-topbar__link"><i class="ph ph-house"></i> الرئيسية</a>
+</header>
 
 <div class="onboarding-container">
   <div>
     <div class="logo-container">
-      <a href="/index.php" class="fx-onboarding-logo">Fleet<span>X</span></a>
-      <p class="fx-onboarding-tagline">اختر نوع حسابك للبدء في المنصة</p>
+      <p class="fx-onboarding-tagline fx-onboarding-tagline--center">اختر نوع حسابك للبدء في المنصة</p>
     </div>
 
     <div class="onboarding-grid">
@@ -44,6 +47,5 @@ require_once 'config.php';
   </div>
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
 </body>
 </html>

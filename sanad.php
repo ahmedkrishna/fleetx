@@ -59,9 +59,14 @@ if ($db_connected) {
   <meta charset="UTF-8">
   <title>منصة نافذ | إصدار سند لأمر | FleetX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-sanad-page">
+
+<header class="fx-flow-topbar">
+  <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
+  <a href="/buyer.php?section=dashboard" class="fx-flow-topbar__link"><i class="ph ph-house"></i> لوحة المشتري</a>
+</header>
 
 <div class="fx-sanad-header">
   <h2>نـــافـــذ <span>(محاكاة)</span></h2>
@@ -107,7 +112,7 @@ if ($db_connected) {
           </p>
         </div>
 
-        <button type="button" onclick="submitSanad()" class="btn btn-primary fx-btn-block" style="font-size: 16px; font-weight: 800;">
+        <button type="button" onclick="submitSanad()" class="btn btn-primary fx-btn-block fx-btn-lg">
           اعتماد وتوقيع السند (محاكاة) <i class="ph-bold ph-signature ph-space-right"></i>
         </button>
       </form>
@@ -115,7 +120,6 @@ if ($db_connected) {
   </div>
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>
   function setAmount(val, el) {
       document.getElementById('amountInput').value = val;

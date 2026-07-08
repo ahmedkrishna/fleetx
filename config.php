@@ -18,6 +18,18 @@ define('DB_NAME',    'u274391035_db_BbBE85ay');
 define('SITE_URL',   'https://mazadi.bearand.com');
 define('SITE_NAME',  'FleetX');
 define('PLATFORM_FEE_PERCENT', 5);
+define('FLEETX_CSS_VER', '16');
+
+function fleetx_css_href(): string {
+    return '/assets/css/fleetx.css?v=' . FLEETX_CSS_VER;
+}
+
+/** Navbar/header logo: logo.png on homepage only, logo-dark.png everywhere else */
+function fleetx_logo_src(): string {
+    $page = basename($_SERVER['PHP_SELF'] ?? '');
+    $is_home = ($page === 'index.php' || $page === '');
+    return '/assets/images/' . ($is_home ? 'logo.png' : 'logo-dark.png');
+}
 
 // ── Connect ────────────────────────────────────────────────
 $conn = null;

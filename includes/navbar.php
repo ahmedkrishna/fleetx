@@ -12,6 +12,8 @@ if ($is_admin) $dash_label = 'لوحة الإدارة';
 elseif ($is_seller) $dash_label = 'لوحة البائع';
 elseif ($is_inspector) $dash_label = 'لوحة الفحص';
 elseif ($is_buyer) $dash_label = 'لوحة المشتري';
+
+$navbar_logo_src = fleetx_logo_src();
 ?>
 
 <nav class="navbar" id="navbar">
@@ -20,7 +22,7 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
 
       <!-- Logo -->
       <a href="/index.php" class="navbar-logo">
-        <img src="/assets/images/logo.png" alt="FleetX Logo">
+        <img src="<?= $navbar_logo_src ?>" alt="FleetX Logo">
       </a>
 
       <!-- Nav Links -->
@@ -105,12 +107,12 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
           <a href="/logout.php" class="btn btn-outline btn-sm hide-on-mobile" style="opacity:0.6; margin-right:4px; border-radius: var(--radius-round); border-color: transparent">خروج</a>
 
         <?php else: ?>
-          <a href="/login.php" class="btn-login hide-on-mobile">دخول المنصة</a>
+          <a href="/login.php" class="btn-login btn-login--green-stroke hide-on-mobile">دخول المنصة</a>
           <a href="/register.php" class="btn btn-primary btn-sm hide-on-mobile" style="border-radius: var(--radius-round)">سجل الآن</a>
         <?php endif; ?>
 
         <button class="navbar-toggle" id="navToggle" aria-label="قائمة">
-          <i class="ph ph-list" style="color: #fff; font-size: 24px;"></i>
+          <i class="ph ph-list navbar-toggle-icon"></i>
         </button>
       </div>
 
@@ -136,8 +138,8 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
 
       <?php if (!$is_logged): ?>
         <li style="margin-top:16px; display:flex; gap:12px;">
-          <a href="/login.php" class="btn btn-outline" style="flex:1; text-align:center">دخول</a>
-          <a href="/register.php" class="btn btn-primary" style="flex:1; text-align:center">تسجيل جديد</a>
+          <a href="/login.php" class="btn-login btn-login--green-stroke fx-mobile-login">دخول المنصة</a>
+          <a href="/register.php" class="btn btn-primary fx-mobile-register">تسجيل جديد</a>
         </li>
         <li>
           <a href="/index.php?guest=1" style="display:block; text-align:center; color:rgba(255,255,255,0.5); font-size:13px; margin-top:8px;">تصفح بدون تسجيل</a>

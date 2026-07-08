@@ -63,15 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تسجيل الدخول | FleetX</title>
   <meta name="description" content="سجّل الدخول إلى منصة FleetX لمزادات أساطيل السيارات">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-auth-body fx-auth-body--light">
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">
-    <img src="/assets/images/logo.png" alt="FleetX">
+    <img src="<?= fleetx_logo_src() ?>" alt="FleetX">
   </a>
   <a href="/index.php" class="fx-auth-topbar__home"><i class="ph ph-house"></i> الرئيسية</a>
 </header>
@@ -150,7 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>
 function selectType(type) {
   // Update cards

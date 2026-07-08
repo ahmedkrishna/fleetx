@@ -119,7 +119,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>إنشاء حساب جديد | FleetX</title>
   <meta name="description" content="سجّل في FleetX وابدأ البيع والشراء في مزادات أساطيل السيارات">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -127,7 +127,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">
-    <img src="/assets/images/logo.png" alt="FleetX">
+    <img src="<?= fleetx_logo_src() ?>" alt="FleetX">
   </a>
   <a href="/login.php" class="fx-auth-topbar__home"><i class="ph ph-sign-in"></i> تسجيل الدخول</a>
 </header>

@@ -45,9 +45,14 @@ $nafath_number = rand(10, 99);
   <meta charset="UTF-8">
   <title>التوثيق الوطني (نفاذ) | FleetX</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-verify-page">
+
+<header class="fx-flow-topbar">
+  <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
+  <a href="/index.php" class="fx-flow-topbar__link"><i class="ph ph-house"></i> الرئيسية</a>
+</header>
 
 <div class="fx-nafath-card">
   <div class="fx-nafath-logo">
@@ -61,7 +66,7 @@ $nafath_number = rand(10, 99);
     </div>
     <h3 class="fx-nafath-title">هويتك موثقة بالكامل</h3>
     <p class="fx-nafath-desc">تم ربط حسابك ببيانات النفاذ الوطني الموحد بنجاح. يمكنك الآن استخدام كافة خدمات المنصة بموثوقية عالية.</p>
-    <a href="/index.php" class="btn btn-primary fx-btn-block" style="border-radius: 30px;">العودة للرئيسية</a>
+    <a href="/index.php" class="btn btn-primary fx-btn-block fx-btn-round">العودة للرئيسية</a>
   <?php else: ?>
     <h3 class="fx-nafath-title">التحقق من نفاذ</h3>
     <p class="fx-nafath-desc">الرجاء فتح تطبيق نفاذ من هاتفك المحمول وتأكيد الطلب باختيار الرقم التالي:</p>
@@ -70,7 +75,7 @@ $nafath_number = rand(10, 99);
     
     <form method="POST">
       <input type="hidden" name="verify_nafath" value="1">
-      <button type="submit" class="btn btn-primary fx-btn-block" style="border-radius: 30px; font-size: 16px; font-weight: 800;">
+      <button type="submit" class="btn btn-primary fx-btn-block fx-btn-round fx-btn-lg">
         (محاكاة) تم قبول الطلب في التطبيق
       </button>
     </form>
@@ -80,6 +85,5 @@ $nafath_number = rand(10, 99);
   <?php endif; ?>
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
 </body>
 </html>
