@@ -69,7 +69,7 @@ $card_id = intval($c['id'] ?? 0);
   </div>
 
   <div class="ac-body">
-    <div class="ac-meta">
+    <div class="ac-meta ac-meta--plain">
       <?php if (!empty($c['seller'])): ?>
       <span><i class="ph ph-storefront"></i><?= htmlspecialchars($c['seller']) ?></span>
       <?php endif; ?>
@@ -82,37 +82,29 @@ $card_id = intval($c['id'] ?? 0);
       <?php endif; ?>
     </div>
 
-    <div class="ac-info-row">
+    <div class="ac-info-row ac-info-row--board">
       <div class="ac-price-block">
         <div class="ac-price-label"><?= htmlspecialchars($price_label) ?></div>
         <div class="ac-price-val font-en"><?= number_format($price) ?> <span class="ac-price-currency">ر.س</span></div>
       </div>
 
-      <div class="ac-timer-side">
+      <div class="ac-timer-board">
         <?php if ($is_ended): ?>
-        <div class="ac-timer-box ac-timer-box--v2 ac-timer-box--plain ac-timer-box--ended">
-          <span class="ac-timer-label"><i class="ph ph-check-circle"></i> انتهى</span>
-        </div>
+        <span class="ac-timer-board__label"><i class="ph ph-check-circle"></i> انتهى</span>
         <?php elseif ($is_instant && !empty($c['end_time'])): ?>
-        <div class="ac-timer-box ac-timer-box--v2 ac-timer-box--plain ac-timer-box--instant">
-          <span class="ac-timer-label"><i class="ph ph-calendar"></i> ينتهي</span>
-          <span class="ac-timer-date font-en"><?= date('m/d', strtotime($c['end_time'])) ?></span>
-        </div>
+        <span class="ac-timer-board__label"><i class="ph ph-calendar"></i> ينتهي</span>
+        <span class="ac-timer-board__val font-en"><?= date('m/d', strtotime($c['end_time'])) ?></span>
         <?php elseif ($timer && ($timer['total'] ?? 0) > 0): ?>
-        <div class="ac-timer-box ac-timer-box--v2 ac-timer-box--plain ac-timer-box--live">
-          <span class="ac-timer-label"><i class="ph ph-clock-countdown"></i> ينتهي خلال</span>
-          <div class="ac-timer-val fx-timer-chips font-en" data-countdown="<?= htmlspecialchars($c['end_time'] ?? '') ?>">
-            <div data-unit="hours"><?= str_pad($timer['hours'] ?? 0, 2, '0', STR_PAD_LEFT) ?></div>
-            <span>:</span>
-            <div data-unit="mins"><?= str_pad($timer['mins'] ?? 0, 2, '0', STR_PAD_LEFT) ?></div>
-            <span>:</span>
-            <div data-unit="secs"><?= str_pad($timer['secs'] ?? 0, 2, '0', STR_PAD_LEFT) ?></div>
-          </div>
+        <span class="ac-timer-board__label"><i class="ph ph-clock-countdown"></i> ينتهي خلال</span>
+        <div class="ac-timer-board__chips fx-timer-chips font-en" data-countdown="<?= htmlspecialchars($c['end_time'] ?? '') ?>">
+          <span data-unit="hours"><?= str_pad($timer['hours'] ?? 0, 2, '0', STR_PAD_LEFT) ?></span>
+          <em>:</em>
+          <span data-unit="mins"><?= str_pad($timer['mins'] ?? 0, 2, '0', STR_PAD_LEFT) ?></span>
+          <em>:</em>
+          <span data-unit="secs"><?= str_pad($timer['secs'] ?? 0, 2, '0', STR_PAD_LEFT) ?></span>
         </div>
         <?php elseif ($is_upcoming): ?>
-        <div class="ac-timer-box ac-timer-box--v2 ac-timer-box--plain ac-timer-box--upcoming">
-          <span class="ac-timer-label"><i class="ph ph-hourglass"></i> قريباً</span>
-        </div>
+        <span class="ac-timer-board__label"><i class="ph ph-hourglass"></i> قريباً</span>
         <?php endif; ?>
       </div>
     </div>

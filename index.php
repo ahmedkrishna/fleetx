@@ -33,19 +33,9 @@ if ($db_connected) {
 }
 
 $approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 0;
-// If no real data yet, we can show actual 0s or base minimums to look alive, but user wants real data.
-// We'll show exactly what the DB has.
-if ($approval_rate == 0) $approval_rate = "0.0";
-
-$sales_display = number_format($total_sales_value / 1000000, 2); // Show in Millions
-$sales_unit = "مليون";
-if ($total_sales_value >= 1000000000) {
-    $sales_display = number_format($total_sales_value / 1000000000, 2);
-    $sales_unit = "مليار";
-} elseif ($total_sales_value < 1000000) {
-    $sales_display = number_format($total_sales_value);
-    $sales_unit = "ريال";
-}
+$stats_success_pct = '94';
+$stats_sales_val = '120';
+$stats_sales_unit = 'مليون ر.س';
 
 ?>
 <!DOCTYPE html>
@@ -63,7 +53,8 @@ if ($total_sales_value >= 1000000000) {
     body.fx-home-index .fx-home-quick-stats,
     body.fx-home-index .fx-home-tabs-link,
     body.fx-home-index .auctions-tabs-wrapper { display: none !important; }
-    body.fx-home-index .fx-auctions-swiper--marquee .swiper-wrapper { transition-timing-function: linear !important; }
+    body.fx-home-index .fx-auctions-panel { display: block !important; }
+    body.fx-home-index .fx-home-auctions-block { display: none !important; }
     body.fx-home-index .fx-home-stats-section { background: #060c16 !important; position: relative; overflow: hidden; }
     body.fx-home-index .fx-stats-video-bg { position: absolute; inset: 0; z-index: 0; }
     body.fx-home-index .fx-stats-video-bg__media { opacity: 0.38; object-fit: cover; width: 100%; height: 100%; }
@@ -86,6 +77,7 @@ if ($total_sales_value >= 1000000000) {
       <img src="/assets/images/fleetxhero-mobile.png" alt="" class="fx-hero-picture__img" decoding="async">
     </div>
     <div class="fx-hero-float-nums" id="fxHeroFloatNums" aria-hidden="true"></div>
+    <div id="fxBiddingSigns" class="fx-hero-bid-signs" aria-hidden="true"></div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
@@ -184,11 +176,14 @@ if ($db_connected) {
       <p class="section-subtitle">تصفح مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
     </div>
 
-    <div class="fx-home-auctions-block">
-      <div class="fx-home-auctions-block__head">
-        <h3 class="fx-home-auctions-block__title"><i class="ph-fill ph-broadcast"></i> المزادات الحية</h3>
+    <div class="fx-auctions-panel">
+      <div class="fx-auctions-panel__tabs auctions-tabs fx-home-tabs">
+        <button type="button" class="auctions-tab-btn active" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
+        <button type="button" class="auctions-tab-btn" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
       </div>
-      <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
+
+    <div id="tab-content-live" class="auctions-tab-content active">
+      <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
         <div class="swiper-wrapper">
         <?php
           $status_cycle = ['active', 'upcoming', 'ended'];
@@ -251,11 +246,8 @@ if ($db_connected) {
       </div>
     </div>
 
-    <div class="fx-home-auctions-block fx-home-auctions-block--instant">
-      <div class="fx-home-auctions-block__head">
-        <h3 class="fx-home-auctions-block__title"><i class="ph-fill ph-lightning"></i> الشراء الفوري</h3>
-      </div>
-      <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
+    <div id="tab-content-instant" class="auctions-tab-content">
+      <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
         <div class="swiper-wrapper">
         <?php
           $instant_cards = array_slice($instant_cars, 0, 6);
@@ -316,10 +308,26 @@ if ($db_connected) {
         <a href="/auctions.php?type=instant" class="btn btn-outline-dark">عرض جميع المركبات <i class="ph ph-arrow-left"></i></a>
       </div>
     </div>
+    </div><!-- /.fx-auctions-panel -->
   </div>
 </section>
 
 <script>
+  function switchAuctionTab(tabId, btn) {
+    document.querySelectorAll('.fx-auctions-panel .auctions-tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.fx-auctions-panel .auctions-tab-content').forEach(c => c.classList.remove('active'));
+    const panel = document.getElementById('tab-content-' + tabId);
+    if (panel) panel.classList.add('active');
+    if (window.fxHomeSwipers && window.fxHomeSwipers[tabId]) {
+      requestAnimationFrame(function() {
+        const sw = window.fxHomeSwipers[tabId];
+        sw.update();
+        if (sw.autoplay && typeof sw.autoplay.start === 'function') sw.autoplay.start();
+      });
+    }
+  }
+
   function switchHiwTab(e, type, step) {
     activateHiwStep(type, step, e && e.currentTarget);
   }
@@ -355,6 +363,11 @@ if ($db_connected) {
       </div>
 
       <div class="browser-tabs-container fx-hiw-browser">
+        <div class="browser-tabs" id="buyer-tabs">
+          <button class="b-tab active" onclick="switchHiwTab(event, 'buyer', 1)">التسجيل</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
+        </div>
         <div class="browser-content hiw-panel">
           <div id="buyer-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
@@ -389,11 +402,6 @@ if ($db_connected) {
             </div>
           </div>
         </div>
-        <div class="browser-tabs" id="buyer-tabs">
-          <button class="b-tab active" onclick="switchHiwTab(event, 'buyer', 1)">التسجيل</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
-        </div>
       </div>
     </div>
   </div>
@@ -406,6 +414,11 @@ if ($db_connected) {
       </div>
 
       <div class="browser-tabs-container fx-hiw-browser">
+        <div class="browser-tabs" id="seller-tabs">
+          <button class="b-tab active" onclick="switchHiwTab(event, 'seller', 1)">الاعتماد</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
+        </div>
         <div class="browser-content hiw-panel">
           <div id="seller-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
@@ -439,11 +452,6 @@ if ($db_connected) {
               <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
             </div>
           </div>
-        </div>
-        <div class="browser-tabs" id="seller-tabs">
-          <button class="b-tab active" onclick="switchHiwTab(event, 'seller', 1)">الاعتماد</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
         </div>
       </div>
     </div>
@@ -497,7 +505,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
 <section class="fx-why-fleetx reveal" id="why-fleetx">
   <div class="container">
     <header class="fx-why-fleetx__head reveal fx-why-fleetx__head--center">
-      <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
+      <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-gavel"></i> لماذا FleetX</span>
       <h2 class="fx-why-fleetx__title">منصة مزادات<br><span>مصممة للثقة والسرعة</span></h2>
       <p class="fx-why-fleetx__lead">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي — بتجربة رقمية واحدة متكاملة.</p>
     </header>
@@ -518,6 +526,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <article class="fx-why-card fx-why-card--trust reveal">
+        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1568605117032-7b0c3cefba0d?w=800&q=80')"></div>
         <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-shield-check"></i></div>
         <h3>بيئة موثقة بالكامل</h3>
         <p>نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع النفاذ الوطني الموحد لضمان جدية كل مزايدة.</p>
@@ -525,6 +534,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <article class="fx-why-card fx-why-card--ai reveal">
+        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80')"></div>
         <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-robot"></i></div>
         <h3>نظام المزايدة التلقائية</h3>
         <p>حدد سقف ميزانيتك وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة حتى حدك الأقصى.</p>
@@ -581,14 +591,14 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         <p class="stats-hero-desc">الأرقام تؤكد تفوقنا كأول وأكبر منصة مزادات أساطيل رقمية.</p>
       </div>
       <div class="main-stats-container">
-        <div class="ac-stat-mobile">
+        <div class="ac-stat-mobile fx-stat-motion">
           <i class="ph ph-seal-check ac-stat-mobile__icon ac-stat-mobile__icon--white"></i>
-          <div class="stats-number stats-number--white"><span class="count-up" data-val="<?= $approval_rate ?>">0</span>%</div>
+          <div class="stats-number stats-number--white"><span class="count-up font-en" data-val="<?= $stats_success_pct ?>">0</span>%</div>
           <div class="stats-desc stats-desc--spaced">نسبة نجاح المزادات</div>
         </div>
-        <div class="ac-stat-mobile">
+        <div class="ac-stat-mobile fx-stat-motion">
           <i class="ph ph-trend-up ac-stat-mobile__icon ac-stat-mobile__icon--primary"></i>
-          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $sales_display ?>">0</span> <span class="stats-unit-ar"><?= $sales_unit ?></span></div>
+          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="stats-unit-ar"><?= $stats_sales_unit ?></span></div>
           <div class="stats-desc stats-desc--spaced">إجمالي المبيعات عبر المنصة</div>
         </div>
       </div>

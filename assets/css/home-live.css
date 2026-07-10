@@ -3170,3 +3170,386 @@ body.fx-home-index .fx-home-stats-section .stats-section__overlay {
     border-radius: 28px 28px 0 0 !important;
   }
 }
+
+/* ==========================================================================
+   Phase 36 — round hero, bid signs, tab panel, HIW tabs-top, why polish
+   ========================================================================== */
+
+/* Hero — rounder bottom corners, nums under image, modern bid signs */
+body.fx-home-index .fx-hero-wrap--fleet1 {
+  border-radius: 0 0 64px 64px !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-hero-wrapper--fleet1 {
+  border-radius: 0 0 64px 64px !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-hero-bg-gradient {
+  z-index: 0 !important;
+}
+
+body.fx-home-index .fx-hero-float-nums {
+  z-index: 1 !important;
+}
+
+body.fx-home-index .fx-hero-picture {
+  z-index: 2 !important;
+}
+
+body.fx-home-index .fx-hero-bid-signs {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+body.fx-home-index .fx-hero-float-num {
+  text-shadow: none !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  opacity: 0.65 !important;
+  font-size: clamp(14px, 2vw, 22px) !important;
+  font-weight: 900 !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.fx-bid-sign {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  opacity: 0;
+  transform: translateX(var(--fx-bid-enter, 80px)) scale(0.92);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.fx-bid-sign--left {
+  left: -280px;
+  flex-direction: row-reverse;
+  --fx-bid-enter: -80px;
+}
+
+.fx-bid-sign--right {
+  right: -280px;
+}
+
+.fx-bid-sign.is-visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.fx-bid-sign--left.is-visible { left: 12px; }
+.fx-bid-sign--right.is-visible { right: 12px; }
+
+.fx-bid-sign__board {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(27, 201, 118, 0.35);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+.fx-bid-sign__board i {
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.fx-bid-sign__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.fx-bid-sign__amount {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+.fx-bid-sign__stem {
+  width: 36px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9);
+  opacity: 0.85;
+}
+
+/* Footer — align with page content grid */
+body.fx-home-index .footer-xm > .container {
+  max-width: 1320px !important;
+  margin-inline: auto !important;
+  padding-inline: 24px !important;
+}
+
+/* §2 — restore tab panel, featured center card, no shadows */
+body.fx-home-index .fx-home-auctions-block {
+  display: none !important;
+}
+
+body.fx-home-index .fx-auctions-panel {
+  display: block !important;
+  max-width: 1180px !important;
+  margin: 24px auto 0 !important;
+  background: #fff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-top: 5px solid #1bc976 !important;
+  border-radius: 28px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 20px 24px 8px !important;
+  background: linear-gradient(180deg, #f8fafc, #fff) !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--featured {
+  padding: 12px 8px 48px !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--featured .swiper-slide {
+  width: min(300px, 78vw) !important;
+  transition: transform 0.45s ease, opacity 0.45s ease !important;
+  opacity: 0.72 !important;
+  transform: scale(0.9) !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--featured .swiper-slide-active {
+  width: min(360px, 86vw) !important;
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  z-index: 2 !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--featured .swiper-slide-active .auction-card,
+body.fx-home-index .fx-auctions-swiper--featured .swiper-slide .auction-card {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--featured .swiper-slide-active .auction-card {
+  border-color: rgba(27, 201, 118, 0.35) !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-meta--plain span,
+body.fx-home-index .auction-card.fx-card-unified .ac-meta span {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+body.fx-home-index .ac-timer-board {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  min-width: 108px;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+}
+
+body.fx-home-index .ac-timer-board__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+body.fx-home-index .ac-timer-board__chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+  direction: ltr;
+}
+
+body.fx-home-index .ac-timer-board__chips em {
+  font-style: normal;
+  opacity: 0.5;
+}
+
+body.fx-home-index .ac-timer-board__val {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+body.fx-home-index .ac-info-row--board {
+  align-items: flex-end !important;
+  border-top: none !important;
+  padding-top: 8px !important;
+}
+
+/* §3 HIW — tabs on top of content card (connected) */
+body.fx-home-index .fx-hiw-browser {
+  flex-direction: column !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-tabs {
+  order: 1 !important;
+  margin: 0 0 -1px !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 8px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-content.hiw-panel {
+  order: 2 !important;
+  border-radius: 0 24px 24px 24px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab {
+  border-radius: 12px 12px 0 0 !important;
+  margin: 0 3px !important;
+  border-bottom: none !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab.active {
+  background: #172030 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  margin-bottom: -1px !important;
+  z-index: 2 !important;
+  position: relative !important;
+}
+
+/* §4 Why — overlays, gradients, journey stroke steps, bigger icons */
+body.fx-home-index .fx-why-card--trust {
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #0a2238 0%, #1d4ed8 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.28) !important;
+}
+
+body.fx-home-index .fx-why-card--ai {
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #1d4ed8 0%, #2563eb 55%, #1e40af 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.28) !important;
+}
+
+body.fx-home-index .fx-why-card__bg-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: var(--fx-why-overlay);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.fx-home-index .fx-why-card--trust > *:not(.fx-why-card__bg-overlay),
+body.fx-home-index .fx-why-card--ai > *:not(.fx-why-card__bg-overlay) {
+  position: relative;
+  z-index: 1;
+}
+
+body.fx-home-index .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  font-size: 96px !important;
+}
+
+body.fx-home-index .fx-why-journey {
+  background: linear-gradient(90deg, #0c4a6e 0%, #0c4a6e 65%, #1d4ed8 65%, #1d4ed8 100%) !important;
+}
+
+body.fx-home-index .fx-why-journey__steps {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  padding-top: 8px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 2px solid rgba(147, 197, 253, 0.45) !important;
+  border-radius: 14px !important;
+  padding: 16px 12px !important;
+  min-height: 120px !important;
+}
+
+body.fx-home-index .fx-why-journey__icon {
+  font-size: 72px !important;
+}
+
+/* §5 — video under content, stat motion */
+body.fx-home-index .fx-stats-video-bg {
+  z-index: 0 !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  z-index: 1 !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__inner {
+  z-index: 2 !important;
+  position: relative !important;
+}
+
+body.fx-home-index .fx-stat-motion {
+  animation: fx-stat-pulse 3.2s ease-in-out infinite;
+}
+
+body.fx-home-index .fx-stat-motion:nth-child(2) {
+  animation-delay: 0.8s;
+}
+
+@keyframes fx-stat-pulse {
+  0%, 100% { transform: translateY(0); filter: brightness(1); }
+  50% { transform: translateY(-4px); filter: brightness(1.08); }
+}
+
+body.fx-home-index .fx-stat-motion .count-up {
+  display: inline-block;
+  animation: fx-stat-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes fx-stat-glow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 18px rgba(27, 201, 118, 0.35); }
+}
+
+/* Contact — smaller phone/email */
+body.fx-home-index .fx-contact-value--en {
+  font-size: 14px !important;
+}
+
+body.fx-home-index .fx-contact-value--addr {
+  font-size: 13px !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-wrap--fleet1,
+  body.fx-home-index .fx-hero-wrapper--fleet1 {
+    border-radius: 0 0 40px 40px !important;
+  }
+
+  .fx-bid-sign--left.is-visible { left: 4px; }
+  .fx-bid-sign--right.is-visible { right: 4px; }
+
+  body.fx-home-index .fx-why-journey__steps {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

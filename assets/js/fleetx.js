@@ -481,6 +481,7 @@ function initHomeSwiper(selector, key) {
   const el = document.querySelector(selector);
   if (!el) return null;
 
+  const isFeatured = el.classList.contains('fx-auctions-swiper--featured');
   const isMarquee = el.classList.contains('fx-auctions-swiper--marquee');
   if (isMarquee) {
     const wrapper = el.querySelector('.swiper-wrapper');
@@ -491,7 +492,30 @@ function initHomeSwiper(selector, key) {
   }
   const slideCount = el.querySelectorAll('.swiper-slide').length;
 
-  const swiper = isMarquee
+  const swiper = isFeatured
+    ? new Swiper(el, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 22,
+        loop: slideCount > 2,
+        speed: 650,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        },
+        grabCursor: true,
+        observer: true,
+        observeParents: true,
+        watchSlidesProgress: true,
+        slideToClickedSlide: true,
+        pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+        navigation: {
+          nextEl: el.querySelector('.swiper-button-next'),
+          prevEl: el.querySelector('.swiper-button-prev'),
+        },
+      })
+    : isMarquee
     ? new Swiper(el, {
         slidesPerView: 'auto',
         centeredSlides: true,
@@ -541,22 +565,110 @@ function initHomeSwiper(selector, key) {
   return swiper;
 }
 
-/* ── Hero floating numbers ─────────────────────────────── */
+/* ── Hero floating digits 1–9 (under image, flee from cursor) ── */
 function initHeroFloatNums() {
   const host = document.getElementById('fxHeroFloatNums');
   if (!host || host.dataset.ready === '1') return;
-  const nums = ['05', '12', '48', '99', '250', '1.2M', '87', '340', '15', '620', '4.5', '128', '73', '905', '2026'];
-  nums.forEach((n, i) => {
+
+  const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const items = [];
+
+  digits.forEach((digit, i) => {
     const el = document.createElement('span');
     el.className = 'fx-hero-float-num';
-    el.textContent = n;
-    el.style.setProperty('--fx-dur', `${11 + (i % 7) * 2.2}s`);
-    el.style.setProperty('--fx-delay', `${-i * 1.4}s`);
-    el.style.left = `${6 + (i * 6.3) % 88}%`;
-    el.style.top = `${8 + (i * 9.7) % 78}%`;
+    el.textContent = digit;
+    const state = {
+      el,
+      x: 8 + Math.random() * 84,
+      y: 10 + Math.random() * 72,
+      vx: (Math.random() - 0.5) * 0.08,
+      vy: (Math.random() - 0.5) * 0.08,
+    };
+    el.style.left = state.x + '%';
+    el.style.top = state.y + '%';
     host.appendChild(el);
+    items.push(state);
   });
+
+  let mouseX = -9999;
+  let mouseY = -9999;
+  const stage = host.closest('.fx-hero-bg-stage');
+  if (stage) {
+    stage.addEventListener('mousemove', (e) => {
+      const rect = stage.getBoundingClientRect();
+      mouseX = ((e.clientX - rect.left) / rect.width) * 100;
+      mouseY = ((e.clientY - rect.top) / rect.height) * 100;
+    }, { passive: true });
+    stage.addEventListener('mouseleave', () => {
+      mouseX = -9999;
+      mouseY = -9999;
+    });
+  }
+
+  function tick() {
+    items.forEach((s) => {
+      const dx = s.x - mouseX;
+      const dy = s.y - mouseY;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 12 && dist > 0.01) {
+        const force = (12 - dist) * 0.035;
+        s.vx += (dx / dist) * force;
+        s.vy += (dy / dist) * force;
+      }
+      s.vx *= 0.98;
+      s.vy *= 0.98;
+      s.x = Math.min(92, Math.max(4, s.x + s.vx));
+      s.y = Math.min(88, Math.max(6, s.y + s.vy));
+      if (s.x <= 4 || s.x >= 92) s.vx *= -0.6;
+      if (s.y <= 6 || s.y >= 88) s.vy *= -0.6;
+      s.el.style.left = s.x + '%';
+      s.el.style.top = s.y + '%';
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
   host.dataset.ready = '1';
+}
+
+/* ── Modern bidding signs in hero ──────────────────────── */
+function initHeroBiddingSigns() {
+  const container = document.getElementById('fxBiddingSigns');
+  if (!container || container.dataset.ready === '1') return;
+
+  const bids = [
+    { text: 'مزايدة جديدة', car: 'كامري 2023', amount: '٨٥,٠٠٠ ر.س', url: '/auctions.php' },
+    { text: 'عرض مباشر', car: 'توسان 2022', amount: '٧٢,٥٠٠ ر.س', url: '/auctions.php?type=live' },
+    { text: 'مزايدة فورية', car: 'باترول 2021', amount: '١٤٣,٠٠٠ ر.س', url: '/event.php?id=1' },
+    { text: 'شراء فوري', car: 'سبورتاج 2022', amount: '٦٨,٠٠٠ ر.س', url: '/auctions.php?type=instant' },
+  ];
+
+  function spawnSign() {
+    const bid = bids[Math.floor(Math.random() * bids.length)];
+    const isLeft = Math.random() > 0.5;
+    const sign = document.createElement('div');
+    sign.className = 'fx-bid-sign ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
+    sign.style.top = (15 + Math.random() * 55) + '%';
+    sign.innerHTML =
+      '<div class="fx-bid-sign__board">' +
+        '<i class="ph-fill ph-gavel"></i>' +
+        '<div class="fx-bid-sign__text">' +
+          '<span class="fx-bid-sign__label">' + bid.text + '<br>على ' + bid.car + '</span>' +
+          '<strong class="fx-bid-sign__amount">' + bid.amount + '</strong>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fx-bid-sign__stem"></div>';
+    sign.addEventListener('click', () => { window.location.href = bid.url; });
+    container.appendChild(sign);
+    requestAnimationFrame(() => sign.classList.add('is-visible'));
+    setTimeout(() => {
+      sign.classList.remove('is-visible');
+      setTimeout(() => sign.remove(), 600);
+    }, 4800);
+  }
+
+  setTimeout(spawnSign, 900);
+  setInterval(spawnSign, 5200);
+  container.dataset.ready = '1';
 }
 
 /* ── Why FleetX card tilt on hover / touch ───────────────── */
@@ -695,6 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavDropdown();
   initSwipers();
   initHeroFloatNums();
+  initHeroBiddingSigns();
   initWhyCardMotion();
 });
 
