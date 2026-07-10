@@ -33,6 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->get_result()->fetch_assoc();
 
         if ($user && !empty($user['password_hash']) && password_verify($password, $user['password_hash'])) {
+            if (!fleetx_user_is_active($user)) {
+                $error = 'حسابك بانتظار موافقة الإدارة. ستتمكن من الدخول بعد التفعيل.';
+            } else {
+            $login_type = $_POST['login_type'] ?? 'trader';
+            if (!fleetx_role_matches_login_type($user['role'], $login_type)) {
+                $expected = $login_type === 'company' ? 'بائع (شركة)' : 'مشتري (تاجر)';
+                $error = 'نوع الحساب المختار لا يطابق دور المستخدم. يرجى اختيار ' . $expected;
+            } else {
             $_SESSION['user_id']          = $user['id'];
             $_SESSION['user_name']        = $user['full_name'];
             $_SESSION['role']             = $user['role'];
@@ -43,9 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_phone']       = $user['mobile'] ?? '';
             $_SESSION['user_city']        = $user['city'] ?? '';
 
-            $redirect = $_GET['redirect'] ?? getDashboardUrl();
+            $redirect = fleetx_safe_redirect($_GET['redirect'] ?? null, getUserRole() === 'buyer' ? getBuyerLandingUrl() : getDashboardUrl());
             header('Location: ' . $redirect);
             exit;
+            }
+            }
         } else {
             $error = 'رقم الجوال أو كلمة المرور غير صحيحة';
         }
@@ -130,10 +140,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input class="fx-form-input" type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
 
+        <div class="fx-auth-mode-toggle" style="display:flex;gap:8px;margin-bottom:16px;">
+          <button type="button" class="btn btn-outline btn-sm" id="mode-password" onclick="setLoginMode('password')" style="flex:1;">كلمة المرور</button>
+          <button type="button" class="btn btn-outline btn-sm" id="mode-otp" onclick="setLoginMode('otp')" style="flex:1;">رمز OTP</button>
+        </div>
+        <div id="otp-panel" style="display:none;">
+          <button type="button" class="btn btn-secondary btn-sm" style="width:100%;margin-bottom:12px;" onclick="sendLoginOtp()">إرسال رمز التحقق</button>
+          <div class="fx-form-group">
+            <label class="fx-form-label">رمز OTP</label>
+            <input class="fx-form-input" type="text" id="otp_code" maxlength="6" placeholder="6 أرقام" dir="ltr">
+          </div>
+          <button type="button" class="fx-btn-auth btn btn-primary" onclick="verifyLoginOtp()">
+            <i class="ph-fill ph-shield-check"></i> تحقق ودخول
+          </button>
+        </div>
+        <div id="password-panel">
         <button type="submit" class="fx-btn-auth btn btn-primary">
           <i class="ph-fill ph-sign-in"></i>
           <span id="submit-label">تسجيل الدخول</span>
         </button>
+        </div>
       </form>
 
       <div class="fx-auth-divider"><span>ليس لديك حساب؟</span></div>
@@ -178,6 +204,30 @@ selectType('<?= htmlspecialchars($selected_type) ?>');
 <?php elseif (!empty($_POST['login_type'])): ?>
 selectType('<?= htmlspecialchars($_POST['login_type']) ?>');
 <?php endif; ?>
+
+let loginMode = 'password';
+function setLoginMode(mode) {
+  loginMode = mode;
+  document.getElementById('password-panel').style.display = mode === 'password' ? '' : 'none';
+  document.getElementById('otp-panel').style.display = mode === 'otp' ? '' : 'none';
+  document.getElementById('password').required = mode === 'password';
+}
+async function sendLoginOtp() {
+  const mobile = document.getElementById('mobile').value.trim();
+  if (!mobile) { if (typeof showToast==='function') showToast('أدخل رقم الجوال','warning'); return; }
+  const res = await fetch('/api/otp.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'send', mobile, purpose:'login'}) });
+  const data = await res.json();
+  if (typeof showToast==='function') showToast(data.message || (data.success?'تم الإرسال':'فشل الإرسال'), data.success?'success':'error');
+}
+async function verifyLoginOtp() {
+  const mobile = document.getElementById('mobile').value.trim();
+  const otp = document.getElementById('otp_code').value.trim();
+  const res = await fetch('/api/otp.php', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'verify', mobile, otp, purpose:'login'}) });
+  const data = await res.json();
+  if (data.success && data.redirect) window.location.href = data.redirect;
+  else if (typeof showToast==='function') showToast(data.error || 'رمز غير صحيح', 'error');
+}
 </script>
+<?php include 'includes/toast-snippet.inc.php'; ?>
 </body>
 </html>

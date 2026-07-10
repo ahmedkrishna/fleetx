@@ -5,6 +5,7 @@
  * FLEETX_BASE_URL=https://mazadi.bearand.com php tests/e2e_end_to_end.php
  */
 $base = rtrim(getenv('FLEETX_BASE_URL') ?: 'https://mazadi.bearand.com', '/');
+$e2e_key = getenv('FLEETX_E2E_KEY') ?: 'mazad2026';
 $jar = tempnam(sys_get_temp_dir(), 'fx_e2e_');
 $mobile = '05' . random_int(10000000, 99999999);
 $email = 'e2e_' . time() . '_' . random_int(1000, 9999) . '@fleetx.test';
@@ -66,18 +67,37 @@ $r = req("$base/check_db.php", $jar);
 step('Database connected', $r['code'] === 200 && str_contains($r['body'], 'Users:'), trim($r['body']));
 
 // ── Phase 2: Register + Login ──────────────────────────────
+$r = req("$base/api/otp.php", $jar, ['json' => [
+    'action' => 'send', 'mobile' => $mobile, 'purpose' => 'register', 'e2e_key' => $e2e_key,
+]]);
+$otp_data = json_decode($r['body'], true);
+$otp_code = $otp_data['debug_otp'] ?? '';
+step('OTP send for register', ($otp_data['success'] ?? false) && preg_match('/^\d{6}$/', $otp_code), $otp_code ? 'got code' : substr($r['body'], 0, 120));
+
 $r = req("$base/register.php", $jar, ['post' => http_build_query([
     'register_submit' => '1', 'step' => '3', 'role' => 'buyer',
     'full_name' => 'E2E Buyer', 'mobile' => $mobile, 'password' => $pass,
     'national_id' => '1234567890', 'city' => 'الرياض', 'email' => $email,
+    'otp_code' => $otp_code,
 ])]);
-step('Register buyer', str_contains($r['body'], 'success-screen') && str_contains($r['body'], 'تم إنشاء حسابك'));
+$reg_ok = str_contains($r['body'], 'success-screen')
+    && (str_contains($r['body'], 'تم إنشاء حسابك') || str_contains($r['body'], 'تم استلام طلب'));
+step('Register buyer', $reg_ok, $reg_ok ? 'success-screen' : substr(strip_tags($r['body']), 0, 120));
+
+$r = req("$base/api/e2e_helpers.php", $jar, ['post' => http_build_query([
+    'key' => $e2e_key, 'action' => 'activate_buyer', 'mobile' => $mobile,
+])]);
+$act = json_decode($r['body'], true);
+step('Activate e2e buyer', ($act['success'] ?? false) === true, $mobile);
 
 $r = req("$base/login.php", $jar, [
     'post' => http_build_query(['login_type' => 'trader', 'mobile' => $mobile, 'password' => $pass]),
     'follow' => true,
 ]);
-step('Login buyer', $r['code'] === 200 && !str_contains($r['body'], 'غير صحيحة'));
+$login_ok = $r['code'] === 200
+    && !str_contains($r['body'], 'غير صحيحة')
+    && !str_contains($r['body'], 'بانتظار موافقة');
+step('Login buyer', $login_ok, $login_ok ? 'session ok' : substr(strip_tags($r['body']), 0, 120));
 
 // ── Phase 3: Verification + wallet ─────────────────────────
 $r = req("$base/nafath.php", $jar, ['post' => http_build_query(['verify_nafath' => '1']), 'follow' => true]);
