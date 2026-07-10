@@ -11,17 +11,6 @@ if (navbar) {
   }, { passive: true });
 }
 
-/* ── Mobile Menu ──────────────────────────────────────────── */
-const navToggle = document.getElementById('navToggle');
-const mobileMenu = document.getElementById('mobileMenu');
-if (navToggle && mobileMenu) {
-  navToggle.addEventListener('click', () => {
-    const isOpen = mobileMenu.style.display !== 'none';
-    mobileMenu.style.display = isOpen ? 'none' : 'block';
-    navToggle.textContent = isOpen ? '☰' : '✕';
-  });
-}
-
 /* ── Scroll Reveal Animation ──────────────────────────────── */
 function initScrollReveal() {
   const revealEls = document.querySelectorAll('.reveal');
@@ -187,6 +176,41 @@ function initCounters() {
   document.querySelectorAll('[data-count]').forEach(el => observer.observe(el));
 }
 
+function initCountUp() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      if (el.classList.contains('counted')) return;
+      el.classList.add('counted');
+
+      const raw = el.getAttribute('data-val') ?? '0';
+      const targetNum = parseFloat(raw);
+      const hasDecimals = raw.includes('.');
+      const duration = 2000;
+      let startTime = null;
+
+      function animateCount(timestamp) {
+        if (!startTime) startTime = timestamp;
+        let progress = timestamp - startTime;
+        if (progress > duration) progress = duration;
+        const t = progress / duration - 1;
+        const current = targetNum * (1 - (t * t * t * t));
+        el.textContent = hasDecimals ? current.toFixed(1) : String(Math.floor(current));
+        if (progress < duration) {
+          requestAnimationFrame(animateCount);
+        } else {
+          el.textContent = raw;
+        }
+      }
+      requestAnimationFrame(animateCount);
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.count-up').forEach(el => observer.observe(el));
+}
+
 /* ── Hero Rotating Text ──────────────────────────────────── */
 function initHeroRotator() {
   const el = document.getElementById('heroRotatingText');
@@ -323,12 +347,7 @@ async function submitBid() {
     }
   } catch (e) {
     console.error(e);
-    // Offline simulation
-    currentBidPrice = amount;
-    updateBidDisplay();
-    addBidToHistory({ name: 'أنت', amount, time: 'الآن', isYou: true });
-    showToast('✅ تمت مزايدتك!', 'success');
-    if (input) input.value = '';
+    showToast('تعذر إرسال المزايدة. تحقق من الاتصال وحاول مجدداً.', 'error');
   }
 
   btn.textContent = 'زايد الآن';
@@ -457,49 +476,135 @@ function initNavDropdown() {
 }
 
 /* ── Swiper Carousels ────────────────────────────────────── */
-function initSwipers() {
-  if (typeof Swiper !== 'undefined') {
-        const commonOpts = {
-      effect: 'coverflow',
-      grabCursor: true,
-      centeredSlides: true,
-      loop: true,
-      autoplay: {
-        delay: 5000, // Autoplay motion for 5 seconds
-        disableOnInteraction: false,
-      },
-      coverflowEffect: {
-        rotate: 0,
-        stretch: 0,
-        depth: 80,
-        modifier: 2,
-        slideShadows: false,
-      },
-      pagination: { el: '.swiper-pagination', clickable: true },
-      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-    };
-    new Swiper('.live-auctions-swiper', {
-      ...commonOpts,
-      slidesPerView: 1.2,
-      breakpoints: {
-        768: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 },
-      }
-    });
-    new Swiper('.instant-buy-swiper', {
-      ...commonOpts,
-      slidesPerView: 1.2,
-      breakpoints: {
-        768: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 },
-      }
-    });
+function initHomeSwiper(selector, key) {
+  if (typeof Swiper === 'undefined') return null;
+  const el = document.querySelector(selector);
+  if (!el) return null;
+
+  const isMarquee = el.classList.contains('fx-auctions-swiper--marquee');
+  if (isMarquee) {
+    const wrapper = el.querySelector('.swiper-wrapper');
+    if (wrapper) {
+      const originals = [...wrapper.querySelectorAll('.swiper-slide')];
+      originals.forEach((slide) => wrapper.appendChild(slide.cloneNode(true)));
+    }
   }
+  const slideCount = el.querySelectorAll('.swiper-slide').length;
+
+  const swiper = isMarquee
+    ? new Swiper(el, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 28,
+        loop: slideCount >= 4,
+        loopAdditionalSlides: Math.max(3, Math.floor(slideCount / 2)),
+        speed: 9000,
+        autoplay: {
+          delay: 0,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        },
+        grabCursor: true,
+        allowTouchMove: true,
+        observer: true,
+        observeParents: true,
+        watchSlidesProgress: true,
+        pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+        navigation: {
+          nextEl: el.querySelector('.swiper-button-next'),
+          prevEl: el.querySelector('.swiper-button-prev'),
+        },
+      })
+    : new Swiper(el, {
+        grabCursor: true,
+        centeredSlides: false,
+        loop: slideCount > 3,
+        spaceBetween: 28,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        pagination: { el: el.querySelector('.swiper-pagination'), clickable: true },
+        navigation: {
+          nextEl: el.querySelector('.swiper-button-next'),
+          prevEl: el.querySelector('.swiper-button-prev'),
+        },
+        slidesPerView: 1.1,
+        breakpoints: {
+          768: { slidesPerView: 2, spaceBetween: 24 },
+          1024: { slidesPerView: 3, spaceBetween: 28 },
+        },
+      });
+
+  if (!window.fxHomeSwipers) window.fxHomeSwipers = {};
+  window.fxHomeSwipers[key] = swiper;
+  return swiper;
+}
+
+/* ── Hero floating numbers ─────────────────────────────── */
+function initHeroFloatNums() {
+  const host = document.getElementById('fxHeroFloatNums');
+  if (!host || host.dataset.ready === '1') return;
+  const nums = ['05', '12', '48', '99', '250', '1.2M', '87', '340', '15', '620', '4.5', '128', '73', '905', '2026'];
+  nums.forEach((n, i) => {
+    const el = document.createElement('span');
+    el.className = 'fx-hero-float-num';
+    el.textContent = n;
+    el.style.setProperty('--fx-dur', `${11 + (i % 7) * 2.2}s`);
+    el.style.setProperty('--fx-delay', `${-i * 1.4}s`);
+    el.style.left = `${6 + (i * 6.3) % 88}%`;
+    el.style.top = `${8 + (i * 9.7) % 78}%`;
+    host.appendChild(el);
+  });
+  host.dataset.ready = '1';
+}
+
+/* ── Why FleetX card tilt on hover / touch ───────────────── */
+function initWhyCardMotion() {
+  const cards = document.querySelectorAll('.fx-why-card, .fx-why-journey');
+  if (!cards.length) return;
+
+  const reset = (card) => {
+    card.style.transform = '';
+    card.classList.remove('is-tilt-active');
+  };
+
+  const applyTilt = (card, clientX, clientY) => {
+    const rect = card.getBoundingClientRect();
+    const x = (clientX - rect.left) / rect.width - 0.5;
+    const y = (clientY - rect.top) / rect.height - 0.5;
+    card.classList.add('is-tilt-active');
+    card.style.transform = `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) translateY(-8px) scale(1.02)`;
+  };
+
+  cards.forEach((card) => {
+    card.addEventListener('mousemove', (e) => applyTilt(card, e.clientX, e.clientY));
+    card.addEventListener('mouseleave', () => reset(card));
+    card.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      if (touch) applyTilt(card, touch.clientX, touch.clientY);
+    }, { passive: true });
+    card.addEventListener('touchend', () => reset(card), { passive: true });
+  });
+}
+
+function initSwipers() {
+  initHomeSwiper('.live-auctions-swiper', 'live');
+  initHomeSwiper('.instant-buy-swiper', 'instant');
 }
 
 /* ── Global Favorite Toggle (API & UI) ──────────────── */
+window.requireLogin = function(message) {
+    if (window.FX_LOGGED_IN) return true;
+    const msg = message || window.FX_GUEST_MSG_FAV || 'سجّل الدخول للمتابعة';
+    if (typeof showToast === 'function') showToast(msg, 'warning');
+    setTimeout(() => { window.location.href = (window.FX_LOGIN_URL || '/login.php') + '?redirect=' + encodeURIComponent(window.location.pathname + window.location.search); }, 600);
+    return false;
+};
+
 window.toggleFavorite = async function(id, btn) {
     if (!id) return;
+    if (!window.requireLogin(window.FX_GUEST_MSG_FAV)) return;
     try {
         const resp = await fetch('/api/toggle_favorite.php', {
             method: 'POST',
@@ -507,6 +612,10 @@ window.toggleFavorite = async function(id, btn) {
             body: JSON.stringify({ id: id })
         });
         const data = await resp.json();
+        if (!data.success && data.message && typeof showToast === 'function') {
+            showToast(data.message, 'warning');
+            return;
+        }
         if (data.success) {
             let icon = btn.querySelector('i');
             if (icon) {
@@ -574,16 +683,19 @@ document.addEventListener('DOMContentLoaded', initFavorites);
 document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initAllCountdowns();
-  syncFavoritesUI();
+  if (typeof syncFavoritesUI === 'function') syncFavoritesUI();
   initFilterTabs();
   initSearch();
   initCounters();
+  initCountUp();
   initHeroRotator();
   initGallery();
   initCardNavigation();
   initOTP();
   initNavDropdown();
   initSwipers();
+  initHeroFloatNums();
+  initWhyCardMotion();
 });
 
 

@@ -4,14 +4,16 @@
  * Set before include: $hero_title (required), $hero_bg, $hero_desc, $hero_eyebrow,
  * $hero_back_href, $hero_back_label, $hero_modifier, $hero_actions_html
  */
-$hero_bg = $hero_bg ?? 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=1600&q=80';
+$hero_bg = $hero_bg ?? (function_exists('fleetx_page_hero_bg_url') ? fleetx_page_hero_bg_url() : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80');
 $hero_modifier = $hero_modifier ?? '';
 $hero_extra_class = $hero_extra_class ?? '';
 $hero_class = 'fx-page-hero' . ($hero_modifier ? ' fx-page-hero--' . $hero_modifier : '');
 if ($hero_extra_class) $hero_class .= ' ' . $hero_extra_class;
 ?>
 <header class="<?= $hero_class ?>">
-  <div class="fx-page-hero__bg" style="background-image:url('<?= htmlspecialchars($hero_bg) ?>')"></div>
+  <div class="fx-page-hero__bg" data-bg style="--fx-hero-bg:url('<?= htmlspecialchars($hero_bg) ?>')"></div>
+  <div class="fx-page-hero__overlay-dark"></div>
+  <div class="fx-page-hero__overlay-fade"></div>
   <div class="fx-page-hero__gradient"></div>
   <div class="container fx-page-hero__inner" dir="rtl">
     <div class="fx-page-hero__row">

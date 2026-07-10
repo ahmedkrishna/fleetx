@@ -54,10 +54,22 @@ if ($total_sales_value >= 1000000000) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>منصة FleetX | مزادات السيارات الاحترافية للأساطيل</title>
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
+  <link rel="stylesheet" href="<?= fleetx_home_live_css_href() ?>">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+  <style id="fx-home-critical">
+    body.fx-home-index .fx-home-quick-stats,
+    body.fx-home-index .fx-home-tabs-link,
+    body.fx-home-index .auctions-tabs-wrapper { display: none !important; }
+    body.fx-home-index .fx-auctions-swiper--marquee .swiper-wrapper { transition-timing-function: linear !important; }
+    body.fx-home-index .fx-home-stats-section { background: #060c16 !important; position: relative; overflow: hidden; }
+    body.fx-home-index .fx-stats-video-bg { position: absolute; inset: 0; z-index: 0; }
+    body.fx-home-index .fx-stats-video-bg__media { opacity: 0.38; object-fit: cover; width: 100%; height: 100%; }
+  </style>
   </head>
-<body class="fx-home fx-home-index">
+<body class="fx-home fx-home-index" data-fx-build="<?= FLEETX_CSS_VER ?>">
 
 <!-- Navbar template -->
 <?php include 'includes/navbar.php'; ?>
@@ -66,293 +78,73 @@ if ($total_sales_value >= 1000000000) {
 <div class="fx-hero-wrap fx-hero-wrap--fleet1">
 <div class="hero-wrapper fx-hero-wrapper--fleet1">
   <div class="fx-hero-bg-stage" aria-hidden="true">
-    <div class="fx-hero-bg-image fx-hero-bg-image--fleet1"></div>
-    <div class="fx-hero-auction-chart">
-      <div class="fx-hero-chart__glow"></div>
-      <canvas id="heroAuctionChart" class="fx-hero-chart__canvas"></canvas>
-      <div class="fx-hero-chart__legend">
-        <span class="fx-hero-chart__key fx-hero-chart__key--green"><i></i> مزايدات حية</span>
-        <span class="fx-hero-chart__key fx-hero-chart__key--blue"><i></i> حركة السوق</span>
-        <span class="fx-hero-chart__key fx-hero-chart__key--navy"><i></i> قيمة الأسطول</span>
-      </div>
-      <div class="fx-hero-chart__scanner"></div>
+    <div class="fx-hero-bg-gradient" aria-hidden="true"></div>
+    <div class="fx-hero-picture fx-hero-picture--desktop fx-hero-picture--float" aria-hidden="true">
+      <img src="/assets/images/fleetxhero-desktop.png" alt="" class="fx-hero-picture__img" decoding="async">
     </div>
+    <div class="fx-hero-picture fx-hero-picture--mobile fx-hero-picture--float" aria-hidden="true">
+      <img src="/assets/images/fleetxhero-mobile.png" alt="" class="fx-hero-picture__img" decoding="async">
+    </div>
+    <div class="fx-hero-float-nums" id="fxHeroFloatNums" aria-hidden="true"></div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
-      <p class="hero-subtitle fx-hero-subtitle--fleet1" id="heroSubtitle"></p>
-
-      <h1 class="hero-title fx-hero-title--fleet1">
-        <span id="heroMainTitle" class="fx-hero-typewriter-text"></span><span id="heroTypeCursor" class="fx-hero-typewriter-cursor" aria-hidden="true"></span>
-      </h1>
+      <p class="hero-subtitle fx-hero-subtitle--fleet1 fx-hero-motion" id="heroSubtitle"></p>
+      <h1 class="hero-title fx-hero-title--fleet1 fx-hero-motion" id="heroMainTitle"></h1>
     </div>
 
     <script>
       (function() {
         const slides = [
-          {
-            title: 'أضخم مزادات أساطيل السيارات',
-            subtitle: 'أول منصة مزادات أساطيل ذكية وموثوقة بالمملكة'
-          },
-          {
-            title: 'تنفيذ فوري وشفافية تامة',
-            subtitle: 'تقنية متطورة لضمان أفضل العوائد لمركباتك'
-          },
-          {
-            title: 'مزايدة ذكية ومضمونة',
-            subtitle: 'تكامل مباشر مع النفاذ الوطني وأعلى معايير الأمان'
-          }
+          { title: 'أضخم مزادات السيارات', subtitle: 'أول منصة مزادات ذكية وموثوقة بالمملكة' },
+          { title: 'تنفيذ فوري وشفافية تامة', subtitle: 'تقنية متطورة لضمان أفضل العوائد لمركباتك' },
+          { title: 'مزايدة ذكية ومضمونة', subtitle: 'تكامل مباشر مع النفاذ الوطني وأعلى معايير الأمان' }
         ];
-        const TYPE_MS = 52;
-        const ERASE_MS = 26;
         let currentIndex = 0;
-        let cycling = false;
+        let animating = false;
+        const titleEl = document.getElementById('heroMainTitle');
+        const subtitleEl = document.getElementById('heroSubtitle');
 
-        function setCursorActive(active) {
-          const cursor = document.getElementById('heroTypeCursor');
-          if (cursor) cursor.classList.toggle('is-active', active);
-        }
-
-        function eraseText(el, done) {
-          const chars = Array.from(el.textContent || '');
-          function step() {
-            if (!chars.length) {
-              done();
-              return;
-            }
-            chars.pop();
-            el.textContent = chars.join('');
-            setTimeout(step, ERASE_MS);
-          }
-          step();
-        }
-
-        function typeText(el, text, done) {
-          el.textContent = '';
-          setCursorActive(true);
-          const chars = Array.from(text);
-          let i = 0;
-          function step() {
-            if (i < chars.length) {
-              el.textContent += chars[i++];
-              setTimeout(step, TYPE_MS);
-            } else {
-              setCursorActive(false);
-              if (done) done();
-            }
-          }
-          step();
-        }
-
-        function showSlide(index, animateTitle) {
-          const titleEl = document.getElementById('heroMainTitle');
-          const subtitleEl = document.getElementById('heroSubtitle');
+        function applySlide(index, animate) {
           if (!titleEl || !subtitleEl) return;
-
           const slide = slides[index];
-          if (animateTitle) {
-            eraseText(titleEl, function() {
-              typeText(titleEl, slide.title, function() {
-                subtitleEl.classList.remove('is-fading');
-                subtitleEl.textContent = slide.subtitle;
-                cycling = false;
-              });
+          const run = function() {
+            titleEl.textContent = slide.title;
+            subtitleEl.textContent = slide.subtitle;
+            titleEl.classList.remove('is-exit');
+            subtitleEl.classList.remove('is-exit');
+            titleEl.classList.add('is-enter');
+            subtitleEl.classList.add('is-enter');
+            requestAnimationFrame(function() {
+              titleEl.classList.add('is-visible');
+              subtitleEl.classList.add('is-visible');
             });
-          } else {
-            typeText(titleEl, slide.title, function() {
-              subtitleEl.textContent = slide.subtitle;
-            });
+            animating = false;
+          };
+          if (!animate) {
+            titleEl.textContent = slide.title;
+            subtitleEl.textContent = slide.subtitle;
+            titleEl.classList.add('is-visible');
+            subtitleEl.classList.add('is-visible');
+            return;
           }
+          titleEl.classList.remove('is-visible', 'is-enter');
+          subtitleEl.classList.remove('is-visible', 'is-enter');
+          titleEl.classList.add('is-exit');
+          subtitleEl.classList.add('is-exit');
+          setTimeout(run, 520);
         }
 
-        function updateHeroText() {
-          if (cycling) return;
-          cycling = true;
-          const subtitleEl = document.getElementById('heroSubtitle');
-          if (subtitleEl) subtitleEl.classList.add('is-fading');
-          setTimeout(function() {
-            currentIndex = (currentIndex + 1) % slides.length;
-            showSlide(currentIndex, true);
-          }, 320);
+        function cycleHero() {
+          if (animating) return;
+          animating = true;
+          currentIndex = (currentIndex + 1) % slides.length;
+          applySlide(currentIndex, true);
         }
 
         window.addEventListener('load', function() {
-          showSlide(0, false);
-          setInterval(updateHeroText, 7000);
-        });
-      })();
-    </script>
-
-    <script>
-      (function() {
-        const canvas = document.getElementById('heroAuctionChart');
-        const host = document.querySelector('.fx-hero-auction-chart');
-        if (!canvas || !host) return;
-
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const ctx = canvas.getContext('2d');
-        const SERIES = [
-          { color: '#1bc976', fill: 'rgba(27, 201, 118, 0.14)', vol: 0.018, bias: 0.52 },
-          { color: '#0ea5e9', fill: 'rgba(14, 165, 233, 0.11)', vol: 0.014, bias: 0.48 },
-          { color: '#1e3a5f', fill: 'rgba(30, 58, 95, 0.09)', vol: 0.011, bias: 0.44 }
-        ];
-        const COUNT = 96;
-        let w = 0;
-        let h = 0;
-        let dpr = 1;
-        let frame = 0;
-        let animId = 0;
-        const lines = SERIES.map(function(s, i) {
-          const pts = [];
-          let v = s.bias;
-          for (let n = 0; n < COUNT; n++) {
-            v += (Math.random() - 0.5) * s.vol * 2;
-            v = Math.max(0.14, Math.min(0.86, v));
-            pts.push(v);
-          }
-          return { cfg: s, pts: pts, offset: i * 0.6 };
-        });
-
-        function resize() {
-          const rect = host.getBoundingClientRect();
-          w = Math.max(1, Math.floor(rect.width));
-          h = Math.max(1, Math.floor(rect.height));
-          dpr = Math.min(window.devicePixelRatio || 1, 2);
-          canvas.width = Math.floor(w * dpr);
-          canvas.height = Math.floor(h * dpr);
-          canvas.style.width = w + 'px';
-          canvas.style.height = h + 'px';
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-
-        function yAt(norm) {
-          const pad = h * 0.14;
-          return pad + (1 - norm) * (h - pad * 2);
-        }
-
-        function drawGrid() {
-          ctx.strokeStyle = 'rgba(15, 23, 42, 0.06)';
-          ctx.lineWidth = 1;
-          for (let i = 1; i < 5; i++) {
-            const y = (h / 5) * i;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(w, y);
-            ctx.stroke();
-          }
-          for (let i = 1; i < 10; i++) {
-            const x = (w / 10) * i;
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, h);
-            ctx.globalAlpha = 0.45;
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-          }
-        }
-
-        function drawSeries(line, pulse) {
-          const step = w / (COUNT - 1);
-          const pts = line.pts;
-          ctx.beginPath();
-          ctx.moveTo(0, yAt(pts[0]));
-          for (let i = 1; i < COUNT; i++) {
-            const x = i * step;
-            const cx = (i - 0.5) * step;
-            const cy = (yAt(pts[i - 1]) + yAt(pts[i])) / 2;
-            ctx.quadraticCurveTo(cx, cy, x, yAt(pts[i]));
-          }
-          ctx.lineTo(w, h);
-          ctx.lineTo(0, h);
-          ctx.closePath();
-          ctx.fillStyle = line.cfg.fill;
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.moveTo(0, yAt(pts[0]));
-          for (let i = 1; i < COUNT; i++) {
-            const x = i * step;
-            const cx = (i - 0.5) * step;
-            const cy = (yAt(pts[i - 1]) + yAt(pts[i])) / 2;
-            ctx.quadraticCurveTo(cx, cy, x, yAt(pts[i]));
-          }
-          ctx.strokeStyle = line.cfg.color;
-          ctx.lineWidth = 2.25;
-          ctx.lineJoin = 'round';
-          ctx.lineCap = 'round';
-          ctx.stroke();
-
-          if (pulse) {
-            const lx = w - 2;
-            const ly = yAt(pts[COUNT - 1]);
-            ctx.beginPath();
-            ctx.arc(lx, ly, 4.5, 0, Math.PI * 2);
-            ctx.fillStyle = line.cfg.color;
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(lx, ly, 9 + Math.sin(frame * 0.08 + line.offset) * 2, 0, Math.PI * 2);
-            ctx.strokeStyle = line.cfg.color;
-            ctx.globalAlpha = 0.35;
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-          }
-        }
-
-        function stepData() {
-          lines.forEach(function(line) {
-            const last = line.pts[line.pts.length - 1];
-            let next = last + (Math.random() - 0.46) * line.cfg.vol;
-            next += (line.cfg.bias - next) * 0.04;
-            next = Math.max(0.12, Math.min(0.88, next));
-            line.pts.shift();
-            line.pts.push(next);
-          });
-        }
-
-        function paint(staticMode) {
-          ctx.clearRect(0, 0, w, h);
-          drawGrid();
-          lines.forEach(function(line, idx) {
-            drawSeries(line, !staticMode && idx === 0);
-          });
-          if (!staticMode) {
-            const scanX = w * (0.72 + Math.sin(frame * 0.012) * 0.08);
-            const grad = ctx.createLinearGradient(scanX - 40, 0, scanX + 40, 0);
-            grad.addColorStop(0, 'rgba(27, 201, 118, 0)');
-            grad.addColorStop(0.5, 'rgba(27, 201, 118, 0.12)');
-            grad.addColorStop(1, 'rgba(27, 201, 118, 0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(scanX - 40, 0, 80, h);
-          }
-        }
-
-        function loop() {
-          frame++;
-          if (frame % 2 === 0) stepData();
-          paint(false);
-          animId = requestAnimationFrame(loop);
-        }
-
-        resize();
-        if (reduced) {
-          paint(true);
-        } else {
-          loop();
-        }
-
-        window.addEventListener('resize', function() {
-          resize();
-          if (reduced) paint(true);
-        });
-
-        document.addEventListener('visibilitychange', function() {
-          if (reduced) return;
-          if (document.hidden) {
-            cancelAnimationFrame(animId);
-          } else {
-            loop();
-          }
+          applySlide(0, false);
+          setInterval(cycleHero, 5500);
         });
       })();
     </script>
@@ -388,45 +180,42 @@ if ($db_connected) {
 <section class="reveal fx-home-auctions">
   <div class="container">
     <div class="fx-home-section-intro fx-home-section-intro--center">
-      <span class="fx-home-eyebrow"><i class="ph-fill ph-gavel"></i> أحدث العروض</span>
       <h2 class="section-title">استكشف المركبات المتاحة</h2>
-      <p class="section-subtitle">تصفح أحدث مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
-      <div class="fx-home-quick-stats">
-        <div class="fx-home-quick-stat"><i class="ph-fill ph-broadcast"></i><strong><?= count($live_auctions) ?></strong><span>مزاد نشط</span></div>
-        <div class="fx-home-quick-stat"><i class="ph-fill ph-lightning"></i><strong><?= count($instant_cars) ?></strong><span>شراء فوري</span></div>
-        <div class="fx-home-quick-stat"><i class="ph-fill ph-buildings"></i><strong><?= count($events) ?></strong><span>حدث مباشر</span></div>
-      </div>
+      <p class="section-subtitle">تصفح مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
     </div>
 
-    <div class="auctions-tabs-wrapper fx-home-tabs-wrap">
-      <div class="auctions-tabs fx-home-tabs">
-        <button class="auctions-tab-btn active" onclick="switchAuctionTab('live')"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
-        <button class="auctions-tab-btn" onclick="switchAuctionTab('instant')"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
+    <div class="fx-home-auctions-block">
+      <div class="fx-home-auctions-block__head">
+        <h3 class="fx-home-auctions-block__title"><i class="ph-fill ph-broadcast"></i> المزادات الحية</h3>
       </div>
-      <a href="/auctions.php" class="fx-home-tabs-link">عرض الكل <i class="ph ph-arrow-left"></i></a>
-    </div>
-
-    <!-- ── Live Auctions Tab Content ── -->
-    <div id="tab-content-live" class="auctions-tab-content active">
-      <div class="swiper auctions-swiper auctions-swiper--padded">
+      <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
         <div class="swiper-wrapper">
         <?php
-          $car_images = [
-              'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80',
-              'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&q=80',
-              'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=800&q=80',
-              'https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800&q=80',
-              'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=80',
-              'https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=800&q=80'
-          ];
           $status_cycle = ['active', 'upcoming', 'ended'];
-          $auction_names = ['مزاد الرياض الكبرى', 'مزاد أسطول جدة', 'مزاد سيارات الدفع الرباعي', 'مزاد السيارات الفاخرة', 'مزاد الوفاق', 'مزاد تصفية الشركات'];
+          $live_cards = array_slice($live_auctions, 0, 6);
+          $live_cities = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'الخبر', 'المدينة المنورة'];
+          $live_prices = [205744, 95000, 78500, 142000, 118500, 67500];
+          $live_names = ['مزاد الرياض الكبرى', 'مزاد أسطول جدة', 'مزاد سيارات الدفع الرباعي', 'مزاد الشرقية', 'مزاد التأجير اليومي', 'مزاد الأساطيل الذهبية'];
+          while (count($live_cards) < 6) {
+            $i = count($live_cards);
+            $live_cards[] = [
+              'id' => 900 + $i,
+              'event_id' => $i + 1,
+              'image_url' => '',
+              'city' => $live_cities[$i % 6],
+              'seller' => 'الوطنية',
+              'current_price' => $live_prices[$i % 6],
+              'starting_price' => $live_prices[$i % 6],
+              'end_time' => date('Y-m-d H:i:s', strtotime('+' . (19 - $i) . ' hours')),
+              'is_featured' => ($i === 0),
+            ];
+          }
 
-          foreach ($live_auctions as $ev_index => $a):
-            $title_car = $auction_names[$ev_index % count($auction_names)];
-            $img = (!empty($a['image_url']) && strlen($a['image_url']) > 4) ? $a['image_url'] : $car_images[$ev_index % count($car_images)];
+          foreach ($live_cards as $ev_index => $a):
+            $title_car = $live_names[$ev_index % count($live_names)];
+            $img = fleetx_card_image($a['image_url'] ?? '', $ev_index, 'live');
             $is_featured = !empty($a['is_featured']);
-            $is_vip = ($is_featured && ($a['id'] % 2 !== 0));
+            $is_vip = ($is_featured && (($a['id'] ?? $ev_index) % 2 !== 0));
             $card_status = $status_cycle[$ev_index % 3];
             $event_href = '/event.php?id=' . ($a['event_id'] ?? ($a['id'] % 3 + 1));
             $fx_card = [
@@ -445,41 +234,56 @@ if ($db_connected) {
               'timer_data' => ($card_status !== 'ended' && !empty($a['end_time'])) ? timeLeft($a['end_time']) : null,
               'is_vip' => $is_vip,
               'is_featured' => $is_featured,
-              'extra_class' => 'animate-card',
+              'extra_class' => 'animate-card fx-card-modern',
             ];
         ?>
-        <div class="swiper-slide">
-          <?php include 'includes/fx-auction-card.inc.php'; ?>
-        </div>
+          <div class="swiper-slide">
+            <?php include 'includes/fx-auction-card.inc.php'; ?>
+          </div>
         <?php endforeach; ?>
-
-
         </div>
         <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
       </div>
       <div class="fx-tab-footer">
         <a href="/auctions.php?type=live" class="btn btn-outline-dark">عرض جميع المزادات الحية <i class="ph ph-arrow-left"></i></a>
       </div>
     </div>
 
-    <!-- ── Instant Buy Tab Content ── -->
-    <div id="tab-content-instant" class="auctions-tab-content">
-      <div class="swiper auctions-swiper auctions-swiper--padded">
+    <div class="fx-home-auctions-block fx-home-auctions-block--instant">
+      <div class="fx-home-auctions-block__head">
+        <h3 class="fx-home-auctions-block__title"><i class="ph-fill ph-lightning"></i> الشراء الفوري</h3>
+      </div>
+      <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
         <div class="swiper-wrapper">
         <?php
-          $random_images = [
-              'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80',
-              'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80',
-              'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80',
-              'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80',
-              'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80',
-              'https://images.unsplash.com/photo-1568844293986-ca9c5c6f8b8a?w=800&q=80'
-          ];
-          foreach ($instant_cars as $inst_index => $a):
+          $instant_cards = array_slice($instant_cars, 0, 6);
+          $inst_makes = ['تويوتا', 'هيونداي', 'نيسان', 'فورد', 'كيا', 'شيفروليه'];
+          $inst_models = ['كامري', 'سوناتا', 'ألتيما', 'إكسبلورر', 'سبورتاج', 'تاهو'];
+          $inst_cities = ['الرياض', 'جدة', 'الدمام', 'الطائف', 'أبها', 'تبوك'];
+          $inst_prices = [89000, 72000, 65000, 115000, 54000, 98000];
+          while (count($instant_cards) < 6) {
+            $i = count($instant_cards);
+            $instant_cards[] = [
+              'id' => 800 + $i,
+              'make' => $inst_makes[$i % 6],
+              'model' => $inst_models[$i % 6],
+              'year' => 2020 + ($i % 4),
+              'image_url' => '',
+              'city' => $inst_cities[$i % 6],
+              'mileage' => 45000 + ($i * 12000),
+              'current_price' => $inst_prices[$i % 6],
+              'starting_price' => $inst_prices[$i % 6],
+              'end_time' => date('Y-m-d H:i:s', strtotime('+' . (3 + $i) . ' days')),
+            ];
+          }
+
+          foreach ($instant_cards as $inst_index => $a):
             $title_car = $a['title'] ?? ($a['make'] . ' ' . $a['model'] . ' ' . $a['year']);
-            $img = (!empty($a['image_url']) && strlen($a['image_url']) > 4) ? $a['image_url'] : $random_images[$inst_index % count($random_images)];
+            $img = fleetx_card_image($a['image_url'] ?? '', $inst_index, 'instant');
             $is_featured = ($inst_index % 3 === 0);
-            $is_vip = ($is_featured && ($a['id'] % 2 !== 0));
+            $is_vip = ($is_featured && (($a['id'] ?? $inst_index) % 2 !== 0));
             $fx_card = [
               'id' => $a['id'],
               'href' => '/vehicle-details.php?id=' . $a['id'],
@@ -496,15 +300,17 @@ if ($db_connected) {
               'is_vip' => $is_vip,
               'is_featured' => $is_featured,
               'show_installment' => (($a['id'] ?? 0) % 2 !== 0),
-              'extra_class' => 'animate-card',
+              'extra_class' => 'animate-card fx-card-modern',
             ];
         ?>
-        <div class="swiper-slide">
-          <?php include 'includes/fx-auction-card.inc.php'; ?>
-        </div>
+          <div class="swiper-slide">
+            <?php include 'includes/fx-auction-card.inc.php'; ?>
+          </div>
         <?php endforeach; ?>
         </div>
         <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
       </div>
       <div class="fx-tab-footer">
         <a href="/auctions.php?type=instant" class="btn btn-outline-dark">عرض جميع المركبات <i class="ph ph-arrow-left"></i></a>
@@ -514,19 +320,6 @@ if ($db_connected) {
 </section>
 
 <script>
-  function switchAuctionTab(tabId) {
-    document.querySelectorAll('.auctions-tab-btn').forEach(btn => btn.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    
-    document.querySelectorAll('.auctions-tab-content').forEach(content => content.classList.remove('active'));
-    document.getElementById('tab-content-' + tabId).classList.add('active');
-    
-    // Update swiper
-    if(window.auctionsSwipers) {
-      window.auctionsSwipers.forEach(s => s.update());
-    }
-  }
-
   function switchHiwTab(e, type, step) {
     activateHiwStep(type, step, e && e.currentTarget);
   }
@@ -555,18 +348,13 @@ if ($db_connected) {
 <!-- ── Section 3: How It Works (v1 dark sticky browser tabs) ── -->
 <section class="fx-hiw-section fx-hiw-section--dark">
   <div id="buyers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--buyers">
-    <div class="container container--full">
+    <div class="container">
       <div class="hiw-dark-head">
         <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">مشتري؟</span></h2>
         <p class="hiw-dark-sub">للمشترين الأفراد والشركات المعتمدة</p>
       </div>
 
-      <div class="browser-tabs-container">
-        <div class="browser-tabs" id="buyer-tabs">
-          <button class="b-tab active" onclick="switchHiwTab(event, 'buyer', 1)">التسجيل</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
-        </div>
+      <div class="browser-tabs-container fx-hiw-browser">
         <div class="browser-content hiw-panel">
           <div id="buyer-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
@@ -601,23 +389,23 @@ if ($db_connected) {
             </div>
           </div>
         </div>
+        <div class="browser-tabs" id="buyer-tabs">
+          <button class="b-tab active" onclick="switchHiwTab(event, 'buyer', 1)">التسجيل</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 2)">المحفظة</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'buyer', 3)">المزايدة</button>
+        </div>
       </div>
     </div>
   </div>
 
   <div id="sellers-section" class="hiw-wrapper hiw-wrapper--sticky hiw-wrapper--sellers">
-    <div class="container container--full">
+    <div class="container">
       <div class="hiw-dark-head">
         <h2 class="hiw-dark-title">كيف تبدأ كـ <span class="fx-text-primary">بائع معتمد؟</span></h2>
         <p class="hiw-dark-sub">لشركات التأجير والأساطيل</p>
       </div>
 
-      <div class="browser-tabs-container">
-        <div class="browser-tabs" id="seller-tabs">
-          <button class="b-tab active" onclick="switchHiwTab(event, 'seller', 1)">الاعتماد</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
-          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
-        </div>
+      <div class="browser-tabs-container fx-hiw-browser">
         <div class="browser-content hiw-panel">
           <div id="seller-step-1" class="hiw-tab-content active" style="display:flex;">
             <div class="hiw-tab-col">
@@ -651,6 +439,11 @@ if ($db_connected) {
               <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80" class="hiw-tab-img" alt="إدراج المركبات" loading="lazy">
             </div>
           </div>
+        </div>
+        <div class="browser-tabs" id="seller-tabs">
+          <button class="b-tab active" onclick="switchHiwTab(event, 'seller', 1)">الاعتماد</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 2)">الاشتراك</button>
+          <button class="b-tab" onclick="switchHiwTab(event, 'seller', 3)">الإدراج</button>
         </div>
       </div>
     </div>
@@ -702,33 +495,19 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
 
 <!-- ── Section 4: Why FleetX (modern bento showcase) ── -->
 <section class="fx-why-fleetx reveal" id="why-fleetx">
-  <div class="fx-why-fleetx__mesh" aria-hidden="true">
-    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--1"></span>
-    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--2"></span>
-    <span class="fx-why-fleetx__orb fx-why-fleetx__orb--3"></span>
-    <span class="fx-why-fleetx__grid"></span>
-  </div>
-
   <div class="container">
-    <header class="fx-why-fleetx__head reveal">
-      <div class="fx-why-fleetx__head-copy">
-        <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
-        <h2 class="fx-why-fleetx__title">منصة مزادات أسطولية<br><span>مصممة للثقة والسرعة</span></h2>
-        <p class="fx-why-fleetx__lead">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي — بتجربة رقمية واحدة متكاملة.</p>
-      </div>
-      <div class="fx-why-fleetx__head-badges" aria-hidden="true">
-        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-seal-check"></i><span>فحص معتمد</span></div>
-        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-fingerprint"></i><span>نفاذ وطني</span></div>
-        <div class="fx-why-fleetx__badge"><i class="ph-fill ph-lightning"></i><span>مزايدة ذكية</span></div>
-      </div>
+    <header class="fx-why-fleetx__head reveal fx-why-fleetx__head--center">
+      <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-sparkle"></i> لماذا FleetX</span>
+      <h2 class="fx-why-fleetx__title">منصة مزادات<br><span>مصممة للثقة والسرعة</span></h2>
+      <p class="fx-why-fleetx__lead">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي — بتجربة رقمية واحدة متكاملة.</p>
     </header>
 
     <div class="fx-why-bento">
       <article class="fx-why-card fx-why-card--spotlight reveal">
-        <div class="fx-why-card__glow" aria-hidden="true"></div>
+        <div class="fx-why-card__spotlight-bg" aria-hidden="true"></div>
         <div class="fx-why-card__spotlight-no">100<span>+</span></div>
         <div class="fx-why-card__body">
-          <div class="fx-why-card__icon fx-why-card__icon--lg"><i class="ph ph-clipboard-text"></i></div>
+          <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-clipboard-text"></i></div>
           <h3>تقرير فحص 100+ نقطة</h3>
           <p>جميع المركبات تخضع لفحص فني شامل يغطي الهيكل والميكانيكا والكهرباء — معتمد من خبراء المنصة قبل عرضها في المزاد.</p>
           <ul class="fx-why-card__checks">
@@ -739,15 +518,14 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <article class="fx-why-card fx-why-card--trust reveal">
-        <div class="fx-why-card__ring" aria-hidden="true"></div>
-        <div class="fx-why-card__icon"><i class="ph ph-shield-check"></i></div>
+        <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-shield-check"></i></div>
         <h3>بيئة موثقة بالكامل</h3>
         <p>نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع النفاذ الوطني الموحد لضمان جدية كل مزايدة.</p>
         <span class="fx-why-card__pill"><i class="ph-fill ph-fingerprint"></i> نفاذ وطني</span>
       </article>
 
       <article class="fx-why-card fx-why-card--ai reveal">
-        <div class="fx-why-card__icon fx-why-card__icon--ai"><i class="ph ph-robot"></i></div>
+        <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-robot"></i></div>
         <h3>نظام المزايدة التلقائية</h3>
         <p>حدد سقف ميزانيتك وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة حتى حدك الأقصى.</p>
         <span class="fx-why-card__pill fx-why-card__pill--ai"><i class="ph-fill ph-lightning"></i> مزايدة ذكية</span>
@@ -787,6 +565,13 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
 
 <!-- ── Section 5: Stats ── -->
 <section class="stats-section stats-section--parallax fx-home-stats-section">
+  <?php $fx_stats_video = fleetx_stats_bg_video_url(); if ($fx_stats_video !== ''): ?>
+  <div class="fx-stats-video-bg" aria-hidden="true">
+    <video class="fx-stats-video-bg__media" autoplay muted loop playsinline preload="metadata">
+      <source src="<?= htmlspecialchars($fx_stats_video) ?>" type="video/mp4">
+    </video>
+  </div>
+  <?php endif; ?>
   <div class="stats-section__overlay"></div>
   
   <div class="container reveal stats-section__inner">
@@ -880,7 +665,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       <div class="contact-form-col reveal reveal--delay-2">
         <div class="fx-contact-form-card">
           <h3 class="fx-contact-form-title">أرسل رسالة</h3>
-          <form onsubmit="event.preventDefault(); alert('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');">
+          <form onsubmit="event.preventDefault(); if(typeof showToast==='function'){showToast('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.','success');} this.reset();">
             <div class="form-grid fx-form-grid">
               <div>
                 <label class="fx-form-label">الاسم الكامل</label>
@@ -1070,132 +855,5 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
 
 <!-- Footer template -->
 <?php include 'includes/footer.php'; ?>
-
-<!-- Initialise Swipers on Home page -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    window.auctionsSwipers = [];
-    document.querySelectorAll('.auctions-swiper').forEach(function(el) {
-      const swiper = new Swiper(el, {
-        slidesPerView: 3,
-        centeredSlides: true,
-        spaceBetween: 24,
-        loop: true,
-        observer: true,
-        observeParents: true,
-        autoplay: {
-          delay: 5000,
-          disableOnInteraction: false,
-        },
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-        },
-        breakpoints: {
-          320: { slidesPerView: 1, spaceBetween: 16 },
-          768: { slidesPerView: 2, spaceBetween: 24 },
-          1024: { slidesPerView: 3, spaceBetween: 24 }
-        }
-      });
-      window.auctionsSwipers.push(swiper);
-    });
-
-    // Favorites Logic
-    document.querySelectorAll('.card-fav').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation(); // prevent navigating to auction room if click bubbles
-        this.classList.toggle('active');
-        let icon = this.querySelector('i');
-        if(this.classList.contains('active')) {
-          icon.classList.remove('ph');
-          icon.classList.add('ph-fill');
-          icon.style.color = '#ef4444';
-          if(typeof showToast === 'function') showToast('تمت الإضافة للمفضلة بنجاح!', 'success');
-        } else {
-          icon.classList.remove('ph-fill');
-          icon.classList.add('ph');
-          icon.style.color = '';
-          if(typeof showToast === 'function') showToast('تم الحذف من المفضلة', 'info');
-        }
-      });
-    });
-
-    // Live Countdown Logic
-    setInterval(function() {
-      document.querySelectorAll('.digital-clock').forEach(clock => {
-        let countdownDate = new Date(clock.getAttribute('data-countdown')).getTime();
-        let now = new Date().getTime();
-        let distance = countdownDate - now;
-        
-        if (distance < 0) {
-          clock.innerHTML = "<div class='ac-timer-expired'>انتهى المزاد</div>";
-          return;
-        }
-
-        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        let secs = Math.floor((distance % (1000 * 60)) / 1000);
-
-        clock.querySelector('[data-unit="days"]').innerText = days.toString().padStart(2, '0');
-        clock.querySelector('[data-unit="hours"]').innerText = hours.toString().padStart(2, '0');
-        clock.querySelector('[data-unit="mins"]').innerText = mins.toString().padStart(2, '0');
-        clock.querySelector('[data-unit="secs"]').innerText = secs.toString().padStart(2, '0');
-      });
-    }, 1000);
-
-  });
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const counters = document.querySelectorAll('.count-up');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if(entry.isIntersecting) {
-                const el = entry.target;
-                if(el.classList.contains('counted')) return;
-                el.classList.add('counted');
-                
-                let targetNum = parseFloat(el.getAttribute('data-val'));
-                let hasDecimals = el.getAttribute('data-val').includes('.');
-                let duration = 2000;
-                let startTime = null;
-                
-                function animateCount(timestamp) {
-                    if(!startTime) startTime = timestamp;
-                    let progress = timestamp - startTime;
-                    if(progress > duration) progress = duration;
-                    
-                    // easeOutQuart
-                    let t = progress / duration;
-                    t--;
-                    let current = targetNum * (1 - (t * t * t * t));
-                    
-                    if(hasDecimals) {
-                        el.innerText = current.toFixed(1);
-                    } else {
-                        el.innerText = Math.floor(current);
-                    }
-                    
-                    if(progress < duration) {
-                        requestAnimationFrame(animateCount);
-                    } else {
-                        el.innerText = el.getAttribute('data-val');
-                    }
-                }
-                requestAnimationFrame(animateCount);
-            }
-        });
-    }, { threshold: 0.1 });
-    
-    counters.forEach(c => observer.observe(c));
-});
-</script>
 </body>
 </html>

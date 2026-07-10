@@ -9,10 +9,10 @@
 @import url('https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css');
 @import url('https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css');
 @import url('platform-ui.css?v=22');
-@import url('theme-restore.css?v=5');
-@import url('homepage-polish.css?v=19');
+@import url('theme-restore.css?v=7');
+/* homepage polish loaded via home-live.css on index only */
 @import url('subpage-polish.css?v=4');
-@import url('site-polish.css?v=1');
+@import url('site-polish.css?v=17');
 
 /* Phosphor Icons Base */
 .ph {
@@ -75,6 +75,13 @@
   /* Legacy Color Names */
   --primary-emerald: #1bc976;
   --primary-turquoise: #0ea5e9;
+
+  /* FleetX brand palette: green · blue · navy · gold (VIP only) */
+  --fx-brand-green: #1bc976;
+  --fx-brand-blue: #0ea5e9;
+  --fx-brand-navy: #0b0f19;
+  --fx-brand-navy-surface: #172030;
+  --fx-brand-gold: #ffd700;
 
   /* Typography */
   --font-ar: 'Tajawal', sans-serif;
@@ -1371,14 +1378,21 @@ h1, h2, h3, h4, h5, h6 {
   height: 400px;
 }
 
-/* HIW Panels */
-.hiw-panel {
+/* HIW Panels (legacy slide panels — not browser tab content box) */
+.hiw-panel:not(.browser-content) {
   display: none;
   width: 100%;
   height: 100%;
   animation: fadeInPanel 0.4s ease;
 }
-.hiw-panel.active { display: flex; }
+.hiw-panel:not(.browser-content).active { display: flex; }
+
+.browser-content.hiw-panel {
+  display: block !important;
+  width: 100%;
+  height: auto;
+  min-height: 360px;
+}
 
 @keyframes fadeInPanel {
   from { opacity: 0; transform: translateY(8px); }
@@ -2699,4 +2713,114 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 }
 body.fx-home-index .fx-hero-tagline--fleet1 {
   color: #047857 !important;
+}
+
+/* Homepage hero background — inlined so positioning always applies */
+body.fx-home-index .fx-hero-wrapper--fleet1 {
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(165deg, #f8fafc 0%, #eef2f6 48%, #e2e8f0 100%) !important;
+  background-image: none !important;
+}
+
+body.fx-home-index .fx-hero-bg-stage {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+body.fx-home-index .fx-hero-bg-gradient {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%) !important;
+}
+
+body.fx-home-index .fx-hero-wrap--fleet1,
+body.fx-home-index .fx-hero-wrapper--fleet1 {
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%) !important;
+}
+
+body.fx-home-index .fx-hero-picture::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2 !important;
+  background: linear-gradient(105deg, rgba(241, 245, 249, 0.42) 0%, rgba(226, 232, 240, 0.28) 45%, rgba(248, 250, 252, 0.18) 100%) !important;
+  pointer-events: none !important;
+}
+
+body.fx-home-index .fx-hero-bg-image,
+body.fx-home-index .fx-hero-picture {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body.fx-home-index .fx-hero-bg-image {
+  background-color: transparent !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}
+
+body.fx-home-index .fx-hero-picture__img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block !important;
+}
+
+body.fx-home-index .fx-hero-bg-image--desktop,
+body.fx-home-index .fx-hero-picture--desktop {
+  display: block !important;
+}
+
+body.fx-home-index .fx-hero-bg-image--desktop {
+  background-image: url('/assets/images/fleetxhero-desktop.png') !important;
+}
+
+body.fx-home-index .fx-hero-bg-image--mobile,
+body.fx-home-index .fx-hero-picture--mobile {
+  display: none !important;
+}
+
+body.fx-home-index .fx-hero-bg-image--mobile {
+  background-image: url('/assets/images/fleetxhero-mobile.png') !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-bg-image--desktop,
+  body.fx-home-index .fx-hero-picture--desktop {
+    display: none !important;
+  }
+
+  body.fx-home-index .fx-hero-bg-image--mobile,
+  body.fx-home-index .fx-hero-picture--mobile {
+    display: block !important;
+  }
+}
+
+/* HIW section 3 — browser content box must stay visible */
+body.fx-home-index .browser-content.hiw-panel,
+#buyers-section .browser-content.hiw-panel,
+#sellers-section .browser-content.hiw-panel {
+  display: block !important;
+  height: auto !important;
+  min-height: 380px !important;
+}
+
+body.fx-home-index .hiw-tab-content {
+  display: none !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+body.fx-home-index .hiw-tab-content.active {
+  display: flex !important;
 }

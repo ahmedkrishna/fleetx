@@ -1,0 +1,3172 @@
+/* ==========================================================================
+   Homepage & global UI polish — Phase 24
+   ========================================================================== */
+
+/* Mobile menu toggle icon — inherits navbar theme color */
+.navbar-toggle-icon {
+  font-size: 24px;
+  color: inherit;
+}
+
+/* ── Navbar: align with page content grid ───────────────────────────────── */
+.navbar > .container {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+.navbar-inner {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Green stroke sign-in button — transparent fill, matches btn-sm sign-up size */
+.btn-login--green-stroke {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-round);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  min-height: 36px;
+  box-sizing: border-box;
+  color: var(--primary) !important;
+  background: transparent !important;
+  border: 2px solid var(--primary);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s ease, border-color 0.35s ease, transform 0.25s ease, box-shadow 0.35s ease;
+}
+
+.btn-login--green-stroke::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.15) 0%, rgba(27, 201, 118, 0.35) 100%);
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  z-index: -1;
+}
+
+.btn-login--green-stroke::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, var(--primary), #0ea5e9) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.btn-login--green-stroke:hover {
+  color: #fff !important;
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(27, 201, 118, 0.35);
+}
+
+.btn-login--green-stroke:hover::before {
+  transform: translateY(0);
+  background: var(--primary);
+}
+
+.btn-login--green-stroke:hover::after {
+  opacity: 1;
+}
+
+body.fx-home.fx-page-shell .btn-login--green-stroke {
+  color: var(--primary) !important;
+  background: transparent !important;
+  border-color: var(--primary);
+}
+
+body.fx-home.fx-page-shell .btn-login--green-stroke:hover {
+  color: #fff !important;
+  border-color: var(--primary);
+}
+
+/* ── Homepage: center all section content ───────────────────────────────── */
+body.fx-home-index section > .container,
+body.fx-home-index .fx-hero-content--fleet1 {
+  text-align: center;
+}
+
+body.fx-home-index .fx-home-section-intro,
+body.fx-home-index .hiw-dark-head {
+  text-align: center;
+}
+
+body.fx-home-index .fx-home-tabs-wrap {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+body.fx-home-index .fx-home-tabs-wrap .fx-home-tabs-link {
+  display: none !important;
+}
+
+body.fx-home-index .fx-tab-footer {
+  text-align: center;
+}
+
+body.fx-home-index .hiw-tab-content {
+  text-align: right;
+}
+
+body.fx-home-index .hiw-tab-col:first-child {
+  text-align: right;
+}
+
+/* ── Hero: lighter diagonal grey gradient + floating fleet images ──────── */
+body.fx-home-index .fx-hero-wrap--fleet1 {
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%) !important;
+}
+
+body.fx-home-index .fx-hero-wrapper--fleet1 {
+  position: relative;
+  min-height: 100svh;
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%) !important;
+  background-image: none !important;
+  background-size: unset !important;
+  background-position: unset !important;
+  overflow: hidden !important;
+}
+
+.fx-hero-bg-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+.fx-hero-bg-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%);
+  pointer-events: none;
+}
+
+.fx-hero-picture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(105deg, rgba(241, 245, 249, 0.42) 0%, rgba(226, 232, 240, 0.28) 45%, rgba(248, 250, 252, 0.18) 100%);
+  pointer-events: none;
+}
+
+.fx-hero-picture {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fx-hero-picture__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  filter: drop-shadow(0 28px 48px rgba(15, 23, 42, 0.12));
+}
+
+.fx-hero-picture--float {
+  animation: fx-hero-image-float 14s ease-in-out infinite;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+@keyframes fx-hero-image-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(6px, -22px, 0) rotate(0.5deg);
+  }
+  50% {
+    transform: translate3d(0, -38px, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(-6px, -18px, 0) rotate(-0.5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-hero-picture--float {
+    animation: none;
+  }
+}
+
+.fx-hero-picture--desktop {
+  display: block;
+}
+
+.fx-hero-picture--mobile {
+  display: none;
+}
+
+.fx-hero-section--fleet1 {
+  position: relative;
+  z-index: 3;
+  min-height: 100svh !important;
+  padding-top: 96px !important;
+  padding-bottom: 40px !important;
+}
+
+.fx-hero-content--fleet1 {
+  transform: translateY(-180px) !important;
+  margin-top: 0 !important;
+}
+
+body.fx-home-index .fx-hero-title--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-title,
+body.fx-home-index .fx-hero-content .hero-title,
+body.fx-home-index .hero-title.fx-hero-title--fleet1,
+body.fx-home-index .fx-hero-typewriter-text {
+  color: #0f172a !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+body.fx-home-index .fx-hero-subtitle--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
+  color: var(--fx-brand-green, #1bc976) !important;
+  text-shadow: none !important;
+}
+
+.fx-hero-title--fleet1 {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 !important;
+  min-height: 1.35em;
+}
+
+.fx-hero-typewriter-text {
+  color: inherit;
+}
+
+.fx-hero-typewriter-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.92em;
+  margin-inline-start: 3px;
+  background: var(--primary);
+  border-radius: 1px;
+  opacity: 0;
+  transform: translateY(0.12em);
+  transition: opacity 0.2s ease;
+}
+
+.fx-hero-typewriter-cursor.is-active {
+  opacity: 1;
+  animation: fx-hero-cursor-blink 0.65s step-end infinite;
+}
+
+@keyframes fx-hero-cursor-blink {
+  50% { opacity: 0; }
+}
+
+.fx-hero-subtitle--fleet1 {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  line-height: 1.5 !important;
+  max-width: 520px !important;
+  margin: 0 auto 4px !important;
+  min-height: 42px;
+  transition: opacity 0.4s ease;
+  order: -1;
+}
+
+.fx-hero-subtitle--fleet1.is-fading {
+  opacity: 0;
+}
+
+/* Mobile: fleetxhero-mobile.png full-screen cover */
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-wrapper--fleet1 {
+    min-height: 100svh;
+    padding-bottom: 0 !important;
+  }
+
+  body.fx-home-index .fx-hero-picture--desktop {
+    display: none;
+  }
+
+  body.fx-home-index .fx-hero-picture--mobile {
+    display: block;
+  }
+
+  .fx-hero-section--fleet1 {
+    min-height: 100svh !important;
+    padding-top: 88px !important;
+    padding-bottom: 24px !important;
+  }
+
+  .fx-hero-content--fleet1 {
+    transform: translateY(-148px) !important;
+  }
+
+  body.fx-home-index .fx-hero-title--fleet1,
+  body.fx-home-index .fx-hero-content--fleet1 .hero-title {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 92%;
+    margin-inline: auto !important;
+    font-size: clamp(34px, 10vw, 44px) !important;
+    line-height: 1.2 !important;
+    text-align: center;
+  }
+
+  body.fx-home-index .fx-hero-typewriter-text {
+    white-space: normal;
+  }
+
+  .fx-hero-subtitle--fleet1 {
+    font-size: 13px !important;
+    max-width: 92% !important;
+  }
+}
+
+/* ── Section 2: homepage swiper + modern cards ───────────────────────── */
+.fx-home-auctions {
+  padding: 64px 0 72px !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) !important;
+}
+
+.fx-home-auctions,
+.fx-home-auctions > .container,
+.fx-home-auctions .auctions-tab-content {
+  overflow: visible;
+}
+
+.fx-home-auctions .auctions-swiper {
+  margin-top: 12px;
+  padding: 16px 0 60px !important;
+  overflow: visible;
+}
+
+.fx-home-auctions .auctions-swiper:not(.fx-auctions-swiper--marquee) .swiper-slide {
+  height: auto;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.45s ease;
+  transform: scale(0.88);
+  opacity: 0.55;
+}
+
+.fx-home-auctions .auctions-swiper:not(.fx-auctions-swiper--marquee) .swiper-slide-active {
+  transform: scale(1);
+  opacity: 1;
+  z-index: 3;
+}
+
+.fx-home-auctions .auctions-swiper:not(.fx-auctions-swiper--marquee) .swiper-slide .auction-card {
+  height: 100%;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.45s ease;
+}
+
+.fx-home-auctions .auctions-swiper:not(.fx-auctions-swiper--marquee) .swiper-slide-active .auction-card {
+  transform: scale(1.03);
+  box-shadow: 0 22px 48px rgba(11, 15, 25, 0.12) !important;
+}
+
+.fx-home-auctions .auctions-swiper .swiper-slide .auction-card.featured-card {
+  border-color: var(--fx-brand-blue) !important;
+  box-shadow: 0 0 18px rgba(14, 165, 233, 0.28) !important;
+}
+
+.fx-home-auctions .auctions-swiper .swiper-slide .auction-card.vip-card {
+  border-color: var(--fx-brand-gold) !important;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.35) !important;
+}
+
+/* ── HIW: dark browser tabs — page-aligned margins ─────────────────────── */
+.fx-hiw-section--dark {
+  position: relative;
+  background: var(--fx-brand-navy);
+  margin-top: 0;
+  padding: 0;
+}
+
+.fx-hiw-section--dark .hiw-wrapper--sticky,
+.fx-hiw-section--dark .hiw-wrapper--buyers,
+.fx-hiw-section--dark .hiw-wrapper--sellers,
+.fx-hiw-section--dark #buyers-section,
+.fx-hiw-section--dark #sellers-section {
+  position: relative !important;
+  top: auto;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  background: var(--fx-brand-navy) !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  padding: 72px 0 !important;
+}
+
+.fx-hiw-section--dark #buyers-section {
+  padding-top: 80px !important;
+}
+
+.fx-hiw-section--dark #sellers-section {
+  padding-bottom: 80px !important;
+  border-radius: 0;
+}
+
+.fx-hiw-section--dark .browser-tabs-container {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.fx-hiw-section--dark .hiw-dark-title,
+.fx-hiw-section--dark .hiw-tab-title {
+  color: #ffffff !important;
+}
+
+.fx-hiw-section--dark .hiw-dark-sub,
+.fx-hiw-section--dark .hiw-tab-desc {
+  color: #94a3b8 !important;
+}
+
+.fx-hiw-section--dark .hiw-panel,
+.fx-hiw-section--dark .browser-content.hiw-panel {
+  display: block !important;
+  background: #172030 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 0 24px 24px 24px !important;
+  padding: 40px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  min-height: 380px;
+}
+
+.fx-hiw-section--dark .hiw-tab-content {
+  display: none;
+  gap: 40px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.fx-hiw-section--dark .hiw-tab-content.active {
+  display: flex !important;
+}
+
+.fx-hiw-section--dark .hiw-tab-col:first-child {
+  flex: 1.1;
+  min-width: 280px;
+}
+
+.fx-hiw-section--dark .hiw-tab-col:last-child {
+  flex: 1;
+  min-width: 260px;
+}
+
+.fx-hiw-section--dark .hiw-tab-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+
+.fx-hiw-section--dark .hiw-tab-desc {
+  font-size: 15px;
+  line-height: 1.85;
+  margin-bottom: 0;
+}
+
+.fx-hiw-section--dark .b-tab {
+  background: #0d131c !important;
+  color: #a0abc0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: none !important;
+  margin: 0 4px;
+  padding: 12px 32px !important;
+  font-weight: 800;
+}
+
+.fx-hiw-section--dark .b-tab:hover {
+  color: #ffffff !important;
+}
+
+.fx-hiw-section--dark .b-tab.active,
+.fx-hiw-section--dark #buyers-section .b-tab.active,
+.fx-hiw-section--dark #sellers-section .b-tab.active {
+  background: #172030 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.fx-hiw-section--dark .hiw-tab-img {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+}
+
+.fx-hiw-section--dark .hiw-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(27, 201, 118, 0.1);
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 768px) {
+  .fx-hiw-section--dark .browser-tabs {
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .fx-hiw-section--dark .b-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 12px 20px !important;
+    font-size: 14px;
+  }
+
+  .fx-hiw-section--dark .hiw-panel,
+  .fx-hiw-section--dark .browser-content.hiw-panel {
+    padding: 24px !important;
+    min-height: auto;
+  }
+
+  .fx-hiw-section--dark .hiw-tab-content.active {
+    flex-direction: column;
+  }
+
+  .fx-hiw-section--dark .hiw-tab-col {
+    min-width: 100%;
+    width: 100%;
+  }
+}
+
+/* ── Section 4: Why FleetX — modern bento showcase ───────────────────── */
+.fx-why-fleetx {
+  position: relative;
+  padding: 96px 0 104px;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.fx-why-fleetx__mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-why-fleetx__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: fx-why-orb-float 14s ease-in-out infinite;
+}
+
+.fx-why-fleetx__orb--1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  right: -80px;
+  background: rgba(27, 201, 118, 0.22);
+}
+
+.fx-why-fleetx__orb--2 {
+  width: 360px;
+  height: 360px;
+  bottom: -100px;
+  left: -60px;
+  background: rgba(14, 165, 233, 0.18);
+  animation-delay: -4s;
+}
+
+.fx-why-fleetx__orb--3 {
+  width: 280px;
+  height: 280px;
+  top: 42%;
+  left: 38%;
+  background: rgba(139, 92, 246, 0.12);
+  animation-delay: -8s;
+}
+
+.fx-why-fleetx__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 75%);
+  opacity: 0.45;
+}
+
+@keyframes fx-why-orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(18px, -14px) scale(1.06); }
+}
+
+.fx-why-fleetx .container {
+  position: relative;
+  z-index: 1;
+}
+
+.fx-why-fleetx__head {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 32px;
+  align-items: end;
+  margin-bottom: 52px;
+}
+
+.fx-why-fleetx__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-round);
+  background: rgba(27, 201, 118, 0.1);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.fx-why-fleetx__title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--text-dark);
+  margin: 0 0 14px;
+  text-align: right;
+}
+
+.fx-why-fleetx__title span {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fx-why-fleetx__lead {
+  font-size: 16px;
+  line-height: 1.85;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 560px;
+  text-align: right;
+}
+
+.fx-why-fleetx__head-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.fx-why-fleetx__badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(12px);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-dark);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fx-why-fleetx__badge i {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.fx-why-fleetx__badge:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 12px 32px rgba(27, 201, 118, 0.12);
+}
+
+.fx-why-bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+
+.fx-why-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  padding: 28px 26px;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+}
+
+.fx-why-card:hover {
+  transform: translateY(-6px);
+}
+
+.fx-why-card--spotlight {
+  grid-column: span 8;
+  grid-row: span 2;
+  min-height: 340px;
+  background: linear-gradient(145deg, #0b0f19 0%, #121a2b 48%, #0d1524 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(11, 15, 25, 0.35);
+  display: flex;
+  align-items: flex-end;
+}
+
+.fx-why-card--spotlight:hover {
+  box-shadow: 0 32px 70px rgba(11, 15, 25, 0.45);
+}
+
+.fx-why-card__glow {
+  position: absolute;
+  top: -40%;
+  left: -20%;
+  width: 70%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(27, 201, 118, 0.28) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+.fx-why-card__spotlight-no {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-size: clamp(72px, 12vw, 120px);
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.04);
+  font-family: 'Outfit', sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+
+.fx-why-card__spotlight-no span {
+  font-size: 0.55em;
+  color: rgba(27, 201, 118, 0.12);
+}
+
+.fx-why-card--spotlight .fx-why-card__body {
+  position: relative;
+  z-index: 1;
+  text-align: right;
+}
+
+.fx-why-card--spotlight h3 {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 12px;
+}
+
+.fx-why-card--spotlight p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0 0 18px;
+  max-width: 520px;
+}
+
+.fx-why-card__checks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.fx-why-card__checks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.fx-why-card__checks i {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+.fx-why-card--trust,
+.fx-why-card--ai {
+  grid-column: span 4;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(10px);
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.fx-why-card--trust:hover,
+.fx-why-card--ai:hover {
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.11);
+  border-color: rgba(27, 201, 118, 0.2);
+}
+
+.fx-why-card--trust {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.fx-why-card__ring {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2px solid rgba(27, 201, 118, 0.25);
+  animation: fx-why-ring-pulse 3s ease-out infinite;
+}
+
+@keyframes fx-why-ring-pulse {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.fx-why-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  background: rgba(27, 201, 118, 0.1);
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.fx-why-card__icon--lg {
+  width: 58px;
+  height: 58px;
+  font-size: 28px;
+  background: rgba(27, 201, 118, 0.15);
+}
+
+.fx-why-card__icon--ai {
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.15), rgba(14, 165, 233, 0.15));
+}
+
+.fx-why-card--trust h3,
+.fx-why-card--ai h3 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-dark);
+  margin: 0 0 10px;
+}
+
+.fx-why-card--trust p,
+.fx-why-card--ai p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin: 0 0 16px;
+}
+
+.fx-why-card__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--primary);
+  background: rgba(27, 201, 118, 0.08);
+  padding: 6px 12px;
+  border-radius: var(--radius-round);
+}
+
+.fx-why-card__pill--ai {
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.1), rgba(14, 165, 233, 0.1));
+  color: #0d9488;
+}
+
+.fx-why-journey {
+  grid-column: span 12;
+  padding: 28px 32px 32px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(145deg, #172030 0%, #111827 50%, #0b0f19 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 48px rgba(11, 15, 25, 0.38);
+}
+
+.fx-why-journey__head {
+  text-align: right;
+  margin-bottom: 28px;
+}
+
+.fx-why-journey__head h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.fx-why-journey__head p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.fx-why-journey__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  position: relative;
+}
+
+.fx-why-journey__steps::before {
+  content: '';
+  position: absolute;
+  top: 34px;
+  right: 12%;
+  left: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9, #8b5cf6);
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.fx-why-journey__steps li {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 12px 10px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.fx-why-journey__steps li:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(27, 201, 118, 0.28);
+  box-shadow: 0 10px 28px rgba(27, 201, 118, 0.12);
+}
+
+.fx-why-journey__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 22px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(27, 201, 118, 0.3);
+}
+
+.fx-why-journey__steps strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.fx-why-journey__steps small {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.58);
+  line-height: 1.5;
+}
+
+@media (max-width: 992px) {
+  .fx-why-fleetx__head {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .fx-why-fleetx__head-badges {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .fx-why-fleetx__badge {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .fx-why-card--spotlight {
+    grid-column: span 12;
+    grid-row: span 1;
+    min-height: auto;
+  }
+
+  .fx-why-card--trust,
+  .fx-why-card--ai {
+    grid-column: span 6;
+  }
+
+  .fx-why-journey__steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .fx-why-journey__steps::before {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .fx-why-fleetx {
+    padding: 72px 0 80px;
+  }
+
+  .fx-why-fleetx__badge {
+    flex: 1 1 100%;
+  }
+
+  .fx-why-card--trust,
+  .fx-why-card--ai {
+    grid-column: span 12;
+  }
+
+  .fx-why-journey {
+    padding: 22px 18px 24px;
+  }
+
+  .fx-why-journey__steps {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .fx-why-journey__steps li {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    grid-template-rows: auto auto;
+    gap: 2px 14px;
+    text-align: right;
+    align-items: center;
+  }
+
+  .fx-why-journey__icon {
+    grid-row: span 2;
+    margin: 0;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+/* ── Stats section polish ───────────────────────────────────────────────── */
+.fx-home-stats-section .stats-features-grid {
+  gap: 18px;
+}
+
+.fx-home-stats-section .stat-feature-card {
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+}
+
+.fx-home-stats-section .stat-feature-card i {
+  font-size: 32px;
+  margin-bottom: 14px;
+}
+
+/* ── Companies page redesign ──────────────────────────────────────────── */
+.fx-companies-page {
+  background: #f4f7fb;
+  padding-bottom: 80px;
+}
+
+.fx-companies-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: -32px auto 32px;
+  max-width: 1320px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 5;
+}
+
+.fx-companies-stat-card {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 20px 18px;
+  text-align: center;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.fx-companies-stat-card i {
+  font-size: 24px;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.fx-companies-stat-card strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  font-family: var(--font-en);
+  color: var(--text-dark);
+}
+
+.fx-companies-stat-card span {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.fx-companies-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.fx-companies-toolbar h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fx-companies-toolbar h2 i {
+  color: var(--primary);
+}
+
+.fx-companies-count {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: var(--bg-light);
+  padding: 8px 14px;
+  border-radius: var(--radius-round);
+}
+
+.fx-companies-search-panel {
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+.fx-companies-search-panel .fx-companies-search {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fx-companies-chips--modern {
+  position: sticky;
+  top: 72px;
+  z-index: 40;
+  background: rgba(244, 247, 251, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 0;
+  margin-bottom: 8px;
+}
+
+.fx-companies-chips--modern .filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.fx-companies-chips--modern .chip {
+  border-radius: var(--radius-round);
+  padding: 10px 18px;
+  font-weight: 800;
+  transition: all 0.25s ease;
+}
+
+.fx-companies-chips--modern .chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(27, 201, 118, 0.25);
+}
+
+.fx-company-grid--modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+
+.fx-company-card--modern {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.fx-company-card--modern:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+  border-color: rgba(27, 201, 118, 0.28);
+}
+
+.fx-company-card--modern.has-live {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.fx-company-card--modern .fx-company-card__top {
+  height: 6px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9);
+}
+
+.fx-company-card--modern.has-live .fx-company-card__top {
+  background: linear-gradient(90deg, #ef4444, #f59e0b);
+}
+
+.fx-company-card--modern .fx-company-card__body {
+  padding: 22px;
+  flex: 1;
+}
+
+.fx-company-card--modern .fx-company-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: #f8fafc;
+  border-top: 1px solid var(--border-light);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+  transition: background 0.25s ease;
+}
+
+.fx-company-card--modern:hover .fx-company-card__cta {
+  background: rgba(27, 201, 118, 0.08);
+}
+
+@media (max-width: 992px) {
+  .fx-companies-hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: -24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fx-companies-chips--modern {
+    top: 60px;
+    overflow-x: auto;
+  }
+
+  .fx-companies-chips--modern .filter-chips {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+  }
+
+  .fx-companies-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .fx-companies-toolbar h2 {
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Phase 25 — Homepage UI refresh (hero, cards v1, HIW, why, stats, contact)
+   ========================================================================== */
+
+/* ── Navbar: grey glass matched to hero gradient ───────────────────────── */
+body.fx-home-index .navbar {
+  background: rgba(228, 234, 240, 0.82) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28) !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar.scrolled {
+  background: rgba(248, 250, 252, 0.97) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.32) !important;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.fx-home-index .navbar-links a {
+  color: #475569 !important;
+}
+
+body.fx-home-index .navbar-links a:hover,
+body.fx-home-index .navbar-links a.active {
+  color: #0f172a !important;
+}
+
+body.fx-home-index .navbar-toggle,
+body.fx-home-index .navbar-toggle-icon {
+  color: #0f172a !important;
+}
+
+body.fx-home-index .navbar .notif-btn {
+  color: #334155 !important;
+}
+
+body.fx-home-index .navbar .notif-btn:hover {
+  color: var(--fx-brand-green, #1bc976) !important;
+}
+
+body.fx-home-index .navbar .btn-outline,
+body.fx-home-index .navbar .fx-btn-round,
+body.fx-home-index .navbar .fx-nav-logout {
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .navbar .btn-outline:hover,
+body.fx-home-index .navbar .fx-btn-round:hover,
+body.fx-home-index .navbar .fx-nav-logout:hover {
+  color: var(--fx-brand-green, #1bc976) !important;
+  border-color: rgba(27, 201, 118, 0.45) !important;
+  background: rgba(27, 201, 118, 0.08) !important;
+}
+
+body.fx-home-index .navbar .fx-nav-user-name {
+  color: #64748b !important;
+}
+
+body.fx-home-index .navbar .btn-login--green-stroke {
+  color: var(--fx-brand-green, #1bc976) !important;
+  border-color: var(--fx-brand-green, #1bc976) !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .navbar .btn-primary {
+  background: var(--primary-gradient) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+body.fx-home-index .navbar .btn,
+body.fx-home-index .navbar .btn-primary,
+body.fx-home-index .navbar .btn-login,
+body.fx-home-index .navbar .btn-login--green-stroke,
+body.fx-home-index .navbar .fx-btn-round {
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar .btn-login--green-stroke:hover {
+  color: #fff !important;
+  background: var(--fx-brand-green, #1bc976) !important;
+  border-color: var(--fx-brand-green, #1bc976) !important;
+  box-shadow: 0 6px 20px rgba(27, 201, 118, 0.28) !important;
+  transform: translateY(-1px);
+}
+
+body.fx-home-index .navbar-logo img {
+  filter: none;
+}
+
+/* ── Hero: solid gradient base + images on top + fade titles ───────────── */
+body.fx-home-index .fx-hero-bg-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+body.fx-home-index .fx-hero-picture--float {
+  animation: fx-hero-image-float 14s ease-in-out infinite !important;
+}
+
+body.fx-home-index .fx-hero-section--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 {
+  position: relative;
+  z-index: 3;
+}
+
+.fx-hero-motion {
+  transition: opacity 0.52s ease-in-out;
+}
+
+.fx-hero-motion.is-exit {
+  opacity: 0;
+}
+
+.fx-hero-motion.is-enter {
+  opacity: 0;
+}
+
+.fx-hero-motion.is-visible {
+  opacity: 1;
+}
+
+body.fx-home-index #heroMainTitle.fx-hero-motion.is-visible {
+  animation: fx-hero-title-glow 5.5s ease-in-out infinite;
+}
+
+@keyframes fx-hero-title-glow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 28px rgba(27, 201, 118, 0.18); }
+}
+
+body.fx-home-index #heroSubtitle.fx-hero-motion.is-visible {
+  letter-spacing: 0.01em;
+}
+
+/* ── Unified modern cards (site-wide) ──────────────────────────────────── */
+.auction-card.fx-card-unified,
+.auctions-grid .auction-card,
+.fx-home-auctions .auctions-swiper .auction-card,
+.fx-home-cards-grid .auction-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  border-radius: 22px !important;
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.04),
+    0 14px 36px rgba(15, 23, 42, 0.07) !important;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.auction-card.fx-card-unified:hover {
+  transform: translateY(-8px);
+  border-color: rgba(27, 201, 118, 0.22) !important;
+  box-shadow:
+    0 8px 20px rgba(15, 23, 42, 0.06),
+    0 24px 48px rgba(27, 201, 118, 0.1) !important;
+}
+
+.auction-card.fx-card-unified .ac-img-wrap {
+  position: relative;
+  height: 210px;
+  min-height: 210px;
+  border-radius: 22px 22px 0 0;
+  background: linear-gradient(145deg, #e8edf3 0%, #f1f5f9 100%);
+  overflow: hidden;
+}
+
+.auction-card.fx-card-unified .ac-img-wrap:not(.ac-img-wrap--square)::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.28), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.auction-card.fx-card-unified .ac-img-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 210px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.auction-card.fx-card-unified .ac-body {
+  padding: 20px 22px 22px;
+}
+
+.auction-card.fx-card-unified .ac-title {
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.35;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.auction-card.fx-card-unified .ac-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.auction-card.fx-card-unified .ac-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: var(--radius-round);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.auction-card.fx-card-unified .ac-meta span i {
+  color: var(--fx-brand-green, #1bc976);
+  font-size: 14px;
+}
+
+.auction-card.fx-card-unified .ac-price-val {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.auction-card.fx-card-unified .btn-ac-full {
+  border-radius: 14px !important;
+  font-weight: 800;
+  padding: 12px 16px !important;
+}
+
+.auction-card.fx-card-unified .ac-price-row > div {
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.auction-card.fx-card-unified .ac-price-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--v2 {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 108px;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.04));
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--instant {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.04));
+  border: 1px solid rgba(14, 165, 233, 0.18);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--ended,
+.auction-card.fx-card-unified .ac-timer-box--upcoming {
+  background: rgba(100, 116, 139, 0.08);
+  border: 1px solid rgba(100, 116, 139, 0.14);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--v2 .ac-timer-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live .ac-timer-label {
+  color: #dc2626;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--instant .ac-timer-label {
+  color: #0284c7;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips div {
+  background: #fff;
+  color: #0f172a;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  min-width: 26px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live .fx-timer-chips div {
+  color: #dc2626;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips span {
+  color: #94a3b8;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips.urgent div {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.auction-card.fx-card-unified .ac-timer-date {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0284c7;
+}
+
+/* ── HIW: rounded panel + page-aligned width ───────────────────────────── */
+.fx-hiw-section--dark .browser-tabs-container {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fx-hiw-section--dark .hiw-panel,
+.fx-hiw-section--dark .browser-content.hiw-panel {
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.fx-hiw-section--dark .browser-tabs {
+  margin-bottom: -1px;
+  padding-inline: 4px;
+}
+
+/* ── Why FleetX: centered head, dark cards, clean icons ────────────────── */
+.fx-why-fleetx__head--center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 48px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fx-why-fleetx__head--center .fx-why-fleetx__title,
+.fx-why-fleetx__head--center .fx-why-fleetx__lead {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fx-why-fleetx__head-badges {
+  display: none !important;
+}
+
+.fx-why-card--spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.fx-why-card__spotlight-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(145deg, rgba(11, 15, 25, 0.88) 0%, rgba(18, 26, 43, 0.82) 55%, rgba(11, 15, 25, 0.9) 100%),
+    url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1400&q=80') center/cover no-repeat;
+  z-index: 0;
+}
+
+.fx-why-card--spotlight .fx-why-card__body {
+  position: relative;
+  z-index: 1;
+}
+
+.fx-why-card--trust,
+.fx-why-card--ai {
+  background: linear-gradient(145deg, #1a2332 0%, #111827 48%, #0b1220 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 16px 40px rgba(11, 15, 25, 0.28) !important;
+}
+
+.fx-why-card--trust h3,
+.fx-why-card--ai h3 {
+  color: #fff !important;
+}
+
+.fx-why-card--trust p,
+.fx-why-card--ai p {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.fx-why-card--trust .fx-why-card__pill,
+.fx-why-card--ai .fx-why-card__pill {
+  width: fit-content !important;
+  max-width: 100%;
+  align-self: flex-start !important;
+  background: rgba(27, 201, 118, 0.14) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(27, 201, 118, 0.22);
+}
+
+.fx-why-card__icon--plain,
+.fx-why-card--spotlight .fx-why-card__icon--plain {
+  width: auto !important;
+  height: auto !important;
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 56px !important;
+  color: var(--fx-brand-green) !important;
+  margin-bottom: 16px !important;
+  align-self: flex-start !important;
+  text-align: right !important;
+  display: block !important;
+}
+
+.fx-why-card--trust .fx-why-card__icon--plain,
+.fx-why-card--ai .fx-why-card__icon--plain {
+  color: #6ee7b7 !important;
+}
+
+.fx-why-card--spotlight .fx-why-card__icon--plain {
+  color: #4ade80 !important;
+}
+
+.fx-why-card__ring,
+.fx-why-card__glow {
+  display: none !important;
+}
+
+.fx-why-journey__icon {
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  font-size: 36px !important;
+  color: var(--fx-brand-green) !important;
+  margin-bottom: 10px !important;
+}
+
+/* ── Why journey: dark wide card (overrides legacy white) ──────────────── */
+.fx-why-journey {
+  background: linear-gradient(90deg, #0ea5e9 0%, #1d6fa8 35%, #172030 35%, #0b0f19 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.2) !important;
+}
+
+.fx-why-journey__head h3 {
+  color: #fff !important;
+}
+
+.fx-why-journey__head p {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.fx-why-journey__steps li {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.fx-why-journey__steps strong {
+  color: #fff !important;
+}
+
+.fx-why-journey__steps small {
+  color: rgba(255, 255, 255, 0.58) !important;
+}
+
+/* ── HIW: full container width alignment ───────────────────────────────── */
+.fx-hiw-section--dark .hiw-wrapper .container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.fx-hiw-section--dark .browser-tabs-container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* ── Stats: larger success & sales icons ───────────────────────────────── */
+.fx-home-stats-section .ac-stat-mobile__icon {
+  font-size: 68px !important;
+  margin-bottom: 20px !important;
+  line-height: 1;
+}
+
+.fx-home-stats-section .main-stats-container {
+  gap: 100px;
+}
+
+/* ── Contact: right-aligned copy ─────────────────────────────────────── */
+body.fx-home-index .fx-home-contact,
+body.fx-home-index .fx-home-contact .contact-grid,
+body.fx-home-index .fx-home-contact .contact-info-col,
+body.fx-home-index .fx-home-contact .contact-form-col,
+body.fx-home-index .fx-home-contact .fx-contact-form-card {
+  text-align: right !important;
+}
+
+body.fx-home-index .fx-home-contact .fx-contact-item {
+  justify-content: flex-start;
+  text-align: right;
+}
+
+body.fx-home-index .fx-home-contact .fx-contact-form-title,
+body.fx-home-index .fx-home-contact .fx-form-label {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .fx-home-stats-section .ac-stat-mobile__icon {
+    font-size: 56px !important;
+  }
+
+  .auction-card.fx-card-unified .ac-timer-box--v2 {
+    min-width: 0;
+    padding: 0;
+  }
+}
+
+/* ==========================================================================
+   Phase 28 — hero overlay, §2 marquee cards, §4 why, §5 stats video
+   ========================================================================== */
+
+/* §2 — centered marquee swiper, plain timers */
+.fx-home-auctions .fx-auctions-swiper--marquee {
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 8px !important;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide {
+  transform: none !important;
+  opacity: 1 !important;
+  height: auto;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide .auction-card {
+  transform: none !important;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide-active .auction-card {
+  transform: none !important;
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.06),
+    0 18px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--plain {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  border-radius: 0 !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--plain .ac-timer-label {
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips div {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 2px !important;
+  min-width: auto !important;
+  border-radius: 0 !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips span {
+  font-size: 13px !important;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--plain .ac-timer-date {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+/* §4 — bluer small cards, journey gradient, bigger icons, hover motion */
+.fx-why-card--trust,
+.fx-why-card--ai {
+  background: linear-gradient(145deg, #1a4d75 0%, #1e5a8a 45%, #16466b 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.22) !important;
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.38s ease, border-color 0.38s ease !important;
+}
+
+.fx-why-card--spotlight,
+.fx-why-card--trust,
+.fx-why-card--ai,
+.fx-why-journey {
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.38s ease, border-color 0.38s ease !important;
+}
+
+.fx-why-card--spotlight:hover,
+.fx-why-card--trust:hover,
+.fx-why-card--ai:hover,
+.fx-why-journey:hover {
+  transform: translateY(-10px) scale(1.015);
+  box-shadow: 0 24px 52px rgba(14, 165, 233, 0.18) !important;
+}
+
+.fx-why-card--spotlight:active,
+.fx-why-card--trust:active,
+.fx-why-card--ai:active,
+.fx-why-journey:active {
+  transform: translateY(-4px) scale(1.008);
+}
+
+.fx-why-card__icon--plain,
+.fx-why-card--spotlight .fx-why-card__icon--plain {
+  font-size: 56px !important;
+  margin-bottom: 16px !important;
+}
+
+.fx-why-card--trust .fx-why-card__icon--plain,
+.fx-why-card--ai .fx-why-card__icon--plain {
+  color: #93c5fd !important;
+}
+
+.fx-why-journey {
+  background: linear-gradient(90deg, #0ea5e9 0%, #1d6fa8 35%, #172030 35%, #0b0f19 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.2) !important;
+}
+
+.fx-why-journey__steps {
+  gap: 14px;
+  padding-top: 8px;
+}
+
+.fx-why-journey__steps::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  top: 52px;
+  right: 5%;
+  left: 5%;
+  height: 3px !important;
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.35), rgba(27, 201, 118, 0.85), rgba(14, 165, 233, 0.35)) !important;
+  opacity: 1 !important;
+  z-index: 0;
+  border-radius: 999px;
+}
+
+.fx-why-journey__steps li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 132px;
+  padding: 18px 14px 16px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(11, 15, 25, 0.2);
+  transition: transform 0.32s ease, background 0.32s ease, border-color 0.32s ease !important;
+}
+
+.fx-why-journey__steps li:hover,
+.fx-why-journey__steps li:active {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(147, 197, 253, 0.45) !important;
+}
+
+.fx-why-journey__icon {
+  font-size: 48px !important;
+  margin-bottom: 12px !important;
+  color: #93c5fd !important;
+  position: relative;
+  z-index: 1;
+}
+
+/* §5 — transparent auction video background */
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  background-image: none !important;
+  background-attachment: scroll !important;
+}
+
+.fx-stats-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fx-stats-video-bg__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.32;
+  filter: saturate(0.85) contrast(1.05);
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: rgba(6, 12, 22, 0.78) !important;
+  z-index: 1;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Phase 29 — §2 panel tabs, card info row, section rhythm, §4/§5 fixes
+   ========================================================================== */
+
+/* Sitewide homepage container alignment */
+body.fx-home-index section > .container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
+/* Unified vertical rhythm between sections */
+body.fx-home-index .fx-home-auctions {
+  padding: 80px 0 80px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark #buyers-section {
+  padding-top: 80px !important;
+  padding-bottom: 72px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark #sellers-section {
+  padding-top: 72px !important;
+  padding-bottom: 80px !important;
+}
+
+body.fx-home-index .fx-why-fleetx {
+  padding: 80px 0 !important;
+}
+
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  padding: 80px 0 96px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-home-contact {
+  padding: 80px 0 !important;
+}
+
+body.fx-home-index .fx-home-section-intro {
+  margin-bottom: 40px !important;
+}
+
+/* §2 — centered panel card with integrated tabs */
+.fx-auctions-panel {
+  max-width: 1180px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 28px;
+  box-shadow:
+    0 4px 16px rgba(15, 23, 42, 0.04),
+    0 24px 56px rgba(15, 23, 42, 0.07);
+  overflow: hidden;
+}
+
+.fx-auctions-panel__tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 24px 0;
+  margin: 0 !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.fx-auctions-panel__tabs .auctions-tab-btn {
+  flex: 0 1 auto;
+  min-width: 168px;
+  justify-content: center;
+  padding: 12px 22px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #64748b !important;
+  transition: background 0.28s ease, color 0.28s ease, border-color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.fx-auctions-panel__tabs .auctions-tab-btn:hover {
+  color: #0f172a !important;
+  background: rgba(241, 245, 249, 0.9) !important;
+}
+
+.fx-auctions-panel__tabs .auctions-tab-btn.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--fx-brand-green, #1bc976), #0ea5e9) !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 22px rgba(27, 201, 118, 0.28);
+  transform: translateY(-1px);
+}
+
+.fx-auctions-panel .auctions-tab-content {
+  padding: 8px 20px 24px;
+}
+
+.fx-auctions-panel .fx-tab-footer {
+  padding-bottom: 8px;
+}
+
+body.fx-home-index .fx-home-tabs-wrap .fx-home-tabs-link,
+.fx-home-quick-stats {
+  display: none !important;
+}
+
+/* §2 — 3 visible cards with gaps, no scale fade */
+.fx-home-auctions .fx-auctions-swiper--marquee {
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: 4px !important;
+  overflow: hidden;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide {
+  transform: none !important;
+  opacity: 1 !important;
+  height: auto;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide .auction-card {
+  transform: none !important;
+  height: 100%;
+}
+
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide-active .auction-card,
+.fx-home-auctions .fx-auctions-swiper--marquee .swiper-slide .auction-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow:
+    0 8px 20px rgba(15, 23, 42, 0.06),
+    0 22px 44px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Card info row — price + timer aligned */
+.auction-card.fx-card-unified .ac-info-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-top: 4px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.auction-card.fx-card-unified .ac-info-row .ac-price-block {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+}
+
+.auction-card.fx-card-unified .ac-info-row .ac-price-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+
+.auction-card.fx-card-unified .ac-info-row .ac-price-val {
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.auction-card.fx-card-unified .ac-timer-side {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.auction-card.fx-card-unified .ac-timer-side .ac-timer-box--plain {
+  text-align: left;
+  align-items: flex-start !important;
+}
+
+.auction-card.fx-card-unified .ac-meta {
+  margin-bottom: 12px;
+}
+
+/* §4 — remove decorative mesh/orbs (markup removed) */
+.fx-why-fleetx__mesh,
+.fx-why-fleetx__orb,
+.fx-why-fleetx__grid {
+  display: none !important;
+}
+
+/* §5 — stronger visible video under dark overlay */
+.fx-stats-video-bg__media {
+  opacity: 0.42 !important;
+  filter: saturate(0.9) contrast(1.08) brightness(0.92);
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.72) 0%, rgba(6, 12, 22, 0.82) 100%) !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-home-auctions,
+  body.fx-home-index .fx-why-fleetx,
+  body.fx-home-index .fx-home-stats-section.stats-section--parallax,
+  body.fx-home-index .fx-home-contact {
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+
+  .fx-auctions-panel {
+    border-radius: 22px;
+  }
+
+  .fx-auctions-panel__tabs {
+    flex-direction: column;
+    padding: 16px 16px 0;
+  }
+
+  .fx-auctions-panel__tabs .auctions-tab-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .fx-auctions-panel .auctions-tab-content {
+    padding: 8px 12px 20px;
+  }
+
+  .auction-card.fx-card-unified .ac-info-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .auction-card.fx-card-unified .ac-timer-side {
+    justify-content: flex-start;
+  }
+
+  .auction-card.fx-card-unified .ac-timer-side .ac-timer-box--plain {
+    text-align: right;
+    align-items: flex-end !important;
+  }
+}
+
+/* ==========================================================================
+   Phase 31 — cache/CDN fix: force reverted §2 layout (no premium Phase 30)
+   ========================================================================== */
+
+body.fx-home-index .fx-home-quick-stats,
+body.fx-home-index .fx-home-tabs-link,
+body.fx-home-index .auctions-tabs-wrapper:not(.fx-auctions-panel__tabs) {
+  display: none !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide-active,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide .auction-card,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide-active .auction-card {
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+body.fx-home-index .fx-auctions-panel {
+  max-width: 1180px !important;
+  margin-inline: auto !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 28px !important;
+  box-shadow: 0 24px 56px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 20px 24px 0 !important;
+  margin: 0 !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs .auctions-tab-btn {
+  min-width: 170px !important;
+  justify-content: center !important;
+  border-radius: 14px !important;
+  padding: 12px 22px !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs .auctions-tab-btn.active {
+  background: linear-gradient(135deg, #1bc976, #0ea5e9) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px rgba(27, 201, 118, 0.28) !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-info-row {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips div {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   Phase 32 — kill platform-ui conflicts (homepage-only, loaded last)
+   ========================================================================== */
+
+body.fx-home-index .auctions-tabs-wrapper:not(.fx-auctions-panel__tabs) {
+  display: none !important;
+}
+
+body.fx-home-index .fx-home-tabs:not(.fx-auctions-panel__tabs) {
+  display: none !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs.auctions-tabs {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 22px 24px 10px !important;
+  background: linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs .auctions-tab-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-width: 190px !important;
+  padding: 13px 24px !important;
+  border-radius: 14px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  color: #64748b !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs .auctions-tab-btn.active {
+  background: linear-gradient(135deg, #1bc976 0%, #0ea5e9 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 22px rgba(27, 201, 118, 0.3) !important;
+}
+
+body.fx-home-index .fx-auctions-panel {
+  display: block !important;
+  max-width: 1180px !important;
+  margin: 24px auto 0 !important;
+  background: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-top: 5px solid #1bc976 !important;
+  border-radius: 28px !important;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12) !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee {
+  overflow: hidden !important;
+  padding: 12px 8px 52px !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide-active,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide .auction-card,
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide-active .auction-card {
+  transform: none !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide {
+  padding: 0 4px;
+}
+
+body.fx-home-index .auction-card.fx-card-unified {
+  border-radius: 22px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-info-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  margin-bottom: 14px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid #f1f5f9 !important;
+}
+
+body.fx-home-index .fx-stats-video-bg__media {
+  opacity: 0.45 !important;
+}
+
+/* ==========================================================================
+   Phase 33 — hero overlay, §2 marquee, §4 why polish, §5 video (user request)
+   ========================================================================== */
+
+/* §2 — centered continuous marquee, frameless timers */
+body.fx-home-index .fx-auctions-swiper--marquee {
+  max-width: 1180px !important;
+  margin-inline: auto !important;
+  padding: 16px 12px 52px !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide {
+  width: 360px !important;
+  max-width: min(360px, 88vw) !important;
+  flex-shrink: 0 !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide {
+    width: 300px !important;
+    max-width: 86vw !important;
+  }
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--v2.ac-timer-box--plain,
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  border-radius: 0 !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips,
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips div {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .ac-timer-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  margin-bottom: 2px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  gap: 2px !important;
+}
+
+/* §4 — bluer trust/AI cards, journey split gradient, bigger icons, step boxes + line */
+body.fx-home-index .fx-why-fleetx__mesh,
+body.fx-home-index .fx-why-fleetx__orb {
+  display: none !important;
+}
+
+body.fx-home-index .fx-why-card--trust,
+body.fx-home-index .fx-why-card--ai {
+  background: linear-gradient(145deg, #1e5a8a 0%, #2563a8 42%, #1a4d75 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.35) !important;
+}
+
+body.fx-home-index .fx-why-card--trust h3,
+body.fx-home-index .fx-why-card--ai h3 {
+  color: #ffffff !important;
+}
+
+body.fx-home-index .fx-why-card--trust p,
+body.fx-home-index .fx-why-card--ai p {
+  color: rgba(255, 255, 255, 0.86) !important;
+}
+
+body.fx-home-index .fx-why-card--trust .fx-why-card__pill,
+body.fx-home-index .fx-why-card--ai .fx-why-card__pill {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #bfdbfe !important;
+}
+
+body.fx-home-index .fx-why-journey {
+  background: linear-gradient(90deg, #0ea5e9 0%, #1d6fa8 35%, #141c2b 35%, #0b0f19 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.28) !important;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+body.fx-home-index .fx-why-card--spotlight,
+body.fx-home-index .fx-why-card--trust,
+body.fx-home-index .fx-why-card--ai {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+body.fx-home-index .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  width: auto !important;
+  height: auto !important;
+  font-size: 68px !important;
+  line-height: 1 !important;
+  margin-bottom: 18px !important;
+  background: transparent !important;
+  color: #93c5fd !important;
+}
+
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  color: #6ee7b7 !important;
+}
+
+body.fx-home-index .fx-why-journey__steps {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+  padding-top: 12px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  top: 58px !important;
+  right: 6% !important;
+  left: 6% !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.45), rgba(27, 201, 118, 0.9), rgba(14, 165, 233, 0.45)) !important;
+  opacity: 1 !important;
+  z-index: 0 !important;
+  border-radius: 999px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 140px !important;
+  padding: 20px 14px 16px !important;
+  background: rgba(255, 255, 255, 0.11) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 28px rgba(11, 15, 25, 0.28) !important;
+  transition: transform 0.32s ease, background 0.32s ease, border-color 0.32s ease !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li:hover,
+body.fx-home-index .fx-why-journey__steps li:active {
+  transform: translateY(-8px) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(147, 197, 253, 0.5) !important;
+}
+
+body.fx-home-index .fx-why-journey__icon {
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 52px !important;
+  color: #93c5fd !important;
+  margin-bottom: 10px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li strong {
+  color: #fff !important;
+  font-size: 14px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li small {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+/* §5 — full-section transparent auction video on dark base */
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  background: #060c16 !important;
+  background-image: none !important;
+}
+
+body.fx-home-index .fx-stats-video-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+}
+
+body.fx-home-index .fx-stats-video-bg__media {
+  opacity: 0.4 !important;
+  filter: saturate(0.9) contrast(1.08) brightness(0.92) !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.55) 0%, rgba(6, 12, 22, 0.78) 100%) !important;
+  z-index: 1 !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__inner {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+body.fx-home-index .fx-why-card.is-tilt-active,
+body.fx-home-index .fx-why-journey.is-tilt-active {
+  transition: transform 0.1s ease-out !important;
+}
+
+@media (max-width: 900px) {
+  body.fx-home-index .fx-why-journey__steps {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  body.fx-home-index .fx-why-journey__steps::before {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   Phase 34 — approved §1–§5 consolidated restore (wins all conflicts)
+   ========================================================================== */
+
+/* §1 Hero */
+body.fx-home-index .fx-hero-wrap--fleet1,
+body.fx-home-index .fx-hero-wrapper--fleet1,
+body.fx-home-index .fx-hero-bg-gradient {
+  background: linear-gradient(to top right, #d1dae3 0%, #dce3eb 14%, #e8edf2 30%, #f1f5f9 48%, #f6f8fb 65%, #fafbfc 82%, #ffffff 100%) !important;
+}
+
+body.fx-home-index .fx-hero-picture::after {
+  display: block !important;
+  background: linear-gradient(105deg, rgba(241, 245, 249, 0.42) 0%, rgba(226, 232, 240, 0.28) 45%, rgba(248, 250, 252, 0.18) 100%) !important;
+}
+
+body.fx-home-index .fx-hero-content--fleet1 {
+  transform: translateY(-180px) !important;
+}
+
+/* §2 Auctions panel + marquee */
+body.fx-home-index .fx-home-auctions {
+  padding: 80px 0 !important;
+}
+
+body.fx-home-index .fx-auctions-panel {
+  max-width: 1180px !important;
+  margin: 24px auto 0 !important;
+  background: #fff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-top: 5px solid #1bc976 !important;
+  border-radius: 28px !important;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12) !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-wrapper {
+  transition-timing-function: linear !important;
+}
+
+body.fx-home-index .fx-auctions-swiper--marquee .swiper-slide {
+  width: 360px !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--v2,
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain,
+body.fx-home-index .auction-card.fx-card-unified .ac-timer-box--plain .fx-timer-chips div {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* §3 How it works */
+body.fx-home-index .fx-hiw-section--dark {
+  background: #0b0f19 !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .container {
+  max-width: 1320px !important;
+  margin-inline: auto !important;
+  padding-inline: 24px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark #buyers-section,
+body.fx-home-index .fx-hiw-section--dark #sellers-section {
+  padding: 80px 0 !important;
+  background: #0b0f19 !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-content.hiw-panel {
+  display: block !important;
+  background: #172030 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 24px 24px 24px !important;
+  min-height: 380px !important;
+  padding: 40px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .hiw-tab-content.active {
+  display: flex !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab.active {
+  background: #172030 !important;
+  color: #fff !important;
+}
+
+/* §4 Why FleetX */
+body.fx-home-index .fx-why-fleetx {
+  padding: 80px 0 !important;
+  background: #f8fafc !important;
+}
+
+body.fx-home-index .fx-why-fleetx__mesh,
+body.fx-home-index .fx-why-fleetx__orb {
+  display: none !important;
+}
+
+body.fx-home-index .fx-why-card--trust,
+body.fx-home-index .fx-why-card--ai {
+  background: linear-gradient(145deg, #1e5a8a 0%, #2563a8 42%, #1a4d75 100%) !important;
+}
+
+body.fx-home-index .fx-why-journey {
+  background: linear-gradient(90deg, #0ea5e9 0%, #1d6fa8 35%, #141c2b 35%, #0b0f19 100%) !important;
+}
+
+body.fx-home-index .fx-why-card__icon--plain {
+  font-size: 68px !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .fx-why-journey__steps::before {
+  display: block !important;
+  top: 58px !important;
+  height: 3px !important;
+  opacity: 1 !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  min-height: 140px !important;
+}
+
+/* §5 Stats video */
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  background: #060c16 !important;
+  padding: 80px 0 96px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-stats-video-bg {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+body.fx-home-index .fx-stats-video-bg__media {
+  opacity: 0.4 !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.55), rgba(6, 12, 22, 0.78)) !important;
+}
+
+/* ==========================================================================
+   Phase 35 — user UI polish (hero, nav, §2 cards, §3 HIW, §4 why, §5 video)
+   ========================================================================== */
+
+/* §1 Hero — image above gradient, no bottom shadow, floating numbers */
+body.fx-home-index .fx-hero-wrap--fleet1,
+body.fx-home-index .fx-hero-wrapper--fleet1 {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+body.fx-home-index .fx-hero-bg-gradient {
+  z-index: 0 !important;
+}
+
+body.fx-home-index .fx-hero-picture {
+  z-index: 2 !important;
+}
+
+body.fx-home-index .fx-hero-picture::after {
+  display: none !important;
+}
+
+body.fx-home-index .fx-hero-picture__img {
+  filter: none !important;
+}
+
+body.fx-home-index .fx-hero-float-nums {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+body.fx-home-index .fx-hero-float-num {
+  position: absolute;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(11px, 1.4vw, 15px);
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 8px rgba(15, 23, 42, 0.12);
+  opacity: 0.55;
+  animation: fx-hero-num-drift var(--fx-dur, 14s) ease-in-out infinite;
+  animation-delay: var(--fx-delay, 0s);
+  will-change: transform, opacity;
+}
+
+@keyframes fx-hero-num-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+  25% { transform: translate3d(12px, -18px, 0); opacity: 0.75; }
+  50% { transform: translate3d(-8px, -32px, 0); opacity: 0.5; }
+  75% { transform: translate3d(16px, -12px, 0); opacity: 0.68; }
+}
+
+body.fx-home-index .fx-hero-section--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 {
+  z-index: 4 !important;
+}
+
+/* Navbar — transparent at top, solid on scroll; gradient stroke hover box */
+body.fx-home-index .navbar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar.scrolled {
+  background: rgba(248, 250, 252, 0.97) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.32) !important;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.fx-home-index .navbar-links a::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 -8px !important;
+  width: auto !important;
+  height: auto !important;
+  bottom: 0 !important;
+  left: -8px !important;
+  right: -8px !important;
+  top: 0 !important;
+  border-radius: 10px !important;
+  border: 2px solid transparent !important;
+  background: linear-gradient(135deg, #1bc976, #0ea5e9) border-box !important;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0) !important;
+  -webkit-mask-composite: xor !important;
+  mask-composite: exclude !important;
+  opacity: 0 !important;
+  transition: opacity 0.28s ease !important;
+}
+
+body.fx-home-index .navbar-links a:hover::after,
+body.fx-home-index .navbar-links a.active::after {
+  opacity: 1 !important;
+}
+
+/* §2 — no tab panel; stacked live + instant marquees */
+body.fx-home-index .fx-auctions-panel,
+body.fx-home-index .fx-auctions-panel__tabs {
+  display: none !important;
+}
+
+body.fx-home-index .fx-home-auctions-block {
+  margin-top: 36px;
+}
+
+body.fx-home-index .fx-home-auctions-block--instant {
+  margin-top: 48px;
+}
+
+body.fx-home-index .fx-home-auctions-block__head {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+body.fx-home-index .fx-home-auctions-block__title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+body.fx-home-index .fx-home-auctions-block__title i {
+  color: var(--fx-brand-green, #1bc976);
+  font-size: 22px;
+}
+
+/* Unified auction/instant cards — square image, title on image */
+.auction-card.fx-card-unified .ac-img-wrap--square {
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  border-radius: 22px 22px 0 0 !important;
+}
+
+.auction-card.fx-card-unified .ac-img-wrap--square img {
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.auction-card.fx-card-unified .ac-img-title-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 52%;
+  background: linear-gradient(to top, rgba(6, 12, 22, 0.78) 0%, rgba(6, 12, 22, 0.35) 55%, transparent 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.auction-card.fx-card-unified .ac-title--on-image {
+  position: absolute;
+  right: 14px;
+  left: 14px;
+  bottom: 14px;
+  z-index: 3;
+  margin: 0 !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+  color: #fff !important;
+  text-align: right;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.auction-card.fx-card--instant,
+.auction-card.fx-card--auction {
+  border-radius: 22px !important;
+}
+
+/* §3 HIW — sticky overlap, tabs below panel, rounded panel corners */
+body.fx-home-index .fx-hiw-section--dark #buyers-section,
+body.fx-home-index .fx-hiw-section--dark #sellers-section {
+  position: sticky !important;
+  top: 0 !important;
+  min-height: 100vh !important;
+  z-index: 1 !important;
+  padding: 80px 0 !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark #sellers-section {
+  z-index: 2 !important;
+  border-radius: 40px 40px 0 0 !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.22) !important;
+  box-shadow: 0 -28px 56px rgba(0, 0, 0, 0.38) !important;
+}
+
+body.fx-home-index .fx-hiw-browser {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-content.hiw-panel,
+body.fx-home-index .fx-hiw-section--dark .hiw-panel {
+  border-radius: 24px !important;
+  order: 1 !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-tabs {
+  order: 2 !important;
+  margin-top: 14px !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab.active {
+  background: #172030 !important;
+  border-color: rgba(27, 201, 118, 0.35) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* §4 Why FleetX — darker blue, bigger icons, journey clean (no boxes/line) */
+body.fx-home-index .fx-why-card--trust,
+body.fx-home-index .fx-why-card--ai {
+  background: linear-gradient(145deg, #0c2d4a 0%, #123d5c 38%, #0a2238 100%) !important;
+  border: 1px solid rgba(59, 130, 246, 0.28) !important;
+}
+
+body.fx-home-index .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  font-size: 84px !important;
+}
+
+body.fx-home-index .fx-why-journey {
+  background: linear-gradient(118deg, #0c4a6e 0%, #1d4ed8 22%, #7c3aed 48%, #0f172a 72%, #020617 100%) !important;
+  border: 1px solid rgba(96, 165, 250, 0.22) !important;
+}
+
+body.fx-home-index .fx-why-journey__steps::before {
+  display: none !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  padding: 8px 10px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li:hover {
+  transform: translateY(-4px) !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .fx-why-journey__icon {
+  font-size: 64px !important;
+}
+
+body.fx-home-index .fx-why-fleetx__title {
+  text-align: center !important;
+}
+
+body.fx-home-index .fx-why-fleetx__head--center {
+  text-align: center !important;
+  display: block !important;
+}
+
+body.fx-home-index .fx-why-fleetx__lead {
+  margin-inline: auto !important;
+  text-align: center !important;
+}
+
+/* §5 — transparent auction video on dark section */
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  background: #040a14 !important;
+}
+
+body.fx-home-index .fx-stats-video-bg__media {
+  opacity: 0.32 !important;
+  filter: saturate(0.85) contrast(1.05) brightness(0.88) !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: linear-gradient(180deg, rgba(4, 10, 20, 0.45) 0%, rgba(4, 10, 20, 0.72) 100%) !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-float-num {
+    font-size: 10px;
+    opacity: 0.45;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark #sellers-section {
+    border-radius: 28px 28px 0 0 !important;
+  }
+}

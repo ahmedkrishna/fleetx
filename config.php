@@ -1,34 +1,171 @@
 <?php
 // ============================================================
-// MAZADI - Car Auction Platform
+// FleetX — Car Auction Platform
 // config.php - Master Configuration
 // ============================================================
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+if (is_file(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
+
+$fx_host = $_SERVER['HTTP_HOST'] ?? '';
+$fx_is_local = in_array($fx_host, ['127.0.0.1', 'localhost'], true)
+    || str_starts_with($fx_host, '127.0.0.1:')
+    || str_starts_with($fx_host, 'localhost:');
+
+if ($fx_is_local) {
+    ini_set('display_errors', '1');
+    error_reporting(E_ALL);
+} else {
+    ini_set('display_errors', '0');
+    ini_set('log_errors', '1');
+    error_reporting(E_ALL);
+}
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── Database Credentials ──────────────────────────────────
-define('DB_HOST',    'localhost');
-define('DB_USER',    'u274391035_usr_BbBE85ay');
-define('DB_PASS',    '*A7medfouad*');
-define('DB_NAME',    'u274391035_db_BbBE85ay');
-define('SITE_URL',   'https://mazadi.bearand.com');
-define('SITE_NAME',  'FleetX');
-define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '21');
+// ── Database Credentials (override in config.local.php) ───
+if (!defined('DB_HOST')) define('DB_HOST',    'localhost');
+if (!defined('DB_USER')) define('DB_USER',    'u274391035_usr_BbBE85ay');
+if (!defined('DB_PASS')) define('DB_PASS',    '*A7medfouad*');
+if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
+if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
+if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
+if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
+define('FLEETX_CSS_VER', '73');
+
+/** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
+if (!defined('FLEETX_STATS_BG_VIDEO')) {
+    define('FLEETX_STATS_BG_VIDEO', 'https://assets.mixkit.co/videos/preview/mixkit-cars-in-a-parking-lot-seen-from-the-air-4308-large.mp4');
+}
+
+if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en'], true)) {
+    $_SESSION['fx_lang'] = $_GET['lang'];
+}
+
+function fleetx_lang(): string {
+    return (($_SESSION['fx_lang'] ?? 'ar') === 'en') ? 'en' : 'ar';
+}
+
+function fleetx_t(string $key): string {
+    static $map = [
+        'nav_auctions' => ['ar' => 'المزادات الحية', 'en' => 'Live Auctions'],
+        'nav_instant' => ['ar' => 'الشراء الفوري', 'en' => 'Instant Buy'],
+        'nav_companies' => ['ar' => 'دليل الشركات', 'en' => 'Companies'],
+        'nav_map' => ['ar' => 'خريطة المزادات', 'en' => 'Auction Map'],
+        'nav_about' => ['ar' => 'كيف يعمل', 'en' => 'How It Works'],
+        'nav_login' => ['ar' => 'دخول المنصة', 'en' => 'Sign In'],
+        'nav_register' => ['ar' => 'سجل الآن', 'en' => 'Register'],
+        'nav_dashboard' => ['ar' => 'لوحة التحكم', 'en' => 'Dashboard'],
+        'guest_bid_login' => ['ar' => 'سجّل الدخول للمزايدة', 'en' => 'Sign in to bid'],
+        'guest_fav_login' => ['ar' => 'سجّل الدخول لحفظ المفضلة', 'en' => 'Sign in to save favorites'],
+        'lang_toggle' => ['ar' => 'EN', 'en' => 'عربي'],
+    ];
+    $lang = fleetx_lang();
+    return $map[$key][$lang] ?? $key;
+}
+
+function fleetx_html_lang(): string {
+    return fleetx_lang();
+}
+
+function fleetx_html_dir(): string {
+    return fleetx_lang() === 'en' ? 'ltr' : 'rtl';
+}
+
+function fleetx_lang_toggle_url(): string {
+    $next = fleetx_lang() === 'ar' ? 'en' : 'ar';
+    $uri = $_SERVER['REQUEST_URI'] ?? '/index.php';
+    $parts = parse_url($uri);
+    $path = $parts['path'] ?? '/index.php';
+    $query = [];
+    if (!empty($parts['query'])) parse_str($parts['query'], $query);
+    $query['lang'] = $next;
+    return $path . '?' . http_build_query($query);
+}
+
+function fleetx_verify_otp(mysqli $conn, string $mobile, string $otp, string $purpose = 'login'): bool {
+    $stmt = $conn->prepare("SELECT id, otp_code FROM otp_sessions WHERE mobile=? AND purpose=? AND is_used=0 AND expires_at > NOW() ORDER BY id DESC LIMIT 1");
+    $stmt->bind_param('ss', $mobile, $purpose);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    if (!$row || $row['otp_code'] !== $otp) return false;
+    $conn->query('UPDATE otp_sessions SET is_used=1 WHERE id=' . (int)$row['id']);
+    return true;
+}
+
+function fleetx_user_is_active(?array $user): bool {
+    if (!$user) return false;
+    return !isset($user['is_active']) || (int)$user['is_active'] === 1;
+}
 
 function fleetx_css_href(): string {
     return '/assets/css/fleetx.css?v=' . FLEETX_CSS_VER;
 }
 
-/** Navbar/header logo: logo.png on homepage only, logo-dark.png everywhere else */
+function fleetx_js_href(): string {
+    return '/assets/js/fleetx.js?v=' . FLEETX_CSS_VER;
+}
+
+function fleetx_home_live_css_href(): string {
+    return '/assets/css/home-live.css?v=' . FLEETX_CSS_VER;
+}
+
+function fleetx_polish_css_href(): string {
+    return '/assets/css/homepage-polish.css?v=' . FLEETX_CSS_VER;
+}
+
+function fleetx_stats_bg_video_url(): string {
+    return defined('FLEETX_STATS_BG_VIDEO') ? trim((string) FLEETX_STATS_BG_VIDEO) : '';
+}
+
+/** Default sub-page hero background — override in config.local.php */
+if (!defined('FLEETX_PAGE_HERO_BG')) {
+    define('FLEETX_PAGE_HERO_BG', 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80');
+}
+
+function fleetx_page_hero_bg_url(): string {
+    return defined('FLEETX_PAGE_HERO_BG') ? trim((string) FLEETX_PAGE_HERO_BG) : '';
+}
+
+/** Navbar/header logo: logo.png on homepage, logo-dark on sub-pages */
 function fleetx_logo_src(): string {
     $page = basename($_SERVER['PHP_SELF'] ?? '');
     $is_home = ($page === 'index.php' || $page === '');
     return '/assets/images/' . ($is_home ? 'logo.png' : 'logo-dark.png');
+}
+
+/** Queue a toast message for the next page render (consumed in footer / toast-snippet). */
+function fleetx_set_toast(string $message, string $type = 'success'): void {
+    $_SESSION['fx_toast'] = ['message' => $message, 'type' => $type];
+}
+
+/** Safe post-login redirect — same-site relative paths only */
+function fleetx_safe_redirect(?string $url, string $fallback = '/index.php'): string {
+    $url = trim((string)$url);
+    if ($url === '' || !str_starts_with($url, '/') || str_starts_with($url, '//')) {
+        return $fallback;
+    }
+    return $url;
+}
+
+/** HTML banner when database is offline */
+function fleetx_db_banner_html(): string {
+    global $db_connected, $db_error_msg;
+    if ($db_connected) return '';
+    $msg = htmlspecialchars($db_error_msg ?: 'تعذر الاتصال بقاعدة البيانات', ENT_QUOTES, 'UTF-8');
+    return '<div class="fx-db-banner" role="alert"><i class="ph ph-warning-circle"></i><span>' . $msg . ' — بعض البيانات قد لا تظهر.</span></div>';
+}
+
+/** Resolve seller company id → user id for notifications */
+function fleetx_seller_user_id($conn, int $seller_company_id): int {
+    if (!$conn || $seller_company_id <= 0) return 0;
+    $stmt = $conn->prepare('SELECT user_id FROM seller_companies WHERE id = ? LIMIT 1');
+    $stmt->bind_param('i', $seller_company_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    return (int)($row['user_id'] ?? 0);
 }
 
 // ── Connect ────────────────────────────────────────────────
@@ -55,6 +192,8 @@ try {
     $db_connected = false;
     $db_error_msg = 'استثناء الاتصال: ' . $e->getMessage();
 }
+
+require_once __DIR__ . '/includes/integrations.php';
 
 // ── Core Helpers ───────────────────────────────────────────
 function sanitize($data) {
@@ -85,6 +224,7 @@ function getDashboardUrl() {
 }
 
 function getBuyerLandingUrl() {
+    if (getUserRole() === 'buyer') return '/companies.php';
     return getDashboardUrl();
 }
 
@@ -127,6 +267,26 @@ function timeLeft($end_time) {
 
 function getTimeDiff($end_time) {
     return timeLeft($end_time);
+}
+
+/** Reliable card image URL with type-specific fallbacks */
+function fleetx_card_image(?string $url, int $seed = 0, string $type = 'live'): string {
+    $live_fallbacks = [
+        'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=800&q=80&auto=format',
+    ];
+    $instant_fallbacks = [
+        'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80&auto=format',
+    ];
+    $fallbacks = ($type === 'instant') ? $instant_fallbacks : $live_fallbacks;
+    $url = trim((string) $url);
+    if ($url !== '' && (preg_match('#^https?://#i', $url) || str_starts_with($url, '/'))) {
+        return $url;
+    }
+    return $fallbacks[abs($seed) % count($fallbacks)];
 }
 
 function getStatusLabel($status) {
@@ -193,7 +353,7 @@ function getAuctionById($conn, $id) {
                v.city as vehicle_city, v.image_url, v.images, v.description as vehicle_desc, v.condition_grade,
                v.vin, v.plate_number,
                sc.company_name as seller_name, sc.is_verified as seller_verified, sc.rating as seller_rating,
-               sc.logo_url as seller_logo,
+               sc.logo_url as seller_logo, sc.user_id as seller_user_id,
                (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as bids_count,
                (SELECT MAX(b2.amount) FROM bids b2 WHERE b2.auction_id = a.id) as highest_bid,
                (SELECT b3.user_id FROM bids b3 WHERE b3.auction_id = a.id ORDER BY b3.amount DESC LIMIT 1) as leading_bidder_id,
@@ -321,16 +481,19 @@ function notifyUser($conn, $user_id, $type, $title, $message, $link = '', $chann
     createNotification($conn, $user_id, $type, $title, $message, $link);
     logActivity($conn, $user_id, $type, $message, ['link' => $link]);
 
-    if (in_array('sms', $channels, true) || in_array('whatsapp', $channels, true)) {
-        $ustmt = $conn->prepare("SELECT mobile FROM users WHERE id = ?");
-        $ustmt->bind_param('i', $user_id);
-        $ustmt->execute();
-        $urow = $ustmt->get_result()->fetch_assoc();
-        $mobile = $urow['mobile'] ?? '';
-        if ($mobile) {
-            if (in_array('sms', $channels, true)) sendSmsNotification($mobile, $message);
-            if (in_array('whatsapp', $channels, true)) sendWhatsAppNotification($mobile, $message);
-        }
+    $ustmt = $conn->prepare("SELECT mobile, email FROM users WHERE id = ?");
+    $ustmt->bind_param('i', $user_id);
+    $ustmt->execute();
+    $urow = $ustmt->get_result()->fetch_assoc();
+    $mobile = $urow['mobile'] ?? '';
+    $email = $urow['email'] ?? '';
+
+    if ($mobile) {
+        if (in_array('sms', $channels, true)) sendSmsNotification($mobile, $message);
+        if (in_array('whatsapp', $channels, true)) sendWhatsAppNotification($mobile, $message);
+    }
+    if (in_array('email', $channels, true) && $email) {
+        sendEmailNotification($email, $title, $message . ($link ? "\n$link" : ''));
     }
 }
 
@@ -387,6 +550,207 @@ function getDefaultInspectorId($conn) {
     return 6;
 }
 
+function fleetx_table_exists($conn, string $table): bool {
+    if (!$conn) return false;
+    $t = $conn->real_escape_string($table);
+    $res = $conn->query("SHOW TABLES LIKE '$t'");
+    return $res && $res->num_rows > 0;
+}
+
+function fleetx_get_setting($conn, string $key, $default = null) {
+    if (!$conn || !fleetx_table_exists($conn, 'platform_settings')) return $default;
+    $stmt = $conn->prepare('SELECT setting_value FROM platform_settings WHERE setting_key = ? LIMIT 1');
+    $stmt->bind_param('s', $key);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    return $row['setting_value'] ?? $default;
+}
+
+function fleetx_login_role_for_type(string $login_type): string {
+    return $login_type === 'company' ? 'seller' : 'buyer';
+}
+
+function fleetx_role_matches_login_type(string $role, string $login_type): bool {
+    if ($role === 'admin') return true;
+    if ($login_type === 'company') {
+        return in_array($role, ['seller', 'admin'], true);
+    }
+    return in_array($role, ['buyer', 'inspector', 'admin'], true);
+}
+
+function getBuyerSubscription($conn, int $user_id): ?array {
+    if (!$conn || $user_id <= 0 || !fleetx_table_exists($conn, 'buyer_subscriptions')) return null;
+    $stmt = $conn->prepare("SELECT * FROM buyer_subscriptions WHERE user_id=? AND is_active=1 AND end_date >= CURDATE() ORDER BY end_date DESC LIMIT 1");
+    $stmt->bind_param('i', $user_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    return $row ?: null;
+}
+
+function buyerCanBid($conn, int $user_id): array {
+    if (!$conn || $user_id <= 0) {
+        return ['allowed' => false, 'reason' => 'يجب تسجيل الدخول للمزايدة', 'link' => '/login.php'];
+    }
+    $ustmt = $conn->prepare('SELECT role, nafath_verified, is_active FROM users WHERE id=? LIMIT 1');
+    $ustmt->bind_param('i', $user_id);
+    $ustmt->execute();
+    $user = $ustmt->get_result()->fetch_assoc();
+    if (!$user || $user['role'] !== 'buyer') {
+        return ['allowed' => false, 'reason' => 'حساب المشتري غير صالح للمزايدة'];
+    }
+    if (!fleetx_user_is_active($user)) {
+        return ['allowed' => false, 'reason' => 'حسابك بانتظار موافقة الإدارة', 'link' => '/buyer.php?section=dashboard'];
+    }
+    $sub = getBuyerSubscription($conn, $user_id);
+    if ($sub) {
+        return ['allowed' => true, 'plan' => $sub['plan']];
+    }
+    if (!(int)($user['nafath_verified'] ?? 0)) {
+        return ['allowed' => false, 'reason' => 'يجب توثيق الهوية عبر نفاذ قبل المزايدة', 'link' => '/nafath.php'];
+    }
+    return ['allowed' => true, 'plan' => 'free'];
+}
+
+function fleetx_process_auto_bids($conn, int $auction_id): array {
+    $placed = [];
+    if (!$conn || !fleetx_table_exists($conn, 'auto_bids')) return $placed;
+
+    for ($i = 0; $i < 20; $i++) {
+        $astmt = $conn->prepare("SELECT current_price, bid_increment, status, end_time FROM auctions WHERE id=?");
+        $astmt->bind_param('i', $auction_id);
+        $astmt->execute();
+        $auction = $astmt->get_result()->fetch_assoc();
+        if (!$auction || !in_array($auction['status'], ['active', 'live'], true)) break;
+        if ($auction['end_time'] && strtotime($auction['end_time']) < time()) break;
+
+        $next = (float)$auction['current_price'] + (float)$auction['bid_increment'];
+        $hstmt = $conn->prepare('SELECT user_id FROM bids WHERE auction_id=? ORDER BY amount DESC, id DESC LIMIT 1');
+        $hstmt->bind_param('i', $auction_id);
+        $hstmt->execute();
+        $high_bidder = (int)($hstmt->get_result()->fetch_assoc()['user_id'] ?? 0);
+
+        $abstmt = $conn->prepare("
+            SELECT ab.user_id FROM auto_bids ab
+            JOIN users u ON u.id = ab.user_id
+            WHERE ab.auction_id=? AND ab.is_active=1 AND ab.max_amount >= ?
+              AND ab.user_id != ? AND (u.is_active=1 OR u.is_active IS NULL)
+            ORDER BY ab.max_amount DESC, ab.id ASC
+            LIMIT 1
+        ");
+        $abstmt->bind_param('idi', $auction_id, $next, $high_bidder);
+        $abstmt->execute();
+        $auto = $abstmt->get_result()->fetch_assoc();
+        if (!$auto) break;
+
+        $result = placeBid($conn, $auction_id, (int)$auto['user_id'], $next, ['skip_auto_process' => true, 'is_auto' => true]);
+        if (empty($result['success'])) break;
+        $placed[] = $result;
+    }
+    return $placed;
+}
+
+function fleetx_platform_fee_percent($conn = null): float {
+    global $conn;
+    $c = $conn ?? ($GLOBALS['conn'] ?? null);
+    if ($c) {
+        $v = fleetx_get_setting($c, 'platform_fee_percent', null);
+        if ($v !== null && $v !== '') return (float)$v;
+    }
+    return (float)PLATFORM_FEE_PERCENT;
+}
+
+function fleetx_inspection_fee($conn = null): float {
+    global $conn;
+    $c = $conn ?? ($GLOBALS['conn'] ?? null);
+    if ($c) {
+        $v = fleetx_get_setting($c, 'inspection_fee', null);
+        if ($v !== null && $v !== '') return (float)$v;
+    }
+    return 100.0;
+}
+
+function sellerCanAddVehicle($conn, int $seller_company_id): array {
+    if (!$conn || $seller_company_id <= 0) return ['allowed' => false, 'reason' => 'شركة غير صالحة'];
+    $stmt = $conn->prepare('SELECT subscription FROM seller_companies WHERE id=? LIMIT 1');
+    $stmt->bind_param('i', $seller_company_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $plan = $row['subscription'] ?? 'standard';
+    $limits = ['standard' => 5, 'premium' => 50, 'enterprise' => 9999];
+    $limit = $limits[$plan] ?? 5;
+    $cstmt = $conn->prepare("SELECT COUNT(*) FROM vehicles WHERE seller_id=? AND status NOT IN ('withdrawn') AND created_at >= DATE_FORMAT(NOW(), '%Y-%m-01')");
+    $cstmt->bind_param('i', $seller_company_id);
+    $cstmt->execute();
+    $count = (int)($cstmt->get_result()->fetch_row()[0] ?? 0);
+    if ($count >= $limit) {
+        return ['allowed' => false, 'reason' => "وصلت لحد الباقة ($limit مركبة/شهر)", 'plan' => $plan];
+    }
+    return ['allowed' => true, 'plan' => $plan, 'remaining' => $limit - $count];
+}
+
+function sendEmailNotification($email, $subject, $message): bool {
+    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+    $log_dir = __DIR__ . '/logs';
+    if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
+    $line = date('Y-m-d H:i:s') . " [EMAIL] $email | $subject | $message\n";
+    @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
+    if (getenv('SMTP_HOST') || defined('SMTP_HOST')) {
+        // Production: PHPMailer / mail() with SMTP
+        @mail($email, $subject, $message, "Content-Type: text/plain; charset=UTF-8\r\nFrom: FleetX <noreply@fleetx.sa>");
+    }
+    return true;
+}
+
+function fleetx_generate_invoice_number(): string {
+    return 'FX-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -6));
+}
+
+function fleetx_zatca_qr_payload(string $seller_name, string $vat_number, string $timestamp, float $total, float $vat): string {
+    // TLV base64 stub for ZATCA QR (simplified)
+    $tlv = chr(1) . chr(strlen($seller_name)) . $seller_name
+         . chr(2) . chr(strlen($vat_number)) . $vat_number
+         . chr(3) . chr(strlen($timestamp)) . $timestamp
+         . chr(4) . chr(strlen((string)$total)) . (string)$total
+         . chr(5) . chr(strlen((string)$vat)) . (string)$vat;
+    return base64_encode($tlv);
+}
+
+function fleetx_create_invoice($conn, int $transaction_id): ?array {
+    if (!$conn || !fleetx_table_exists($conn, 'invoices')) return null;
+    $stmt = $conn->prepare('SELECT t.*, u.full_name as buyer_name, u.email as buyer_email, sc.company_name, sc.vat_number FROM transactions t JOIN users u ON t.buyer_id=u.id JOIN seller_companies sc ON t.seller_id=sc.id WHERE t.id=? LIMIT 1');
+    $stmt->bind_param('i', $transaction_id);
+    $stmt->execute();
+    $tx = $stmt->get_result()->fetch_assoc();
+    if (!$tx) return null;
+    $subtotal = (float)$tx['sale_price'];
+    $vat = round($subtotal * 0.15, 2);
+    $total = $subtotal + $vat;
+    $inv_num = fleetx_generate_invoice_number();
+    $qr = fleetx_zatca_qr_payload($tx['company_name'] ?? 'FleetX', $tx['vat_number'] ?? '300000000000003', date('c'), $total, $vat);
+    $ins = $conn->prepare('INSERT INTO invoices (transaction_id, invoice_number, buyer_id, seller_id, subtotal, vat_amount, total, zatca_qr) VALUES (?,?,?,?,?,?,?,?)');
+    $ins->bind_param('isiiddds', $transaction_id, $inv_num, $tx['buyer_id'], $tx['seller_id'], $subtotal, $vat, $total, $qr);
+    if ($ins->execute()) {
+        $conn->query("UPDATE transactions SET invoice_number='$inv_num', vat_amount=$vat WHERE id=$transaction_id");
+        return ['invoice_number' => $inv_num, 'total' => $total, 'vat' => $vat, 'qr' => $qr];
+    }
+    return null;
+}
+
+function fleetx_vehicle_status_label(string $status): string {
+    $labels = [
+        'pending' => 'مسودة',
+        'awaiting_admin' => 'بانتظار موافقة الإدارة',
+        'inspection_scheduled' => 'مجدول للفحص',
+        'awaiting_seller_approval' => 'بانتظار موافقتك',
+        'approved' => 'معتمدة',
+        'in_auction' => 'في المزاد',
+        'sold' => 'مباعة',
+        'withdrawn' => 'مسحوبة',
+        'suspended' => 'موقوفة',
+    ];
+    return $labels[$status] ?? $status;
+}
+
 function getSellerCompany($conn, $user_id) {
     $stmt = $conn->prepare('SELECT * FROM seller_companies WHERE user_id = ? LIMIT 1');
     $stmt->bind_param('i', $user_id);
@@ -394,37 +758,96 @@ function getSellerCompany($conn, $user_id) {
     return $stmt->get_result()->fetch_assoc();
 }
 
-function placeBid($conn, $auction_id, $user_id, $amount) {
+function placeBid($conn, $auction_id, $user_id, $amount, array $opts = []) {
+    $bid_check = buyerCanBid($conn, (int)$user_id);
+    if (!$bid_check['allowed']) {
+        return ['success' => false, 'error' => $bid_check['reason'], 'link' => $bid_check['link'] ?? null];
+    }
+
     $conn->begin_transaction();
     try {
-        // Lock auction row
         $stmt = $conn->prepare("SELECT current_price, bid_increment, end_time, status FROM auctions WHERE id=? FOR UPDATE");
         $stmt->bind_param('i', $auction_id);
         $stmt->execute();
         $auction = $stmt->get_result()->fetch_assoc();
-        
+
         if (!$auction) throw new Exception('المزاد غير موجود');
         if (!in_array($auction['status'], ['active', 'live'], true)) throw new Exception('المزاد غير نشط');
         if ($auction['end_time'] && strtotime($auction['end_time']) < time()) throw new Exception('انتهى وقت المزاد');
-        
+
         $min_bid = $auction['current_price'] + $auction['bid_increment'];
-        if ($amount < $min_bid) throw new Exception("الحد الأدنى للمزايدة هو " . formatPrice($min_bid));
-        
-        // Insert bid
+        if ($amount < $min_bid) throw new Exception('الحد الأدنى للمزايدة هو ' . formatPrice($min_bid));
+
+        $ustmt = $conn->prepare('SELECT sanad_limit, wallet_balance FROM users WHERE id=?');
+        $ustmt->bind_param('i', $user_id);
+        $ustmt->execute();
+        $urow = $ustmt->get_result()->fetch_assoc();
+        $sanad_limit = (float)($urow['sanad_limit'] ?? 0);
+        if ($sanad_limit > 0 && $amount > $sanad_limit) {
+            throw new Exception('المبلغ يتجاوز حد سند الأمر المعتمد (' . formatPrice($sanad_limit) . ')');
+        }
+
         $stmt2 = $conn->prepare("INSERT INTO bids (auction_id, user_id, amount, ip_address) VALUES (?,?,?,?)");
         $ip = $_SERVER['REMOTE_ADDR'] ?? '';
         $stmt2->bind_param('iids', $auction_id, $user_id, $amount, $ip);
         $stmt2->execute();
-        
-        // Update current price
-        $stmt3 = $conn->prepare("UPDATE auctions SET current_price=? WHERE id=?");
-        $stmt3->bind_param('di', $amount, $auction_id);
-        $stmt3->execute();
-        
-        logActivity($conn, $user_id, 'bid_placed', 'قدمت مزايدة بمبلغ ' . number_format($amount) . ' ر.س', ['auction_id' => $auction_id, 'amount' => $amount]);
+
+        $new_end_time = $auction['end_time'] ?? '';
+        $anti_snipe = 180;
+        if ($conn) {
+            $as = fleetx_get_setting($conn, 'anti_snipe_seconds', '180');
+            $anti_snipe = max(60, (int)$as);
+        }
+        if ($auction['end_time']) {
+            $remaining = strtotime($auction['end_time']) - time();
+            if ($remaining < $anti_snipe) {
+                $new_end_time = date('Y-m-d H:i:s', time() + $anti_snipe);
+                $stmt3 = $conn->prepare('UPDATE auctions SET current_price=?, end_time=? WHERE id=?');
+                $stmt3->bind_param('dsi', $amount, $new_end_time, $auction_id);
+                $stmt3->execute();
+            } else {
+                $stmt3 = $conn->prepare('UPDATE auctions SET current_price=? WHERE id=?');
+                $stmt3->bind_param('di', $amount, $auction_id);
+                $stmt3->execute();
+            }
+        } else {
+            $stmt3 = $conn->prepare('UPDATE auctions SET current_price=? WHERE id=?');
+            $stmt3->bind_param('di', $amount, $auction_id);
+            $stmt3->execute();
+        }
+
+        $notif_msg = 'قدم شخص آخر مزايدة بـ ' . number_format($amount) . ' ر.س';
+        $notif_link = '/auction-live.php?id=' . $auction_id;
+        $outbid_stmt = $conn->prepare('
+            SELECT DISTINCT b.user_id FROM bids b
+            WHERE b.auction_id=? AND b.user_id != ? AND b.amount < ?
+        ');
+        $outbid_stmt->bind_param('iid', $auction_id, $user_id, $amount);
+        $outbid_stmt->execute();
+        $outbid_res = $outbid_stmt->get_result();
+        while ($ob = $outbid_res->fetch_assoc()) {
+            notifyUser($conn, (int)$ob['user_id'], 'outbid', 'تم تجاوز مزايدتك!', $notif_msg, $notif_link, ['in_app', 'sms']);
+        }
+
+        $act_type = !empty($opts['is_auto']) ? 'auto_bid_placed' : 'bid_placed';
+        logActivity($conn, $user_id, $act_type, 'قدمت مزايدة بمبلغ ' . number_format($amount) . ' ر.س', ['auction_id' => $auction_id, 'amount' => $amount]);
 
         $conn->commit();
-        return ['success' => true, 'new_price' => $amount];
+        $response = [
+            'success' => true,
+            'new_price' => $amount,
+            'new_end_time' => $new_end_time ?: null,
+        ];
+        if (empty($opts['skip_auto_process'])) {
+            $auto = fleetx_process_auto_bids($conn, (int)$auction_id);
+            if ($auto) {
+                $last = $auto[count($auto) - 1];
+                $response['new_price'] = $last['new_price'] ?? $response['new_price'];
+                $response['new_end_time'] = $last['new_end_time'] ?? $response['new_end_time'];
+                $response['auto_bids'] = count($auto);
+            }
+        }
+        return $response;
     } catch (Exception $e) {
         $conn->rollback();
         return ['success' => false, 'error' => $e->getMessage()];
