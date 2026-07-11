@@ -490,14 +490,30 @@ function initHomeSwiper(selector, key) {
       originals.forEach((slide) => wrapper.appendChild(slide.cloneNode(true)));
     }
   }
-  const slideCount = el.querySelectorAll('.swiper-slide').length;
+  let slideCount = el.querySelectorAll('.swiper-slide').length;
+
+  // Featured carousels use fixed-width slides (CSS). With only 3 slides, Swiper
+  // loop mode never creates duplicates and autoplay stalls on the last slide.
+  if (isFeatured && slideCount >= 3 && slideCount <= 4) {
+    const wrapper = el.querySelector('.swiper-wrapper');
+    if (wrapper) {
+      const originals = [...wrapper.querySelectorAll('.swiper-slide')];
+      originals.forEach((slide) => wrapper.appendChild(slide.cloneNode(true)));
+      slideCount = wrapper.querySelectorAll('.swiper-slide').length;
+    }
+  }
+
+  const featuredInitial = slideCount > 1 ? Math.min(1, slideCount - 1) : 0;
 
   const swiper = isFeatured
     ? new Swiper(el, {
-        slidesPerView: 1.15,
+        slidesPerView: 'auto',
         centeredSlides: true,
         spaceBetween: 18,
-        loop: slideCount >= 3,
+        loop: slideCount >= 6,
+        loopAdditionalSlides: slideCount >= 6 ? 3 : 0,
+        rewind: slideCount < 6,
+        initialSlide: featuredInitial,
         speed: 700,
         autoplay: {
           delay: 4200,
@@ -513,10 +529,6 @@ function initHomeSwiper(selector, key) {
         navigation: {
           nextEl: el.querySelector('.swiper-button-next'),
           prevEl: el.querySelector('.swiper-button-prev'),
-        },
-        breakpoints: {
-          640: { slidesPerView: 2, spaceBetween: 20 },
-          992: { slidesPerView: 3, spaceBetween: 22 },
         },
       })
     : isMarquee
@@ -563,6 +575,19 @@ function initHomeSwiper(selector, key) {
           1024: { slidesPerView: 3, spaceBetween: 28 },
         },
       });
+
+  if (isFeatured && swiper) {
+    requestAnimationFrame(() => {
+      if (swiper.params.loop && typeof swiper.slideToLoop === 'function') {
+        swiper.slideToLoop(featuredInitial, 0);
+      } else {
+        swiper.slideTo(featuredInitial, 0);
+      }
+      if (swiper.autoplay && typeof swiper.autoplay.start === 'function') {
+        swiper.autoplay.start();
+      }
+    });
+  }
 
   if (!window.fxHomeSwipers) window.fxHomeSwipers = {};
   window.fxHomeSwipers[key] = swiper;
