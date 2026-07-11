@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '86');
+define('FLEETX_CSS_VER', '87');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -338,6 +338,15 @@ function fleetx_card_image(?string $url, int $seed = 0, string $type = 'live', s
     }
     $fallbacks = fleetx_card_fallbacks($type);
     return $fallbacks[abs($seed) % count($fallbacks)];
+}
+
+/** onerror handler for card/thumb images — chained seeded fallbacks */
+function fleetx_img_onerror_handler(int $seed, string $type = 'live', string $make = ''): string {
+    $fallback_img = fleetx_card_image('', $seed, $type, $make);
+    $fallback_img2 = fleetx_card_image('', $seed + 5, $type, $make);
+    return "var i=this;if(!i.dataset.fbx){i.dataset.fbx='1';i.src='" . htmlspecialchars($fallback_img, ENT_QUOTES) . "'}"
+        . "else if(i.dataset.fbx==='1'){i.dataset.fbx='2';i.src='" . htmlspecialchars($fallback_img2, ENT_QUOTES) . "'}"
+        . "else{i.onerror=null}";
 }
 
 function getStatusLabel($status) {

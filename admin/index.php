@@ -179,12 +179,17 @@ $admin_active = 'dashboard';
         </tr>
       </thead>
       <tbody>
-        <?php foreach ($recent_auctions as $auc): ?>
+        <?php foreach ($recent_auctions as $auc):
+          $admin_thumb_type = (($auc['type'] ?? '') === 'instant') ? 'instant' : 'live';
+          $admin_thumb_id = intval($auc['id'] ?? 0);
+          $admin_thumb_src = fleetx_card_image($auc['image_url'] ?? '', $admin_thumb_id, $admin_thumb_type, $auc['make'] ?? '');
+          $admin_thumb_err = fleetx_img_onerror_handler($admin_thumb_id, $admin_thumb_type, $auc['make'] ?? '');
+        ?>
           <tr>
             <td style="font-family:var(--font-en);color:var(--gray-500)">#AUC-<?php echo sprintf("%03d", $auc['id']); ?></td>
             <td>
               <div style="display:flex;align-items:center;gap:var(--space-3)">
-                <img src="<?php echo sanitize($auc['image_url']); ?>" alt="" style="width:48px;height:36px;object-fit:cover;border-radius:var(--radius-sm)">
+                <img src="<?= htmlspecialchars($admin_thumb_src) ?>" alt="" loading="lazy" decoding="async" onerror="<?= $admin_thumb_err ?>" style="width:48px;height:36px;object-fit:cover;border-radius:var(--radius-sm);background:#f1f5f9">
                 <div>
                   <div style="font-weight:600;font-size:var(--font-size-sm);color:#1E293B"><?php echo sanitize($auc['title']); ?></div>
                   <div style="font-size:10px;color:var(--gray-500)"><?php echo number_format($auc['mileage']); ?> كم | <?php echo sanitize($auc['city']); ?></div>
