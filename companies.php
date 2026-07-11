@@ -129,34 +129,35 @@ $hero_bottom_html = '';
           $cta_text = $has_live ? 'دخول المزاد المباشر' : ($has_active ? 'عرض المزادات' : 'عرض السيارات');
         ?>
         <a href="/company-profile.php?id=<?= $comp['id'] ?>"
-           class="fx-company-card fx-company-card--modern <?= $card_cls ?>"
+           class="fx-company-card fx-company-card--v2 <?= $card_cls ?>"
            data-name="<?= htmlspecialchars($comp['company_name']) ?>"
            data-city="<?= htmlspecialchars($comp['city'] ?? '') ?>"
            data-live="<?= intval($comp['live_count']) ?>"
            data-active="<?= intval($comp['active_count']) ?>"
            data-rating="<?= $rating ?>">
 
-          <div class="fx-company-card__top"></div>
-
-          <div class="fx-company-badges">
-            <?php if ($has_live): ?>
-            <span class="fx-live-pill"><span class="fx-live-pill__dot"></span> مباشر</span>
-            <?php endif; ?>
-            <?php if (!empty($comp['is_verified'])): ?>
-            <span class="fx-verified-pill"><i class="ph-fill ph-seal-check"></i> موثّق</span>
-            <?php endif; ?>
+          <div class="fx-company-card__banner" aria-hidden="true">
+            <div class="fx-company-card__banner-glow"></div>
           </div>
 
-          <div class="fx-company-card__body">
-            <div class="fx-company-card__head">
+          <div class="fx-company-card__main">
+            <div class="fx-company-card__identity">
               <div class="fx-company-card__avatar">
                 <?php if ($has_logo): ?>
                   <img src="<?= htmlspecialchars($logo) ?>" alt="<?= htmlspecialchars($comp['company_name']) ?>">
                 <?php else: ?>
-                  <?= htmlspecialchars($initial) ?>
+                  <span class="fx-company-card__initial"><?= htmlspecialchars($initial) ?></span>
                 <?php endif; ?>
               </div>
               <div class="fx-company-card__info">
+                <div class="fx-company-card__badges">
+                  <?php if ($has_live): ?>
+                  <span class="fx-live-pill"><span class="fx-live-pill__dot"></span> مباشر</span>
+                  <?php endif; ?>
+                  <?php if (!empty($comp['is_verified'])): ?>
+                  <span class="fx-verified-pill"><i class="ph-fill ph-seal-check"></i> موثّق</span>
+                  <?php endif; ?>
+                </div>
                 <h3 class="fx-company-card__name"><?= htmlspecialchars($comp['company_name']) ?></h3>
                 <div class="fx-company-card__meta">
                   <span><i class="ph ph-map-pin"></i> <?= htmlspecialchars($comp['city'] ?? 'المملكة') ?></span>
@@ -164,22 +165,24 @@ $hero_bottom_html = '';
                 </div>
               </div>
             </div>
-            <div class="fx-company-card__stats">
-              <div class="fx-company-card__stat">
+
+            <div class="fx-company-card__metrics">
+              <div class="fx-company-card__metric">
                 <strong class="font-en"><?= intval($comp['live_count']) ?></strong>
                 <span>مباشر</span>
               </div>
-              <div class="fx-company-card__stat">
+              <div class="fx-company-card__metric">
                 <strong class="font-en"><?= intval($comp['active_count']) ?></strong>
                 <span>نشط</span>
               </div>
-              <div class="fx-company-card__stat">
+              <div class="fx-company-card__metric">
                 <strong class="font-en"><?= number_format(intval($comp['total_count'])) ?></strong>
                 <span>إجمالي</span>
               </div>
             </div>
+
+            <span class="fx-company-card__cta"><?= $cta_text ?> <i class="ph ph-arrow-left"></i></span>
           </div>
-          <span class="fx-company-card__cta"><?= $cta_text ?> <i class="ph ph-arrow-left"></i></span>
         </a>
         <?php endforeach; ?>
       </div>

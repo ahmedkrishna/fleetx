@@ -494,13 +494,13 @@ function initHomeSwiper(selector, key) {
 
   const swiper = isFeatured
     ? new Swiper(el, {
-        slidesPerView: 'auto',
+        slidesPerView: 1.15,
         centeredSlides: true,
-        spaceBetween: 22,
-        loop: slideCount > 2,
-        speed: 650,
+        spaceBetween: 18,
+        loop: slideCount >= 3,
+        speed: 700,
         autoplay: {
-          delay: 5000,
+          delay: 4200,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
         },
@@ -513,6 +513,10 @@ function initHomeSwiper(selector, key) {
         navigation: {
           nextEl: el.querySelector('.swiper-button-next'),
           prevEl: el.querySelector('.swiper-button-prev'),
+        },
+        breakpoints: {
+          640: { slidesPerView: 2, spaceBetween: 20 },
+          992: { slidesPerView: 3, spaceBetween: 22 },
         },
       })
     : isMarquee
@@ -570,42 +574,63 @@ function initHeroBiddingSigns() {
   const container = document.getElementById('fxBiddingSigns');
   if (!container || container.dataset.ready === '1') return;
 
-  const bids = [
-    { text: 'مزايدة جديدة', car: 'كامري 2023', amount: '٨٥,٠٠٠ ر.س', url: '/auctions.php' },
-    { text: 'عرض مباشر', car: 'توسان 2022', amount: '٧٢,٥٠٠ ر.س', url: '/auctions.php?type=live' },
-    { text: 'مزايدة فورية', car: 'باترول 2021', amount: '١٤٣,٠٠٠ ر.س', url: '/event.php?id=1' },
-    { text: 'شراء فوري', car: 'سبورتاج 2022', amount: '٦٨,٠٠٠ ر.س', url: '/auctions.php?type=instant' },
+  const vipCards = [
+    { type: 'live', title: 'كامري 2022', amount: '٩٥,٠٠٠ ر.س', url: '/event.php?id=1' },
+    { type: 'instant', title: 'سوناتا 2023 VIP', amount: '٧٢,٠٠٠ ر.س', url: '/vehicle-details.php?id=8' },
+    { type: 'live', title: 'لاندكروزر 2021', amount: '١٤٥,٠٠٠ ر.س', url: '/event.php?id=2' },
+    { type: 'instant', title: 'تucson 2022', amount: '٦٨,٥٠٠ ر.س', url: '/auctions.php?type=instant' },
   ];
 
+  const activeTops = [];
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+
+  function pickTop() {
+    if (isMobile()) {
+      return (45 + Math.random() * 10) + '%';
+    }
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const top = 10 + Math.floor(Math.random() * 58);
+      const clash = activeTops.some((t) => Math.abs(t - top) < 14);
+      if (!clash) {
+        activeTops.push(top);
+        if (activeTops.length > 5) activeTops.shift();
+        return top + '%';
+      }
+    }
+    return (12 + Math.floor(Math.random() * 50)) + '%';
+  }
+
   function spawnSign() {
-    const bid = bids[Math.floor(Math.random() * bids.length)];
+    const card = vipCards[Math.floor(Math.random() * vipCards.length)];
     const isLeft = Math.random() > 0.5;
-    const sign = document.createElement('div');
-    sign.className = 'fx-bid-sign ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
-    sign.style.top = (15 + Math.random() * 55) + '%';
-    const boardHtml =
-      '<div class="fx-bid-sign__board">' +
+    const sign = document.createElement('a');
+    sign.href = card.url;
+    sign.className = 'fx-bid-sign fx-bid-sign--vip ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
+    sign.style.top = pickTop();
+    sign.setAttribute('aria-label', card.title + ' ' + card.amount);
+    const typeLabel = card.type === 'instant' ? 'شراء فوري VIP' : 'مزاد VIP';
+    const typeIcon = card.type === 'instant' ? 'ph-lightning' : 'ph-gavel';
+    sign.innerHTML =
+      '<div class="fx-bid-sign__board fx-bid-sign__board--vip">' +
+        '<span class="fx-bid-sign__vip-badge"><i class="ph-fill ph-crown"></i> VIP</span>' +
+        '<div class="fx-bid-sign__thumb" aria-hidden="true"><i class="ph-fill ' + typeIcon + '"></i></div>' +
         '<div class="fx-bid-sign__text">' +
-          '<span class="fx-bid-sign__label">' + bid.text + '<br>على ' + bid.car + '</span>' +
-          '<strong class="fx-bid-sign__amount">' + bid.amount + '</strong>' +
+          '<span class="fx-bid-sign__type">' + typeLabel + '</span>' +
+          '<strong class="fx-bid-sign__car">' + card.title + '</strong>' +
+          '<span class="fx-bid-sign__amount">' + card.amount + '</span>' +
         '</div>' +
       '</div>';
-    const stemHtml = '<div class="fx-bid-sign__stem" aria-hidden="true"></div>';
-    sign.innerHTML = isLeft
-      ? boardHtml + stemHtml
-      : stemHtml + boardHtml;
-    sign.addEventListener('click', () => { window.location.href = bid.url; });
     container.appendChild(sign);
     requestAnimationFrame(() => sign.classList.add('is-visible'));
     setTimeout(() => {
       sign.classList.remove('is-visible');
       setTimeout(() => sign.remove(), 600);
-    }, 4800);
+    }, 5200);
   }
 
-  setTimeout(spawnSign, 500);
-  setTimeout(spawnSign, 2200);
-  setInterval(spawnSign, 3800);
+  setTimeout(spawnSign, 600);
+  setTimeout(spawnSign, 2400);
+  setInterval(spawnSign, 4200);
   container.dataset.ready = '1';
 }
 

@@ -1031,3 +1031,177 @@ body.fx-home-index .navbar-logo img {
     padding: 18px 16px;
   }
 }
+
+/* Phase 44 — Companies v2 cards */
+.fx-page-shell--companies .fx-company-card--v2 {
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.fx-page-shell--companies .fx-company-card--v2:hover {
+  transform: translateY(-6px);
+  border-color: rgba(27, 201, 118, 0.35);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+}
+
+.fx-page-shell--companies .fx-company-card__banner {
+  position: relative;
+  height: 72px;
+  background: linear-gradient(135deg, #e8edf2 0%, #f8fafc 100%);
+}
+
+.fx-page-shell--companies .fx-company-card--v2.has-live .fx-company-card__banner {
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.22) 0%, rgba(14, 165, 233, 0.14) 100%);
+}
+
+.fx-page-shell--companies .fx-company-card--v2.has-active .fx-company-card__banner {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, #f1f5f9 100%);
+}
+
+.fx-page-shell--companies .fx-company-card__banner-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.65), transparent 55%);
+}
+
+.fx-page-shell--companies .fx-company-card__main {
+  padding: 0 18px 16px;
+  margin-top: -28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.fx-page-shell--companies .fx-company-card__identity {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.fx-page-shell--companies .fx-company-card--v2 .fx-company-card__avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1bc976, #0ea5e9);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  flex-shrink: 0;
+}
+
+.fx-page-shell--companies .fx-company-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.fx-page-shell--companies .fx-company-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.fx-page-shell--companies .fx-company-card__metric {
+  text-align: center;
+  padding: 10px 6px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+}
+
+.fx-page-shell--companies .fx-company-card__metric strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.fx-page-shell--companies .fx-company-card__metric span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.fx-page-shell--companies .fx-company-card--v2 .fx-company-card__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.1), rgba(14, 165, 233, 0.08));
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* Phase 44 — About pillars (no cards) */
+.fx-about-pillars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 48px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.fx-about-pillar {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 28px 22px;
+  background: transparent;
+  border: none;
+  border-inline-end: 1px solid #e2e8f0;
+}
+
+.fx-about-pillar:last-child {
+  border-inline-end: none;
+}
+
+.fx-about-pillar i {
+  font-size: 36px;
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.fx-about-pillar h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.fx-about-pillar p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .fx-about-pillars {
+    grid-template-columns: 1fr;
+  }
+  .fx-about-pillar {
+    border-inline-end: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .fx-about-pillar:last-child {
+    border-bottom: none;
+  }
+}

@@ -8539,32 +8539,45 @@ a.auctions-tab-btn {
   padding: 48px 40px;
 }
 .fx-auth-visual--light::before {
-  background-image: url('/assets/images/fleetxhero1.png');
-  opacity: 0.18;
+  background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1400&q=80&auto=format');
+  opacity: 0.55;
   background-size: cover;
   background-position: center;
 }
+.fx-auth-visual--light::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 18, 32, 0.82) 0%, rgba(10, 35, 64, 0.55) 55%, rgba(15, 23, 42, 0.35) 100%);
+  z-index: 1;
+}
 .fx-auth-eyebrow { margin-bottom: 16px; }
 .fx-auth-tagline--light {
-  color: #0f172a;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: #f8fafc;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+.fx-auth-tagline--light span {
+  color: #7ee8b8;
 }
 .fx-auth-sub--light {
-  color: #475569;
+  color: rgba(248, 250, 252, 0.88);
   font-weight: 600;
 }
+.fx-auth-eyebrow {
+  color: #7ee8b8 !important;
+}
 .fx-auth-stats--light .fx-auth-stat-num {
-  color: var(--primary);
-  background: #fff;
-  border: 1px solid var(--border-light);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--radius-lg);
   padding: 10px 16px;
   display: inline-block;
   min-width: 64px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 .fx-auth-stats--light .fx-auth-stat-lbl {
-  color: var(--text-muted);
+  color: rgba(248, 250, 252, 0.82);
   font-weight: 700;
 }
 .fx-auth-form-panel--light {

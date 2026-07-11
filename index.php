@@ -35,7 +35,8 @@ if ($db_connected) {
 $approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 0;
 $stats_success_pct = '94';
 $stats_sales_val = '120';
-$stats_sales_unit = 'M Riyal';
+$stats_sales_unit = 'M';
+$stats_sales_unit_ar = 'ريال';
 
 ?>
 <!DOCTYPE html>
@@ -176,9 +177,12 @@ if ($db_connected) {
     </div>
 
     <div class="fx-auctions-shell">
-      <div class="fx-auctions-panel__tabs auctions-tabs fx-home-tabs">
-        <button type="button" class="auctions-tab-btn active" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
-        <button type="button" class="auctions-tab-btn" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
+      <div class="fx-auction-type-toggle" role="group" aria-label="نوع العرض">
+        <span class="fx-auction-type-toggle__label is-active" data-tab="live"><i class="ph-fill ph-broadcast"></i> المزادات الحية</span>
+        <button type="button" class="fx-auction-type-toggle__switch" id="auctionTypeSwitch" aria-pressed="false" aria-label="التبديل بين المزادات الحية والشراء الفوري" onclick="toggleAuctionType(this)">
+          <span class="fx-auction-type-toggle__knob"></span>
+        </button>
+        <span class="fx-auction-type-toggle__label" data-tab="instant"><i class="ph-fill ph-lightning"></i> الشراء الفوري</span>
       </div>
 
       <div id="tab-content-live" class="auctions-tab-content fx-auctions-tab-content active">
@@ -186,11 +190,11 @@ if ($db_connected) {
         <div class="swiper-wrapper">
         <?php
           $status_cycle = ['active', 'upcoming', 'ended'];
-          $live_cards = array_slice($live_auctions, 0, 6);
+          $live_cards = array_slice($live_auctions, 0, 3);
           $live_cities = ['الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'الخبر', 'المدينة المنورة'];
           $live_prices = [205744, 95000, 78500, 142000, 118500, 67500];
           $live_names = ['مزاد الرياض الكبرى', 'مزاد أسطول جدة', 'مزاد سيارات الدفع الرباعي', 'مزاد الشرقية', 'مزاد التأجير اليومي', 'مزاد الأساطيل الذهبية'];
-          while (count($live_cards) < 6) {
+          while (count($live_cards) < 3) {
             $i = count($live_cards);
             $live_cards[] = [
               'id' => 900 + $i,
@@ -249,12 +253,12 @@ if ($db_connected) {
       <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
         <div class="swiper-wrapper">
         <?php
-          $instant_cards = array_slice($instant_cars, 0, 6);
+          $instant_cards = array_slice($instant_cars, 0, 3);
           $inst_makes = ['تويوتا', 'هيونداي', 'نيسان', 'فورد', 'كيا', 'شيفروليه'];
           $inst_models = ['كامري', 'سوناتا', 'ألتيما', 'إكسبلورر', 'سبورتاج', 'تاهو'];
           $inst_cities = ['الرياض', 'جدة', 'الدمام', 'الطائف', 'أبها', 'تبوك'];
           $inst_prices = [89000, 72000, 65000, 115000, 54000, 98000];
-          while (count($instant_cards) < 6) {
+          while (count($instant_cards) < 3) {
             $i = count($instant_cards);
             $instant_cards[] = [
               'id' => 800 + $i,
@@ -312,9 +316,27 @@ if ($db_connected) {
 </section>
 
 <script>
+  function toggleAuctionType(btn) {
+    const goInstant = btn.getAttribute('aria-pressed') !== 'true';
+    btn.setAttribute('aria-pressed', goInstant ? 'true' : 'false');
+    btn.classList.toggle('is-instant', goInstant);
+    document.querySelectorAll('.fx-auction-type-toggle__label').forEach(function(l) {
+      l.classList.toggle('is-active', l.dataset.tab === (goInstant ? 'instant' : 'live'));
+    });
+    switchAuctionTab(goInstant ? 'instant' : 'live', null);
+  }
+
   function switchAuctionTab(tabId, btn) {
     document.querySelectorAll('.fx-auctions-shell .auctions-tab-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
+    document.querySelectorAll('.fx-auction-type-toggle__label').forEach(function(l) {
+      l.classList.toggle('is-active', l.dataset.tab === tabId);
+    });
+    const toggle = document.getElementById('auctionTypeSwitch');
+    if (toggle) {
+      toggle.setAttribute('aria-pressed', tabId === 'instant' ? 'true' : 'false');
+      toggle.classList.toggle('is-instant', tabId === 'instant');
+    }
     document.querySelectorAll('.fx-auctions-shell .auctions-tab-content').forEach(c => c.classList.remove('active'));
     const panel = document.getElementById('tab-content-' + tabId);
     if (panel) panel.classList.add('active');
@@ -505,7 +527,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
   <div class="container">
     <header class="fx-why-fleetx__head reveal fx-why-fleetx__head--center">
       <span class="fx-why-fleetx__eyebrow"><i class="ph-fill ph-gavel"></i> لماذا FleetX</span>
-      <h2 class="fx-why-fleetx__title">منصة مزادات<br><span>مصممة للثقة والسرعة</span></h2>
+      <h2 class="fx-why-fleetx__title"><span class="fx-why-fleetx__title-gradient">منصة مزادات</span><br><span class="fx-why-fleetx__title-dark">مصممة للثقة والسرعة</span></h2>
       <p class="fx-why-fleetx__lead">نسهل العمليات اللوجستية والفحص والتسوية من البداية وحتى التسليم النهائي — بتجربة رقمية واحدة متكاملة.</p>
     </header>
 
@@ -598,7 +620,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         </div>
         <div class="ac-stat-mobile fx-stat-motion">
           <i class="ph ph-trend-up ac-stat-mobile__icon ac-stat-mobile__icon--primary"></i>
-          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="font-en stats-unit-en"><?= $stats_sales_unit ?></span></div>
+          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="font-en stats-unit-en"><?= $stats_sales_unit ?></span> <span class="stats-unit-ar"><?= $stats_sales_unit_ar ?></span></div>
           <div class="stats-desc stats-desc--spaced">إجمالي المبيعات عبر المنصة</div>
         </div>
       </div>
