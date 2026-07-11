@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '88');
+define('FLEETX_CSS_VER', '89');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -129,11 +129,34 @@ function fleetx_page_hero_bg_url(): string {
     return defined('FLEETX_PAGE_HERO_BG') ? trim((string) FLEETX_PAGE_HERO_BG) : '';
 }
 
-/** Navbar/header logo: logo.png on homepage, logo-dark on sub-pages */
-function fleetx_logo_src(): string {
+/** Logo asset paths — logo.png for light backgrounds, logo-dark.png for dark */
+function fleetx_logo_light_src(): string {
+    return '/assets/images/logo.png';
+}
+
+function fleetx_logo_dark_src(): string {
+    return '/assets/images/logo-dark.png';
+}
+
+/** Detect whether the current page header uses a light or dark background */
+function fleetx_logo_bg_context(): string {
     $page = basename($_SERVER['PHP_SELF'] ?? '');
+    $script = $_SERVER['PHP_SELF'] ?? '';
     $is_home = ($page === 'index.php' || $page === '');
-    return '/assets/images/' . ($is_home ? 'logo.png' : 'logo-dark.png');
+    $light_pages = ['login.php', 'register.php', 'onboarding.php', 'nafath.php', 'sanad.php'];
+    if ($is_home || in_array($page, $light_pages, true)) {
+        return 'light';
+    }
+    if (str_contains($script, '/admin/')) {
+        return 'light';
+    }
+    return 'dark';
+}
+
+/** Single logo src for legacy img tags — pass light|dark or omit for auto */
+function fleetx_logo_src(?string $bg = null): string {
+    $bg = $bg ?? fleetx_logo_bg_context();
+    return $bg === 'light' ? fleetx_logo_light_src() : fleetx_logo_dark_src();
 }
 
 /** Queue a toast message for the next page render (consumed in footer / toast-snippet). */

@@ -2601,6 +2601,8 @@ input:checked + .slider:before { transform: translateX(20px); }
 .account-type-card:hover { border-color: var(--bg-dark); }
 .account-type-card.active { border-color: var(--primary); background: rgba(27,201,118,0.05); }
 .account-type-card .at-icon { font-size: 36px; margin-bottom: 10px; display: block; }
+.account-type-card .at-icon i { font-size: 32px; color: var(--primary); }
+.account-type-card.active .at-icon i { color: #047857; }
 .account-type-card .at-name { font-size: 15px; font-weight: 900; color: var(--text-dark); margin-bottom: 4px; }
 .account-type-card .at-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -3658,6 +3660,13 @@ input:checked + .slider:before { transform: translateX(20px); }
   margin: 10px auto 0;
   text-align: center;
 }
+.fx-page-hero--dashboard .fx-page-hero__meta {
+  justify-content: center;
+  margin-top: 20px;
+}
+.fx-page-hero--dashboard .fx-page-hero__actions {
+  justify-content: center;
+}
 .fx-page-hero--dashboard .fx-page-hero__gradient {
   background: linear-gradient(115deg, rgba(6, 12, 22, 0.96) 0%, rgba(6, 12, 22, 0.78) 55%, rgba(27, 201, 118, 0.12) 100%);
 }
@@ -3666,6 +3675,9 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .fx-page-hero--seller .fx-page-hero__gradient {
   background: linear-gradient(to right, rgba(6, 12, 22, 0.96) 0%, rgba(6, 12, 22, 0.82) 100%);
+}
+.fx-page-hero--inspector .fx-page-hero__gradient {
+  background: linear-gradient(115deg, rgba(6, 12, 22, 0.96) 0%, rgba(15, 23, 42, 0.82) 50%, rgba(14, 165, 233, 0.14) 100%);
 }
 .fx-dash-page-body {
   position: relative;
@@ -8654,36 +8666,59 @@ a.auctions-tab-btn {
   text-decoration: none;
 }
 
-/* Register — light centered flow */
-.fx-register-body--light {
-  background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 40%, #f8fafc 100%);
-  align-items: flex-start;
-  padding: 88px 20px 48px;
+/* Register — split layout (matches login) */
+.fx-register-body {
+  min-height: 100vh;
 }
-.fx-register-shell {
-  width: 100%;
-  max-width: 680px;
+.fx-auth-wrap--register {
+  min-height: 100vh;
+  padding-top: 64px;
+}
+.fx-auth-visual--register {
+  padding: 56px 40px 48px;
+}
+.fx-auth-visual--register .fx-auth-visual-content {
+  text-align: right;
+  max-width: 440px;
   margin: 0 auto;
 }
-.fx-register-hero {
-  text-align: center;
-  margin-bottom: 28px;
+.fx-register-benefits {
+  margin: 28px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
-.fx-register-hero__title {
-  font-size: clamp(26px, 4vw, 32px);
-  font-weight: 900;
-  color: #0f172a;
-  margin: 12px 0 8px;
+.fx-register-benefit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.92);
 }
-.fx-register-hero__desc {
-  font-size: 15px;
-  color: #475569;
-  margin: 0;
-  line-height: 1.7;
+.fx-register-benefit i {
+  font-size: 20px;
+  color: #7ee8b8;
+  flex-shrink: 0;
+}
+.fx-auth-form-panel--register {
+  padding: 56px 32px 48px;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+.fx-reg-box--wide {
+  max-width: 520px;
+  width: 100%;
 }
 .fx-reg-card--home {
   border-radius: var(--radius-xl);
   box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+  border: none;
+  padding: 28px 24px;
+  background: transparent;
+}
+.fx-register-body .steps-bar {
+  margin-bottom: 24px;
 }
 .fx-register-body--light .step-dot.active {
   background: var(--primary);
@@ -8710,6 +8745,9 @@ a.auctions-tab-btn {
 @media (max-width: 768px) {
   .fx-auth-topbar { padding: 12px 16px; }
   .fx-auth-wrap--light { padding-top: 56px; }
+  .fx-auth-wrap--register { padding-top: 56px; }
+  .fx-auth-visual--register { display: none; }
+  .fx-auth-form-panel--register { padding: 32px 20px; }
   .fx-auth-form-panel--light { padding: 32px 20px; }
   .fx-auth-box--card { padding: 24px 20px; }
   .fx-register-body--light { padding-top: 76px; }

@@ -148,6 +148,8 @@ $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-wallet"
     . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-trophy"></i> ' . (int)$buyer_won_hero . ' مزاد فائز</span>';
 $hero_actions_html = '<a href="/auctions.php" class="btn btn-primary"><i class="ph ph-gavel ph-space-left"></i> تصفح المزادات</a>'
     . '<a href="/companies.php" class="btn btn-outline"><i class="ph ph-buildings ph-space-left"></i> دليل الشركات</a>';
+$hero_modifier = 'dashboard';
+$hero_extra_class = 'fx-page-hero--buyer';
 include 'includes/page-hero.inc.php';
 ?>
 
@@ -475,13 +477,13 @@ include 'includes/page-hero.inc.php';
       <?php else: ?>
         <div class="fx-dash-card-grid">
           <?php foreach ($user_bids as $bid):
-            $bid_img = fleetx_card_image($bid['image_url'] ?? '', intval($bid['id'] ?? 0), 'instant', $bid['make'] ?? '');
+            $bid_thumb = fleetx_vehicle_thumb($bid['image_url'] ?? '', intval($bid['id'] ?? 0), 'live', $bid['make'] ?? '');
             $is_winning = $bid['is_winning'] ?? ($bid['amount'] >= $bid['current_price']);
             $timer = $bid['end_time'] ? timeLeft($bid['end_time']) : null;
           ?>
           <div class="bid-card">
             <div class="bid-card-img">
-              <img src="<?= $bid_img ?>" alt="<?= sanitize($bid['auction_title']) ?>" loading="lazy">
+              <img src="<?= htmlspecialchars($bid_thumb['src']) ?>" alt="<?= sanitize($bid['auction_title']) ?>" loading="lazy" decoding="async" onerror="<?= $bid_thumb['onerror'] ?>">
               <div class="bid-status-badge <?= $is_winning ? 'bid-status-winning' : 'bid-status-outbid' ?>">
                 <?= $is_winning ? 'رابح' : 'تم تجاوزك' ?>
               </div>
@@ -570,11 +572,11 @@ include 'includes/page-hero.inc.php';
       <?php else: ?>
         <div class="fx-dash-card-grid">
           <?php foreach ($purchases as $p):
-            $p_img = fleetx_card_image($p['image_url'] ?? '', intval($p['id'] ?? 0), 'instant', $p['make'] ?? '');
+            $p_thumb = fleetx_vehicle_thumb($p['image_url'] ?? '', intval($p['id'] ?? 0), 'instant', $p['make'] ?? '');
           ?>
           <div class="bid-card">
             <div class="bid-card-img">
-              <img src="<?= $p_img ?>" alt="<?= sanitize($p['title']) ?>" loading="lazy">
+              <img src="<?= htmlspecialchars($p_thumb['src']) ?>" alt="<?= sanitize($p['title']) ?>" loading="lazy" decoding="async" onerror="<?= $p_thumb['onerror'] ?>">
               <div class="bid-status-badge bid-status-winning">تم الشراء</div>
             </div>
             <div class="bid-card-body">
@@ -622,7 +624,8 @@ include 'includes/page-hero.inc.php';
         <div class="fav-grid">
           <?php foreach ($fav_items as $item):
             $title_car = $item['title'] ?? (($item['make'] ?? '') . ' ' . ($item['model'] ?? '') . ' ' . ($item['year'] ?? ''));
-            $img = fleetx_card_image($item['image_url'] ?? '', intval($item['id'] ?? 0), ($item['type'] ?? '') === 'instant' ? 'instant' : 'live', $item['make'] ?? '');
+            $fav_type = (($item['type'] ?? '') === 'instant') ? 'instant' : 'live';
+            $fav_thumb = fleetx_vehicle_thumb($item['image_url'] ?? '', intval($item['id'] ?? 0), $fav_type, $item['make'] ?? '');
             $is_instant = ($item['type'] ?? '') === 'instant';
           ?>
             <div class="auction-card fx-fav-card" onclick="window.location.href='<?= $is_instant ? '/vehicle-details.php' : '/auction-room.php' ?>?id=<?= $item['id'] ?>'">
@@ -630,7 +633,7 @@ include 'includes/page-hero.inc.php';
                 <i class="ph-fill ph-heart"></i>
               </div>
               <div class="ac-img-wrap">
-                <img src="<?= $img ?>" alt="<?= sanitize($title_car) ?>" loading="lazy">
+                <img src="<?= htmlspecialchars($fav_thumb['src']) ?>" alt="<?= sanitize($title_car) ?>" loading="lazy" decoding="async" onerror="<?= $fav_thumb['onerror'] ?>">
               </div>
               <div class="ac-body">
                 <h3 class="ac-title"><?= sanitize($title_car) ?></h3>

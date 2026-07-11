@@ -4,7 +4,7 @@ $admin_active = $admin_active ?? '';
 <aside class="admin-sidebar" id="admin-sidebar" role="complementary" aria-label="القائمة الجانبية">
   <div class="admin-sidebar-header">
     <a href="/index.php" class="navbar-brand">
-      <img src="<?= fleetx_logo_src() ?>" alt="FleetX" style="height:36px;">
+      <?php $fx_logo_bg = 'light'; $fx_logo_link = ''; $fx_logo_height = 36; include dirname(__DIR__) . '/includes/fx-logo.inc.php'; ?>
       <div class="navbar-brand-text">
         <span class="brand-ar" style="font-size:14px;color:#1E293B">FleetX</span>
         <span class="brand-en" style="font-size:10px;color:#1bc976">لوحة الإدارة</span>

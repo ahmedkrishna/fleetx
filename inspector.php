@@ -69,6 +69,8 @@ $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-hourgla
 $hero_actions_html = ($role === 'admin')
     ? '<a href="/admin/inspections.php" class="btn btn-outline"><i class="ph ph-shield-check ph-space-left"></i> لوحة الإدارة</a>'
     : '';
+$hero_modifier = 'dashboard';
+$hero_extra_class = 'fx-page-hero--inspector';
 include 'includes/page-hero.inc.php';
 ?>
 

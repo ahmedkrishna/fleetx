@@ -50,6 +50,7 @@ $files = @(
     'assets/css/admin.css',
     'assets/js/fleetx.js',
     'includes/navbar.php',
+    'includes/fx-logo.inc.php',
     'includes/header.php',
     'includes/page-hero.inc.php',
     'includes/fx-auction-card.inc.php',

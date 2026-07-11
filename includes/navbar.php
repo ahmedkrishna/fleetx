@@ -13,7 +13,6 @@ elseif ($is_seller) $dash_label = 'لوحة البائع';
 elseif ($is_inspector) $dash_label = 'لوحة الفحص';
 elseif ($is_buyer) $dash_label = 'لوحة المشتري';
 
-$navbar_logo_src = fleetx_logo_src();
 ?>
 
 <?= fleetx_db_banner_html() ?>
@@ -23,7 +22,7 @@ $navbar_logo_src = fleetx_logo_src();
 
       <!-- Logo -->
       <a href="/index.php" class="navbar-logo">
-        <img src="<?= $navbar_logo_src ?>" alt="FleetX Logo">
+        <?php $fx_logo_bg = 'auto'; $fx_logo_link = ''; include __DIR__ . '/fx-logo.inc.php'; ?>
       </a>
 
       <!-- Nav Links -->

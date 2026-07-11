@@ -2,18 +2,40 @@
    Sub-page & auth UI polish — Phase 25 + UI fixes
    ========================================================================== */
 
-/* Sub-pages: logo-dark.png on dark glass navbar */
-body.fx-home.fx-page-shell .navbar-logo img {
-  filter: none;
-  height: 36px;
+/* Adaptive logo — light vs dark background variants */
+.fx-logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+.fx-logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.fx-logo__img {
   width: auto;
   object-fit: contain;
 }
+.fx-logo--on-light .fx-logo__img--dark {
+  display: none !important;
+}
+.fx-logo--on-dark .fx-logo__img--light {
+  display: none !important;
+}
 
-body.fx-home-index .navbar-logo img {
+body.fx-home.fx-page-shell .navbar-logo .fx-logo__img,
+body.fx-home-index .navbar-logo .fx-logo__img {
   height: 36px;
-  width: auto;
-  object-fit: contain;
+}
+
+.fx-auth-topbar__logo .fx-logo__img,
+.fx-flow-topbar__logo .fx-logo__img {
+  height: 36px;
+}
+
+.fx-footer-logo-wrap .fx-logo__img {
+  height: 40px;
 }
 
 /* Mobile nav: icon colors match link text */

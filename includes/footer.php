@@ -5,7 +5,7 @@
       <!-- Brand & About -->
       <div>
         <a href="/index.php" class="fx-footer-brand">
-          <img src="/assets/images/logo.png" alt="FleetX" class="fx-footer-logo">
+          <?php $fx_logo_bg = 'dark'; $fx_logo_link = ''; $fx_logo_class = 'fx-footer-logo-wrap'; $fx_logo_height = 40; include __DIR__ . '/fx-logo.inc.php'; ?>
         </a>
         <p class="fx-footer-about">
           منصة FleetX هي العلامة التجارية الرائدة لتنظيم وإدارة مزادات سيارات الأساطيل وشركات التأجير في المملكة العربية السعودية. نوفر بيئة تداول ذكية وآمنة وموثوقة بالكامل مدعومة بتقنية الذكاء الاصطناعي.

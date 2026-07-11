@@ -133,6 +133,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_submit'])) {
 }
 
 $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'buyer';
+
+$auth_companies = 0;
+$auth_auctions = 0;
+$auth_revenue = 0;
+if ($db_connected) {
+    $auth_companies = (int)($conn->query("SELECT COUNT(*) FROM seller_companies")->fetch_row()[0] ?? 0);
+    $auth_auctions = (int)($conn->query("SELECT COUNT(*) FROM auctions")->fetch_row()[0] ?? 0);
+    $auth_revenue = (float)($conn->query("SELECT COALESCE(SUM(current_price),0) FROM auctions WHERE status='ended'")->fetch_row()[0] ?? 0);
+}
+$auth_revenue_display = $auth_revenue >= 1000000
+    ? number_format($auth_revenue / 1000000, 1) . 'M+'
+    : number_format($auth_revenue);
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -145,22 +157,38 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="fx-register-body fx-register-body--light">
+<body class="fx-auth-body fx-auth-body--light fx-register-body">
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">
-    <img src="<?= fleetx_logo_src() ?>" alt="FleetX">
+    <?php $fx_logo_bg = 'light'; $fx_logo_link = ''; include 'includes/fx-logo.inc.php'; ?>
   </a>
   <a href="/login.php" class="fx-auth-topbar__home"><i class="ph ph-sign-in"></i> تسجيل الدخول</a>
 </header>
 
-<div class="fx-register-shell">
-<div class="reg-container">
-  <div class="fx-register-hero">
-    <span class="fx-home-eyebrow"><i class="ph-fill ph-user-plus"></i> انضم إلى FleetX</span>
-    <h1 class="fx-register-hero__title">إنشاء حساب جديد</h1>
-    <p class="fx-register-hero__desc">ابدأ البيع أو الشراء في مزادات أساطيل السيارات خلال دقائق</p>
+<div class="fx-auth-wrap fx-auth-wrap--light fx-auth-wrap--register">
+  <div class="fx-auth-visual fx-auth-visual--light fx-auth-visual--register">
+    <div class="fx-auth-visual-content">
+      <span class="fx-home-eyebrow fx-auth-eyebrow"><i class="ph-fill ph-user-plus"></i> انضم إلى FleetX</span>
+      <h1 class="fx-auth-tagline fx-auth-tagline--light">ابدأ رحلتك في<br><span>مزادات الأساطيل</span><br>خلال دقائق</h1>
+      <p class="fx-auth-sub fx-auth-sub--light">سجّل كبائع أو مشتري واستفد من فحص موثّق، مزايدات شفافة، ودفع آمن</p>
+      <div class="fx-register-benefits">
+        <div class="fx-register-benefit"><i class="ph-fill ph-shield-check"></i><span>توثيق عبر النفاذ الوطني</span></div>
+        <div class="fx-register-benefit"><i class="ph-fill ph-gavel"></i><span>مزادات حية وبيع فوري</span></div>
+        <div class="fx-register-benefit"><i class="ph-fill ph-chart-line-up"></i><span>تقارير فحص معتمدة</span></div>
+      </div>
+      <div class="fx-auth-stats fx-auth-stats--light">
+        <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= max(1, $auth_companies) ?>+</div><div class="fx-auth-stat-lbl">شركة معتمدة</div></div>
+        <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= max(1, $auth_auctions) ?>+</div><div class="fx-auth-stat-lbl">مزاد منظم</div></div>
+        <div class="fx-auth-stat"><div class="fx-auth-stat-num"><?= $auth_revenue_display ?></div><div class="fx-auth-stat-lbl">ريال حجم التداول</div></div>
+      </div>
+    </div>
   </div>
+
+  <div class="fx-auth-form-panel fx-auth-form-panel--light fx-auth-form-panel--register">
+    <div class="fx-auth-box fx-panel-first fx-auth-box--card fx-reg-box--wide">
+      <h1 class="fx-auth-title">إنشاء حساب جديد</h1>
+      <p class="fx-auth-subtitle">اختر نوع حسابك وأكمل البيانات في 3 خطوات بسيطة</p>
 
   <?php if ($success):
     $reg_role = $_SESSION['register_role'] ?? 'buyer';
@@ -245,7 +273,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
 
         <div class="account-type-grid">
           <div class="account-type-card <?= (($_POST['role']??$init_role)==='seller')?'active':'' ?>" onclick="setRole('seller')" id="atcard-seller">
-            <span class="at-icon">🏢</span>
+            <span class="at-icon"><i class="ph-fill ph-buildings"></i></span>
             <div class="at-name">شركة تأجير</div>
             <div class="at-desc">للشركات ومعارض السيارات الراغبة في بيع أساطيلها</div>
             <div class="at-features">
@@ -255,7 +283,7 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
             </div>
           </div>
           <div class="account-type-card <?= (($_POST['role']??$init_role)==='buyer')?'active':'' ?>" onclick="setRole('buyer')" id="atcard-buyer">
-            <span class="at-icon">🛒</span>
+            <span class="at-icon"><i class="ph-fill ph-shopping-cart"></i></span>
             <div class="at-name">تاجر / وكيل</div>
             <div class="at-desc">للتجار والأفراد الراغبين في شراء سيارات الأساطيل</div>
             <div class="at-features">
@@ -387,7 +415,8 @@ $init_role = isset($_GET['type']) && $_GET['type'] === 'company' ? 'seller' : 'b
     </form>
   </div>
   <?php endif; ?>
-</div>
+    </div>
+  </div>
 </div>
 
 <script src="https://unpkg.com/@phosphor-icons/web"></script>

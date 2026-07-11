@@ -56,7 +56,7 @@ $nafath_number = rand(10, 99);
 <body class="fx-verify-page">
 
 <header class="fx-flow-topbar">
-  <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
+  <a href="/index.php" class="fx-flow-topbar__logo"><?php $fx_logo_bg = 'light'; $fx_logo_link = ''; include 'includes/fx-logo.inc.php'; ?></a>
   <a href="/index.php" class="fx-flow-topbar__link"><i class="ph ph-house"></i> الرئيسية</a>
 </header>
 

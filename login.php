@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">
-    <img src="<?= fleetx_logo_src() ?>" alt="FleetX">
+    <?php $fx_logo_bg = 'light'; $fx_logo_link = ''; include 'includes/fx-logo.inc.php'; ?>
   </a>
   <a href="/index.php" class="fx-auth-topbar__home"><i class="ph ph-house"></i> الرئيسية</a>
 </header>

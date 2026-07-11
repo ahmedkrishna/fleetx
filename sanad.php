@@ -73,7 +73,7 @@ if ($db_connected) {
 <body class="fx-sanad-page">
 
 <header class="fx-flow-topbar">
-  <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
+  <a href="/index.php" class="fx-flow-topbar__logo"><?php $fx_logo_bg = 'light'; $fx_logo_link = ''; include 'includes/fx-logo.inc.php'; ?></a>
   <a href="/buyer.php?section=dashboard" class="fx-flow-topbar__link"><i class="ph ph-house"></i> لوحة المشتري</a>
 </header>
 
