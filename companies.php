@@ -55,7 +55,7 @@ $hero_bottom_html = '';
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 
-<div class="fx-companies-layout container fx-page-body--overlap">
+<div class="fx-companies-layout fx-page-body fx-page-body--overlap">
   <div class="fx-companies-hero-stats reveal">
     <div class="fx-companies-stat-card">
       <i class="ph-fill ph-buildings"></i>

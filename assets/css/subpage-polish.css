@@ -38,6 +38,93 @@ body.fx-home-index .navbar-logo .fx-logo__img {
   height: 40px;
 }
 
+/* Login stroke button — global (not only homepage home-live.css) */
+.btn-login--green-stroke {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-round);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+  min-height: 36px;
+  box-sizing: border-box;
+  color: var(--primary) !important;
+  background: transparent !important;
+  border: 2px solid var(--primary);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s ease, border-color 0.35s ease, transform 0.25s ease, box-shadow 0.35s ease;
+}
+.btn-login--green-stroke:hover {
+  color: #fff !important;
+  border-color: var(--primary-hover, var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(27, 201, 118, 0.35);
+  background: var(--primary) !important;
+}
+body.fx-home.fx-page-shell .btn-login--green-stroke {
+  color: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(27, 201, 118, 0.55) !important;
+}
+body.fx-home.fx-page-shell .btn-login--green-stroke:hover {
+  color: #0f172a !important;
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* Auth login mode toggle — visible on white card */
+.fx-auth-mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.fx-auth-mode-toggle .fx-auth-mode-btn {
+  flex: 1;
+  border-radius: var(--radius-round);
+  font-weight: 800;
+}
+.fx-auth-mode-toggle .fx-auth-mode-btn.active {
+  background: rgba(27, 201, 118, 0.12);
+  border-color: var(--primary);
+  color: #047857;
+}
+
+/* Homepage: light mobile drawer on light navbar */
+body.fx-home-index #mobileMenu {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+body.fx-home-index #mobileMenu a {
+  color: #334155 !important;
+}
+body.fx-home-index #mobileMenu a:hover,
+body.fx-home-index #mobileMenu a.fx-mobile-active {
+  color: var(--primary) !important;
+}
+body.fx-home-index #mobileMenu a .ph,
+body.fx-home-index #mobileMenu a i.ph {
+  color: #64748b !important;
+}
+body.fx-home-index #mobileMenu a:hover .ph,
+body.fx-home-index #mobileMenu a.fx-mobile-active .ph {
+  color: var(--primary) !important;
+}
+body.fx-home-index #mobileMenu .fx-mobile-guest-link {
+  color: #64748b !important;
+}
+body.fx-home-index #mobileMenu .fx-mobile-guest-link:hover {
+  color: var(--primary) !important;
+}
+
+/* Unified overlap margin for sub-page bodies */
+body.fx-home.fx-page-shell .fx-page-body--overlap {
+  margin-top: -44px;
+}
+
 /* Mobile nav: icon colors match link text */
 #mobileMenu a .ph,
 #mobileMenu a i.ph {

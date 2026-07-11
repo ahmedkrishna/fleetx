@@ -175,13 +175,6 @@ include 'includes/page-hero.inc.php';
 
 <div class="container fx-page-body fx-page-body--overlap fx-map-page">
   <div class="fx-map-intro-bar">
-    <div class="fx-map-intro-stat">
-      <i class="ph-fill ph-car"></i>
-      <div>
-        <strong><?= count($map_vehicles) ?></strong>
-        <span>مركبة معروضة</span>
-      </div>
-    </div>
     <a href="/auctions.php" class="fx-map-intro-link">عرض القائمة <i class="ph ph-arrow-left"></i></a>
   </div>
 

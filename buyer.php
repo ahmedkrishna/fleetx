@@ -139,8 +139,12 @@ if ($db_connected) {
 <?php include 'includes/navbar.php'; ?>
 
 <?php
-$hero_title = 'مرحباً بك، ' . sanitize($user_name);
-$hero_desc = 'تابع مزايداتك، مشترياتك، ومحفظتك من مكان واحد';
+$hero_title = ($section === 'dashboard')
+    ? ('مرحباً بك، ' . sanitize($user_name))
+    : htmlspecialchars($buyer_sec['label']);
+$hero_desc = ($section === 'dashboard')
+    ? 'تابع مزايداتك، مشترياتك، ومحفظتك من مكان واحد'
+    : ('لوحة المشتري — ' . sanitize($user_name));
 $hero_bg = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80';
 $hero_eyebrow = 'لوحة المشتري';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-wallet"></i> ' . number_format((float)$buyer_wallet_hero) . ' ر.س محفظة</span>'
@@ -192,6 +196,7 @@ include 'includes/page-hero.inc.php';
     </div>
 
     <!-- Header Bar -->
+    <?php if ($section !== 'dashboard'): ?>
     <div class="buyer-header-bar fx-buyer-card">
       <h1 class="buyer-title">
         <i class="<?= $buyer_sec['icon'] ?> <?= $buyer_sec['icon_class'] ?>"></i> <?= htmlspecialchars($buyer_sec['label']) ?>
@@ -201,6 +206,7 @@ include 'includes/page-hero.inc.php';
         <a href="/auctions.php" class="btn btn-primary btn--pill"><i class="ph ph-plus"></i> تصفح المزادات</a>
       <?php endif; ?>
     </div>
+    <?php endif; ?>
 
     <?php
     // Nafath & Sanad Check

@@ -24,7 +24,7 @@
           <li><a href="/auctions.php">جميع المزادات النشطة</a></li>
           <li><a href="/auctions.php?type=live">مزادات التنفيذ الفوري</a></li>
           <li><a href="/auctions.php?type=instant">الشراء المباشر والفوري</a></li>
-          <li><a href="/about.php">شروط التداول والمشاركة</a></li>
+          <li><a href="/about.php">كيف يعمل FleetX</a></li>
         </ul>
       </div>
 
@@ -97,6 +97,9 @@
 
   window.FX_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
   window.FX_LOGIN_URL = '/login.php';
+  <?php if (isset($hero_bid_signs) && !empty($hero_bid_signs)): ?>
+  window.FX_HERO_BIDS = <?= json_encode($hero_bid_signs, JSON_UNESCAPED_UNICODE) ?>;
+  <?php endif; ?>
   window.FX_GUEST_MSG_BID = <?= json_encode(fleetx_t('guest_bid_login'), JSON_UNESCAPED_UNICODE) ?>;
   window.FX_GUEST_MSG_FAV = <?= json_encode(fleetx_t('guest_fav_login'), JSON_UNESCAPED_UNICODE) ?>;
 

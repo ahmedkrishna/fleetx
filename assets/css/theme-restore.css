@@ -24,7 +24,7 @@ body.fx-home-index .navbar-links a.active {
 body.fx-home-index .navbar-toggle {
   color: #0f172a !important;
 }
-body.fx-home-index .btn-nav-login {
+body.fx-home-index .btn-login--green-stroke {
   color: var(--primary) !important;
   border-color: var(--primary) !important;
 }
@@ -81,9 +81,9 @@ body.fx-home.fx-page-shell .navbar-links a.active {
 body.fx-home.fx-page-shell .navbar-toggle {
   color: #fff !important;
 }
-body.fx-home.fx-page-shell .btn-nav-login {
-  color: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+body.fx-home.fx-page-shell .btn-login--green-stroke {
+  color: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(27, 201, 118, 0.55) !important;
 }
 
 /* ── Sub-page heroes: dark base + stronger overlay ─────────────────────── */

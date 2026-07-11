@@ -140,9 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input class="fx-form-input" type="password" id="password" name="password" placeholder="••••••••" required>
         </div>
 
-        <div class="fx-auth-mode-toggle" style="display:flex;gap:8px;margin-bottom:16px;">
-          <button type="button" class="btn btn-outline btn-sm" id="mode-password" onclick="setLoginMode('password')" style="flex:1;">كلمة المرور</button>
-          <button type="button" class="btn btn-outline btn-sm" id="mode-otp" onclick="setLoginMode('otp')" style="flex:1;">رمز OTP</button>
+        <div class="fx-auth-mode-toggle">
+          <button type="button" class="btn btn-outline-dark btn-sm fx-auth-mode-btn active" id="mode-password" onclick="setLoginMode('password')">كلمة المرور</button>
+          <button type="button" class="btn btn-outline-dark btn-sm fx-auth-mode-btn" id="mode-otp" onclick="setLoginMode('otp')">رمز OTP</button>
         </div>
         <div id="otp-panel" style="display:none;">
           <button type="button" class="btn btn-secondary btn-sm" style="width:100%;margin-bottom:12px;" onclick="sendLoginOtp()">إرسال رمز التحقق</button>
@@ -211,6 +211,8 @@ function setLoginMode(mode) {
   document.getElementById('password-panel').style.display = mode === 'password' ? '' : 'none';
   document.getElementById('otp-panel').style.display = mode === 'otp' ? '' : 'none';
   document.getElementById('password').required = mode === 'password';
+  document.getElementById('mode-password')?.classList.toggle('active', mode === 'password');
+  document.getElementById('mode-otp')?.classList.toggle('active', mode === 'otp');
 }
 async function sendLoginOtp() {
   const mobile = document.getElementById('mobile').value.trim();

@@ -520,8 +520,7 @@ $hero_eyebrow = 'لوحة البائع';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-car"></i> ' . (int)$fleet_count . ' مركبة معروضة</span>'
     . '<span class="fx-page-hero__chip"><i class="ph-fill ph-currency-circle-dollar"></i> ' . number_format((float)$total_sales) . ' ر.س مبيعات</span>'
     . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-gavel"></i> ' . (int)($active_auctions_count ?? 0) . ' مزاد نشط</span>';
-$hero_actions_html = '<a href="/add-auction.php" class="btn btn-primary"><i class="ph ph-gavel ph-space-left"></i> مزاد مباشر</a>'
-    . '<a href="/add-auction.php?type=instant" class="btn btn-outline"><i class="ph ph-lightning ph-space-left"></i> بيع فوري</a>';
+$hero_actions_html = '';
 $hero_modifier = 'dashboard';
 $hero_extra_class = 'fx-page-hero--seller';
 include 'includes/page-hero.inc.php';

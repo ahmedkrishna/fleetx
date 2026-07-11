@@ -155,7 +155,6 @@ $auth_revenue_display = $auth_revenue >= 1000000
   <meta name="description" content="سجّل في FleetX وابدأ البيع والشراء في مزادات أساطيل السيارات">
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body class="fx-auth-body fx-auth-body--light fx-register-body">
 
@@ -419,7 +418,6 @@ $auth_revenue_display = $auth_revenue >= 1000000
   </div>
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>
 let currentRole = '<?= htmlspecialchars($_POST['role'] ?? $init_role) ?>';
 let nafathVerified = false;

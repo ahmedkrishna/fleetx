@@ -594,27 +594,27 @@ function initHomeSwiper(selector, key) {
   return swiper;
 }
 
-/* ── Modern bidding signs in hero ──────────────────────── */
+/* ── Hero bidding signs (gavel paddle cards → live listings) ── */
 function initHeroBiddingSigns() {
   const container = document.getElementById('fxBiddingSigns');
   if (!container || container.dataset.ready === '1') return;
 
-  const vipCards = [
-    { type: 'live', title: 'كامري 2022', amount: '٩٥,٠٠٠ ر.س', url: '/event.php?id=1' },
-    { type: 'instant', title: 'سوناتا 2023 VIP', amount: '٧٢,٠٠٠ ر.س', url: '/vehicle-details.php?id=8' },
-    { type: 'live', title: 'لاندكروزر 2021', amount: '١٤٥,٠٠٠ ر.س', url: '/event.php?id=2' },
-    { type: 'instant', title: 'تucson 2022', amount: '٦٨,٥٠٠ ر.س', url: '/auctions.php?type=instant' },
-  ];
+  const bids = Array.isArray(window.FX_HERO_BIDS) && window.FX_HERO_BIDS.length
+    ? window.FX_HERO_BIDS
+    : [
+        { text: 'مزايدة جديدة', car: 'كامري 2023', amount: '٨٥,٠٠٠ ر.س', url: '/event.php?id=1' },
+        { text: 'عرض مباشر', car: 'توسان 2022', amount: '٧٢,٥٠٠ ر.س', url: '/auctions.php?type=live' },
+        { text: 'مزايدة فورية', car: 'باترول 2021', amount: '١٤٣,٠٠٠ ر.س', url: '/event.php?id=2' },
+        { text: 'شراء فوري', car: 'سبورتاج 2022', amount: '٦٨,٠٠٠ ر.س', url: '/auctions.php?type=instant' },
+      ];
 
   const activeTops = [];
   const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
 
   function pickTop() {
-    if (isMobile()) {
-      return (45 + Math.random() * 10) + '%';
-    }
+    if (isMobile()) return (42 + Math.random() * 12) + '%';
     for (let attempt = 0; attempt < 12; attempt++) {
-      const top = 10 + Math.floor(Math.random() * 58);
+      const top = 12 + Math.floor(Math.random() * 52);
       const clash = activeTops.some((t) => Math.abs(t - top) < 14);
       if (!clash) {
         activeTops.push(top);
@@ -622,40 +622,38 @@ function initHeroBiddingSigns() {
         return top + '%';
       }
     }
-    return (12 + Math.floor(Math.random() * 50)) + '%';
+    return (14 + Math.floor(Math.random() * 48)) + '%';
   }
 
   function spawnSign() {
-    const card = vipCards[Math.floor(Math.random() * vipCards.length)];
+    const bid = bids[Math.floor(Math.random() * bids.length)];
     const isLeft = Math.random() > 0.5;
     const sign = document.createElement('a');
-    sign.href = card.url;
-    sign.className = 'fx-bid-sign fx-bid-sign--vip ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
+    sign.href = bid.url;
+    sign.className = 'fx-bid-sign ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
     sign.style.top = pickTop();
-    sign.setAttribute('aria-label', card.title + ' ' + card.amount);
-    const typeLabel = card.type === 'instant' ? 'شراء فوري VIP' : 'مزاد VIP';
-    const typeIcon = card.type === 'instant' ? 'ph-lightning' : 'ph-gavel';
+    sign.setAttribute('aria-label', bid.text + ' على ' + bid.car + ' — ' + bid.amount);
     sign.innerHTML =
-      '<div class="fx-bid-sign__board fx-bid-sign__board--vip">' +
-        '<span class="fx-bid-sign__vip-badge"><i class="ph-fill ph-crown"></i> VIP</span>' +
-        '<div class="fx-bid-sign__thumb" aria-hidden="true"><i class="ph-fill ' + typeIcon + '"></i></div>' +
+      (isLeft ? '<div class="fx-bid-sign__stem"></div>' : '') +
+      '<div class="fx-bid-sign__gavel"><i class="ph-fill ph-gavel"></i></div>' +
+      '<div class="fx-bid-sign__board">' +
         '<div class="fx-bid-sign__text">' +
-          '<span class="fx-bid-sign__type">' + typeLabel + '</span>' +
-          '<strong class="fx-bid-sign__car">' + card.title + '</strong>' +
-          '<span class="fx-bid-sign__amount">' + card.amount + '</span>' +
+          '<span class="fx-bid-sign__label">' + bid.text + '<br>على ' + bid.car + '</span>' +
+          '<strong class="fx-bid-sign__amount">' + bid.amount + '</strong>' +
         '</div>' +
-      '</div>';
+      '</div>' +
+      (!isLeft ? '<div class="fx-bid-sign__stem"></div>' : '');
     container.appendChild(sign);
     requestAnimationFrame(() => sign.classList.add('is-visible'));
     setTimeout(() => {
       sign.classList.remove('is-visible');
       setTimeout(() => sign.remove(), 600);
-    }, 5200);
+    }, 4800);
   }
 
-  setTimeout(spawnSign, 600);
-  setTimeout(spawnSign, 2400);
-  setInterval(spawnSign, 4200);
+  setTimeout(spawnSign, 700);
+  setTimeout(spawnSign, 2200);
+  setInterval(spawnSign, 5000);
   container.dataset.ready = '1';
 }
 

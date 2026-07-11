@@ -32,11 +32,68 @@ if ($db_connected) {
     if ($res_success) $successful_auctions = intval($res_success->fetch_row()[0]);
 }
 
-$approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 0;
-$stats_success_pct = '94';
-$stats_sales_val = '120';
-$stats_sales_unit = 'M';
+$approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 94;
+if ($total_sales_value >= 1000000) {
+    $stats_sales_val = (string) round($total_sales_value / 1000000);
+    $stats_sales_unit = 'M';
+} elseif ($total_sales_value >= 1000) {
+    $stats_sales_val = (string) round($total_sales_value / 1000);
+    $stats_sales_unit = 'K';
+} else {
+    $stats_sales_val = (string) max(1, (int) round($total_sales_value));
+    $stats_sales_unit = '';
+}
+$stats_success_pct = (string) max(1, (int) round($approval_rate));
 $stats_sales_unit_ar = 'ريال';
+
+// Fetch auctions early for hero bid signs + section 2
+$live_auctions = [];
+$instant_cars = [];
+if ($db_connected) {
+    $res = $conn->query("SELECT a.*, v.make, v.model, v.year, v.image_url, v.city, v.mileage
+                         FROM auctions a
+                         JOIN vehicles v ON a.vehicle_id = v.id
+                         WHERE a.type='live' AND a.status='active' LIMIT 6");
+    if ($res) while ($row = $res->fetch_assoc()) $live_auctions[] = $row;
+
+    $res = $conn->query("SELECT a.*, v.make, v.model, v.year, v.image_url, v.city, v.mileage
+                         FROM auctions a
+                         JOIN vehicles v ON a.vehicle_id = v.id
+                         WHERE a.type='instant' AND a.status='active' LIMIT 6");
+    if ($res) while ($row = $res->fetch_assoc()) $instant_cars[] = $row;
+}
+
+$hero_bid_signs = [];
+$hero_live_names = ['مزاد الرياض الكبرى', 'مزاد أسطول جدة', 'مزاد سيارات الدفع الرباعي', 'مزاد الشرقية'];
+foreach (array_slice($live_auctions, 0, 4) as $i => $a) {
+    $car_label = trim(($a['make'] ?? '') . ' ' . ($a['model'] ?? '') . ' ' . ($a['year'] ?? ''));
+    if ($car_label === '') $car_label = $hero_live_names[$i % count($hero_live_names)];
+    $hero_bid_signs[] = [
+        'text' => 'مزايدة حية',
+        'car' => $car_label,
+        'amount' => number_format((int)($a['current_price'] ?? $a['starting_price'] ?? 50000)) . ' ر.س',
+        'url' => '/event.php?id=' . (int)($a['event_id'] ?? (($a['id'] ?? $i) % 3 + 1)),
+    ];
+}
+$hero_inst_makes = ['تويوتا', 'هيونداي', 'نيسان', 'فورد'];
+$hero_inst_models = ['كامري', 'سوناتا', 'ألتيما', 'إكسبلورر'];
+foreach (array_slice($instant_cars, 0, 3) as $i => $a) {
+    $car_label = trim(($a['make'] ?? $hero_inst_makes[$i % 4]) . ' ' . ($a['model'] ?? $hero_inst_models[$i % 4]) . ' ' . ($a['year'] ?? '2023'));
+    $hero_bid_signs[] = [
+        'text' => 'شراء فوري',
+        'car' => $car_label,
+        'amount' => number_format((int)($a['current_price'] ?? $a['starting_price'] ?? 65000)) . ' ر.س',
+        'url' => '/vehicle-details.php?id=' . (int)($a['id'] ?? (8 + $i)),
+    ];
+}
+if (empty($hero_bid_signs)) {
+    $hero_bid_signs = [
+        ['text' => 'مزايدة جديدة', 'car' => 'كامري 2023', 'amount' => '٨٥,٠٠٠ ر.س', 'url' => '/event.php?id=1'],
+        ['text' => 'عرض مباشر', 'car' => 'توسان 2022', 'amount' => '٧٢,٥٠٠ ر.س', 'url' => '/event.php?id=2'],
+        ['text' => 'مزايدة فورية', 'car' => 'باترول 2021', 'amount' => '١٤٣,٠٠٠ ر.س', 'url' => '/auctions.php?type=live'],
+        ['text' => 'شراء فوري', 'car' => 'سبورتاج 2022', 'amount' => '٦٨,٠٠٠ ر.س', 'url' => '/auctions.php?type=instant'],
+    ];
+}
 
 ?>
 <!DOCTYPE html>
@@ -77,7 +134,7 @@ $stats_sales_unit_ar = 'ريال';
     <div class="fx-hero-picture fx-hero-picture--mobile fx-hero-picture--float" aria-hidden="true">
       <img src="/assets/images/fleetxhero-mobile.png" alt="" class="fx-hero-picture__img" decoding="async">
     </div>
-    <div id="fxBiddingSigns" class="fx-hero-bid-signs" aria-hidden="true"></div>
+    <div id="fxBiddingSigns" class="fx-hero-bid-signs" aria-label="عروض مزادات حية"></div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
@@ -143,30 +200,6 @@ $stats_sales_unit_ar = 'ريال';
   </section>
 </div>
 </div>
-
-<?php 
-// Fetch Live Auctions
-$live_auctions = [];
-if ($db_connected) {
-    $res = $conn->query("SELECT a.*, v.make, v.model, v.year, v.image_url, v.city, v.mileage 
-                         FROM auctions a 
-                         JOIN vehicles v ON a.vehicle_id = v.id 
-                         WHERE a.type='live' AND a.status='active' LIMIT 6");
-    if ($res) while ($row = $res->fetch_assoc()) $live_auctions[] = $row;
-}
-
-
-// Fetch Instant Buy
-$instant_cars = [];
-if ($db_connected) {
-    $res = $conn->query("SELECT a.*, v.make, v.model, v.year, v.image_url, v.city, v.mileage 
-                         FROM auctions a 
-                         JOIN vehicles v ON a.vehicle_id = v.id 
-                         WHERE a.type='instant' AND a.status='active' LIMIT 6");
-    if ($res) while ($row = $res->fetch_assoc()) $instant_cars[] = $row;
-}
-
-?>
 
 <!-- ── Section 2: Auctions ── -->
 <section class="reveal fx-home-auctions">

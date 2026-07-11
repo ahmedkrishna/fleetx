@@ -64,8 +64,7 @@ $hero_title = 'لوحة الفاحصين';
 $hero_desc = 'مرحباً ' . sanitize($_SESSION['user_name']) . ' — إدارة طلبات الفحص والتقارير';
 $hero_bg = 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80';
 $hero_eyebrow = 'الفحص الفني';
-$hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-hourglass"></i> ' . (int)$pending_count . ' بانتظار الفحص</span>'
-    . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-check-circle"></i> ' . (int)$completed_count . ' مكتمل</span>';
+$hero_meta_html = '';
 $hero_actions_html = ($role === 'admin')
     ? '<a href="/admin/inspections.php" class="btn btn-outline"><i class="ph ph-shield-check ph-space-left"></i> لوحة الإدارة</a>'
     : '';
