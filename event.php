@@ -59,9 +59,14 @@ if (!$event) {
 $title = $event['title'];
 $hero_title = $event['title'];
 $hero_bg = 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80';
+if (!empty($vehicles[0]['image_url'])) {
+    $hero_bg = fleetx_card_image($vehicles[0]['image_url'], (int)($vehicles[0]['id'] ?? 0), 'live', $vehicles[0]['make'] ?? '');
+}
 $hero_back_href = '/auctions.php';
 $hero_back_label = '← العودة لقاعة المزادات';
 $hero_eyebrow = 'حدث مزاد نشط';
+$hero_desc = sanitize($event['seller'] ?? ($event['seller_company'] ?? '')) . ' — ' . $total_vehicles . ' مركبة معروضة في هذا الحدث';
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact fx-page-hero--event';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph-fill ph-buildings"></i> ' . sanitize($event['seller'] ?? ($event['seller_company'] ?? 'الوطنية للتأجير')) . '</span>
   <span class="fx-page-hero__chip"><span class="fx-live-dot"></span> مزاد نشط الآن</span>

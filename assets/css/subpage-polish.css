@@ -125,6 +125,42 @@ body.fx-home.fx-page-shell .fx-page-body--overlap {
   margin-top: -44px;
 }
 
+/* Event + vehicle detail heroes — aligned dark cover headers */
+.fx-page-hero--event .fx-page-hero__row,
+.fx-page-hero--vehicle .fx-page-hero__row {
+  align-items: flex-end;
+  gap: 20px;
+}
+.fx-page-hero--event .fx-page-hero__actions {
+  flex-shrink: 0;
+}
+.fx-page-hero--event .fx-countdown-panel {
+  min-width: 280px;
+}
+.fx-page-shell--listing .fx-toolbar h2 {
+  color: #0f172a;
+}
+.fx-page-shell--listing .fx-toolbar .fx-detail-spec__label {
+  color: #64748b;
+}
+.fx-page-shell--listing .fx-toolbar .fx-detail-spec__label strong {
+  color: var(--primary);
+}
+@media (max-width: 768px) {
+  .fx-page-hero--event .fx-page-hero__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fx-page-hero--event .fx-countdown-panel {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .fx-page-shell--listing .fx-page-body--overlap-lg {
+    margin-top: -36px;
+  }
+}
+
 /* Mobile nav: icon colors match link text */
 #mobileMenu a .ph,
 #mobileMenu a i.ph {

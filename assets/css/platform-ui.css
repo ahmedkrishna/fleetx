@@ -2284,9 +2284,9 @@ input:checked + .slider:before { transform: translateX(20px); }
   color: var(--primary);
   margin-top: 10px;
 }
-.fx-countdown-unit-lbl {
+.fx-countdown-panel .fx-countdown-unit-lbl {
   font-size: 11px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.58);
   margin-top: 6px;
   font-weight: 700;
 }

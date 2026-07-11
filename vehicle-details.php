@@ -20,7 +20,8 @@ if (!$is_instant && in_array($auction['status'] ?? '', ['active', 'live'], true)
 }
 
 $title_car = $auction['title'] ?? ($auction['make'].' '.$auction['model'].' '.$auction['year']);
-$img = fleetx_card_image($auction['image_url'] ?? '', intval($auction['id'] ?? 0), 'instant', $auction['make'] ?? '');
+$thumb = fleetx_vehicle_thumb($auction['image_url'] ?? '', intval($auction['id'] ?? 0), 'instant', $auction['make'] ?? '');
+$img = $thumb['src'];
 
 $gallery_images = isset($auction['gallery_images']) && is_array($auction['gallery_images']) ? $auction['gallery_images'] : [
     $img,
@@ -65,7 +66,7 @@ if ($is_instant) {
     $hero_meta_html .= '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-lightning"></i> متاح للشراء الفوري</span>';
 }
 $hero_actions_html = '<button type="button" class="btn btn-outline fx-vehicle-fav-btn" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
-$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact';
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact fx-page-hero--vehicle';
 include 'includes/page-hero.inc.php';
 ?>
 
@@ -92,7 +93,7 @@ include 'includes/page-hero.inc.php';
         <div class="mazad-premium-gallery">
           <div class="mpg-main-view">
             <?php if ($is_instant): ?><div class="fx-instant-badge"><i class="ph-fill ph-lightning"></i> شراء فوري</div><?php endif; ?>
-            <img id="main-gallery-img" src="<?= $gallery_images[0] ?>" alt="صورة رئيسية">
+            <img id="main-gallery-img" src="<?= htmlspecialchars($thumb['src']) ?>" alt="صورة رئيسية" decoding="async" onerror="<?= $thumb['onerror'] ?>">
             <div class="mpg-overlay">
               <div class="mpg-badge"><i class="ph-bold ph-camera"></i> <?= count($gallery_images) ?> صور</div>
             </div>
