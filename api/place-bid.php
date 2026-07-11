@@ -60,10 +60,11 @@ if ($result['success']) {
     $bidCount = (int)($cntStmt->get_result()->fetch_assoc()['c'] ?? 0);
 
     echo json_encode([
-        'success'   => true,
-        'message'   => 'تم تسجيل مزايدتك بنجاح!',
-        'new_price' => number_format($result['new_price']),
-        'bid_count' => $bidCount,
+        'success'      => true,
+        'message'      => 'تم تسجيل مزايدتك بنجاح!',
+        'new_price'    => $result['new_price'],
+        'bid_count'    => $bidCount,
+        'new_end_time' => $result['new_end_time'] ?? null,
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => $result['error'] ?? 'حدث خطأ أثناء تسجيل المزايدة.']);

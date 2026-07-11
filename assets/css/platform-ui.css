@@ -5897,12 +5897,12 @@ input:checked + .slider:before { transform: translateX(20px); }
 /* Auction cards */
 .auction-card--clickable { cursor: pointer; }
 .vip-card {
-  border: 2px solid #FFCA28 !important;
-  box-shadow: 0 0 15px rgba(255, 202, 40, 0.4);
+  border: 2px solid var(--fx-brand-gold, #ffd700) !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.35);
 }
 .featured-card {
-  border: 2px solid #0ea5e9 !important;
-  box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+  border: 2px solid var(--fx-brand-blue, #0ea5e9) !important;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.35);
 }
 .badge-status {
   font-weight: 700;
@@ -5914,7 +5914,7 @@ input:checked + .slider:before { transform: translateX(20px); }
   gap: 4px;
 }
 .badge-status--live { color: #fff; background: #1bc976; }
-.badge-status--upcoming { color: #fff; background: #8b5cf6; }
+.badge-status--upcoming { color: #fff; background: var(--fx-brand-navy-surface, #172030); border: 1px solid rgba(14, 165, 233, 0.35); }
 .badge-status--ended { color: #fff; background: #94a3b8; }
 .badge-status--instant { color: #fff; background: #1bc976; }
 .badge-status--installment { color: #fff; background: #8b5cf6; }

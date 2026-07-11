@@ -28,7 +28,7 @@ $title = $vehicle['make'] . ' ' . $vehicle['model'] . ' ' . $vehicle['year'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تقرير الفحص المعتمد: <?= sanitize($title) ?> | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--vehicle-report">
 
@@ -38,7 +38,6 @@ $title = $vehicle['make'] . ' ' . $vehicle['model'] . ' ' . $vehicle['year'];
 $hero_title = 'تقرير الفحص الموثق الشامل';
 $hero_desc = 'مرجع تقرير فني معتمد لأساطيل السيارات المستعملة بالمملكة.';
 $hero_bg = $vehicle['image_url'] ?? 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = sanitize($title);
 $hero_back_href = '/auctions.php';
 $hero_back_label = '← العودة للمزادات';

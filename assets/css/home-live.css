@@ -3553,3 +3553,467 @@ body.fx-home-index .fx-contact-value--addr {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+/* ==========================================================================
+   Phase 37 — §2 tab shell, §3 tab layering, §4 darker blues, hero polish
+   ========================================================================== */
+
+/* §2 — tabs above panel; white card only under live/instant content */
+body.fx-home-index .fx-auctions-shell {
+  max-width: 1180px;
+  margin: 24px auto 0;
+}
+
+body.fx-home-index .fx-auctions-panel__tabs {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 0 0 14px !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .fx-auctions-panel {
+  display: block !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  background: #fff !important;
+  border: 2px solid #e2e8f0 !important;
+  border-top: 5px solid #1bc976 !important;
+  border-radius: 28px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body.fx-home-index .fx-auctions-panel .auctions-tab-content {
+  padding: 12px 20px 24px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-meta--plain {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 10px 14px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-meta--plain span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-info-row--board {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: end !important;
+  gap: 12px 16px !important;
+  padding-top: 4px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-price-block {
+  min-width: 0 !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-price-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #94a3b8 !important;
+  margin-bottom: 2px !important;
+}
+
+body.fx-home-index .auction-card.fx-card-unified .ac-price-val {
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  color: #0f172a !important;
+}
+
+body.fx-home-index .ac-timer-board {
+  align-items: flex-end !important;
+  text-align: left !important;
+  border-top: none !important;
+  padding-top: 0 !important;
+  min-width: 112px !important;
+}
+
+body.fx-home-index .ac-timer-board__label {
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+}
+
+body.fx-home-index .ac-timer-board__chips {
+  font-size: 15px !important;
+}
+
+/* §3 HIW — step tabs stay in place but layer under content panel */
+body.fx-home-index .fx-hiw-browser {
+  position: relative !important;
+  padding-top: 8px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-tabs {
+  order: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .browser-content.hiw-panel {
+  order: 2 !important;
+  position: relative !important;
+  z-index: 4 !important;
+  margin-top: -18px !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab {
+  position: relative !important;
+  z-index: 1 !important;
+  border-radius: 14px 14px 0 0 !important;
+  margin: 0 4px !important;
+  padding-bottom: 22px !important;
+  border-bottom: none !important;
+}
+
+body.fx-home-index .fx-hiw-section--dark .b-tab.active {
+  z-index: 2 !important;
+  background: #121c2c !important;
+  margin-bottom: 0 !important;
+}
+
+/* §4 Why — darker blues, distinct overlays, bigger icons */
+body.fx-home-index .fx-why-card--spotlight {
+  background: linear-gradient(145deg, #04101f 0%, #0a1e38 55%, #0f2847 100%) !important;
+  border: 1px solid rgba(37, 99, 235, 0.22) !important;
+}
+
+body.fx-home-index .fx-why-card__spotlight-bg {
+  background:
+    linear-gradient(145deg, rgba(4, 12, 24, 0.92) 0%, rgba(8, 22, 42, 0.88) 55%, rgba(6, 14, 28, 0.94) 100%),
+    url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1400&q=80') center/cover no-repeat !important;
+}
+
+body.fx-home-index .fx-why-card--trust {
+  background: linear-gradient(165deg, #030b16 0%, #061525 42%, #0c2340 68%, #153e6b 100%) !important;
+  border: 1px solid rgba(37, 99, 235, 0.28) !important;
+}
+
+body.fx-home-index .fx-why-card--ai {
+  background: linear-gradient(165deg, #061525 0%, #0a2340 38%, #0f3058 62%, #1a4a7a 100%) !important;
+  border: 1px solid rgba(37, 99, 235, 0.28) !important;
+}
+
+body.fx-home-index .fx-why-card__bg-overlay {
+  opacity: 0.26 !important;
+  mix-blend-mode: soft-light !important;
+}
+
+body.fx-home-index .fx-why-journey {
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(
+    90deg,
+    #1e3a8a 0%,
+    #1e40af 18%,
+    rgba(30, 58, 138, 0.55) 35%,
+    #060c16 35%,
+    #030712 100%
+  ) !important;
+  border: 1px solid rgba(37, 99, 235, 0.24) !important;
+}
+
+body.fx-home-index .fx-why-journey__bg-overlay {
+  opacity: 0.18 !important;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, transparent 55%);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, transparent 55%);
+}
+
+body.fx-home-index .fx-why-journey > *:not(.fx-why-journey__bg-overlay) {
+  position: relative;
+  z-index: 1;
+}
+
+body.fx-home-index .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  font-size: clamp(88px, 9vw, 120px) !important;
+  line-height: 0.9 !important;
+  margin-bottom: 20px !important;
+}
+
+body.fx-home-index .fx-why-journey__icon {
+  font-size: clamp(64px, 6vw, 88px) !important;
+  margin-bottom: 14px !important;
+}
+
+body.fx-home-index .fx-why-card--trust .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--ai .fx-why-card__icon--plain {
+  color: #7dd3fc !important;
+}
+
+/* §5 — English sales unit */
+body.fx-home-index .stats-unit-en {
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 0.42em !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  opacity: 0.92;
+}
+
+/* Hero — denser float nums + outward gavel bid signs */
+body.fx-home-index .fx-hero-float-num {
+  font-size: clamp(12px, 1.8vw, 20px) !important;
+  opacity: 0.58 !important;
+  animation: fx-hero-num-twinkle 4s ease-in-out infinite !important;
+  animation-delay: var(--fx-num-delay, 0s) !important;
+  transform: scale(var(--fx-num-scale, 1));
+}
+
+@keyframes fx-hero-num-twinkle {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.78; }
+}
+
+.fx-bid-sign--left {
+  flex-direction: row !important;
+  --fx-bid-enter: -90px;
+}
+
+.fx-bid-sign--right {
+  flex-direction: row !important;
+}
+
+.fx-bid-sign__gavel {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.22), rgba(14, 165, 233, 0.18));
+  border: 1px solid rgba(27, 201, 118, 0.4);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+.fx-bid-sign__gavel i {
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.fx-bid-sign__board {
+  gap: 0 !important;
+}
+
+.fx-bid-sign__stem {
+  flex-shrink: 0;
+  width: 28px;
+  height: 6px;
+  margin: 0 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9);
+  opacity: 0.9;
+}
+
+.fx-bid-sign--left .fx-bid-sign__stem {
+  background: linear-gradient(90deg, #0ea5e9, var(--primary));
+}
+
+.fx-bid-sign--right .fx-bid-sign__stem {
+  background: linear-gradient(90deg, var(--primary), #0ea5e9);
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-auctions-shell {
+    margin-top: 16px;
+  }
+
+  body.fx-home-index .fx-auctions-panel__tabs {
+    flex-direction: column;
+    padding-bottom: 10px !important;
+  }
+
+  body.fx-home-index .fx-auctions-panel__tabs .auctions-tab-btn {
+    width: 100%;
+  }
+
+  body.fx-home-index .auction-card.fx-card-unified .ac-info-row--board {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  body.fx-home-index .ac-timer-board {
+    align-items: flex-start !important;
+    text-align: right !important;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark .browser-content.hiw-panel {
+    margin-top: -12px !important;
+  }
+
+  body.fx-home-index .fx-why-card__icon--plain,
+  body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+    font-size: 72px !important;
+  }
+}
+
+/* ==========================================================================
+   Phase 39 — §4 journey card: dark R→L gradient, image overlay, no step frames
+   ========================================================================== */
+
+body.fx-home-index .fx-why-journey {
+  background: linear-gradient(
+    to left,
+    #020617 0%,
+    #030712 38%,
+    #060c16 72%,
+    #0f172a 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 20px 48px rgba(2, 6, 23, 0.45) !important;
+}
+
+body.fx-home-index .fx-why-journey:hover {
+  box-shadow: 0 24px 52px rgba(2, 6, 23, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.fx-home-index .fx-why-journey__bg-overlay {
+  opacity: 0.24 !important;
+  mix-blend-mode: soft-light !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+}
+
+body.fx-home-index .fx-why-journey__steps::before {
+  display: none !important;
+  content: none !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  padding: 10px 12px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li:hover,
+body.fx-home-index .fx-why-journey__steps li:active {
+  background: transparent !important;
+  border: none !important;
+  transform: translateY(-4px) !important;
+}
+
+body.fx-home-index .fx-why-journey__icon {
+  color: #93c5fd !important;
+}
+
+/* ==========================================================================
+   Phase 40 — bid signs: no icon, stem on opposite side of card
+   ========================================================================== */
+
+.fx-bid-sign__gavel {
+  display: none !important;
+}
+
+.fx-bid-sign--left,
+.fx-bid-sign--right {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+.fx-bid-sign__board {
+  flex-shrink: 0;
+}
+
+.fx-bid-sign__stem {
+  width: 32px !important;
+  height: 5px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  opacity: 0.9 !important;
+}
+
+/* Left signs: card inner, stem extends toward center (right of card) */
+.fx-bid-sign--left .fx-bid-sign__stem {
+  margin-inline-start: -2px !important;
+  background: linear-gradient(90deg, rgba(27, 201, 118, 0.35), var(--primary), #0ea5e9) !important;
+}
+
+/* Right signs: stem on left of card, extends toward center */
+.fx-bid-sign--right .fx-bid-sign__stem {
+  margin-inline-end: -2px !important;
+  background: linear-gradient(90deg, #0ea5e9, var(--primary), rgba(27, 201, 118, 0.35)) !important;
+}
+
+/* ==========================================================================
+   Phase 41 — §4 card 3 (AI): opposite gradient
+   ========================================================================== */
+
+body.fx-home-index .fx-why-card--ai {
+  background: linear-gradient(
+    345deg,
+    #1a4a7a 0%,
+    #0f3058 32%,
+    #0a2340 58%,
+    #061525 100%
+  ) !important;
+}
+
+/* Phase 42 — remove hero floating numbers */
+body.fx-home-index .fx-hero-float-nums,
+body.fx-home-index .fx-hero-float-num {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Phase 43 — §2: no big panel card under live/instant tabs
+   ========================================================================== */
+
+body.fx-home-index .fx-auctions-panel {
+  display: none !important;
+}
+
+body.fx-home-index .fx-auctions-shell {
+  max-width: 1180px;
+  margin: 24px auto 0;
+}
+
+body.fx-home-index .fx-auctions-shell .fx-auctions-tab-content,
+body.fx-home-index .fx-auctions-shell .auctions-tab-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 8px 0 0 !important;
+}
+
+body.fx-home-index .fx-auctions-shell .fx-tab-footer {
+  padding-top: 16px;
+  text-align: center;
+}

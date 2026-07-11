@@ -56,6 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paint      = sanitize($_POST['paint_condition'] ?? 'good');
     $accident   = isset($_POST['accident_history']) ? 1 : 0;
     $notes      = trim($_POST['notes'] ?? '');
+    $tire_cond  = sanitize($_POST['tire_condition'] ?? 'good');
+    $trans_notes= trim($_POST['transmission_notes'] ?? '');
+    $engine_notes= trim($_POST['engine_notes'] ?? '');
+    $mileage_ok = isset($_POST['mileage_verified']) ? 1 : 0;
 
     $report_pdf = $inspection['report_pdf'] ?? '';
     if (isset($_FILES['report_pdf']) && $_FILES['report_pdf']['error'] === UPLOAD_ERR_OK) {
@@ -81,14 +85,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UPDATE inspections SET
                     exterior_score=?, interior_score=?, mechanical_score=?, electronics_score=?,
                     paint_condition=?, accident_history=?, notes=?, report_pdf=?,
+                    tire_condition=?, transmission_notes=?, engine_notes=?, mileage_verified=?,
                     status='completed', inspection_date=CURDATE()
                 WHERE id=?
             ");
-            $upd->bind_param('iiiisisi', $exterior, $interior, $mechanical, $electronics, $paint, $accident, $notes, $report_pdf, $inspection_id);
+            $upd->bind_param('iiiisisssssii', $exterior, $interior, $mechanical, $electronics, $paint, $accident, $notes, $report_pdf, $tire_cond, $trans_notes, $engine_notes, $mileage_ok, $inspection_id);
             $upd->execute();
 
             $vstmt = $conn->prepare("
-                UPDATE vehicles SET status='approved',
+                UPDATE vehicles SET status='awaiting_seller_approval',
                     autodata_price_min=?, autodata_price_max=?
                 WHERE id=?
             ");
@@ -98,12 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $vstmt->bind_param('ddi', $vmin, $vmax, $vid);
             $vstmt->execute();
 
+            $conn->query("UPDATE inspections SET seller_approved=NULL WHERE id=$inspection_id");
+
             $overall = round(($exterior + $interior + $mechanical + $electronics) / 4);
             $car_name = $inspection['make'] . ' ' . $inspection['model'] . ' ' . $inspection['year'];
 
             notifyUser($conn, (int)$inspection['seller_user_id'], 'system',
-                'تقرير الفحص جاهز',
-                "تم اعتماد فحص $car_name بدرجة $overall/100. السعر المقدر: " . number_format($vmin) . ' - ' . number_format($vmax) . ' ر.س',
+                'تقرير الفحص جاهز — بانتظار موافقتك',
+                "اكتمل فحص $car_name بدرجة $overall/100. راجع التقرير واعتمد أو ارفض قبل النشر. السعر المقدر: " . number_format($vmin) . ' - ' . number_format($vmax) . ' ر.س',
                 '/seller.php?section=reports',
                 ['in_app', 'sms', 'whatsapp']
             );
@@ -128,7 +135,7 @@ $estimated = estimateAutoDataPrice($inspection['make'], $inspection['model'], $i
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تقرير الفحص | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--inspector-report">
 <?php include 'includes/navbar.php'; ?>
@@ -138,7 +145,6 @@ $report_vehicle = sanitize($inspection['make'] . ' ' . $inspection['model'] . ' 
 $hero_title = 'تقرير فحص: ' . $report_vehicle;
 $hero_desc = 'البائع: ' . sanitize($inspection['seller_name']) . ' | المدينة: ' . sanitize($inspection['city'] ?? '—');
 $hero_bg = 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'تقرير الفحص';
 $hero_back_href = '/inspector.php';
 $hero_back_label = '← العودة لطلبات الفحص';
@@ -149,9 +155,9 @@ include 'includes/page-hero.inc.php';
 
   <div class="report-card">
     <div class="report-header">
-      <h1 class="fx-report-title">
-        تقرير فحص: <?= sanitize($inspection['make'] . ' ' . $inspection['model'] . ' ' . $inspection['year']) ?>
-      </h1>
+      <h2 class="fx-report-title">
+        تفاصيل الفحص الفني
+      </h2>
       <p class="fx-report-meta">
         البائع: <?= sanitize($inspection['seller_name']) ?> |
         المدينة: <?= sanitize($inspection['city'] ?? '—') ?> |
@@ -205,6 +211,26 @@ include 'includes/page-hero.inc.php';
         يوجد سجل حوادث سابق
       </label>
 
+      <div class="fx-field-block">
+        <label class="fx-field-label">حالة الإطارات</label>
+        <select name="tire_condition" class="form-select">
+          <?php foreach (['excellent'=>'ممتازة','good'=>'جيدة','fair'=>'مقبولة','poor'=>'تحتاج استبدال'] as $k=>$v): ?>
+          <option value="<?= $k ?>" <?= ($inspection['tire_condition']??'good')===$k?'selected':'' ?>><?= $v ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="fx-field-block">
+        <label class="fx-field-label">ملاحظات ناقل الحركة</label>
+        <textarea name="transmission_notes" class="form-textarea" placeholder="أداء القير، تسريبات..."><?= sanitize($inspection['transmission_notes'] ?? '') ?></textarea>
+      </div>
+      <div class="fx-field-block">
+        <label class="fx-field-label">ملاحظات المحرك</label>
+        <textarea name="engine_notes" class="form-textarea" placeholder="الضغط، الصوت، التسريبات..."><?= sanitize($inspection['engine_notes'] ?? '') ?></textarea>
+      </div>
+      <label class="fx-check-row">
+        <input type="checkbox" name="mileage_verified" value="1" <?= !isset($inspection['mileage_verified']) || $inspection['mileage_verified'] ? 'checked' : '' ?>>
+        تم التحقق من قراءة العداد ومطابقتها للسجلات
+      </label>
       <div class="fx-field-block">
         <label class="fx-field-label">ملاحظات الفاحص</label>
         <textarea name="notes" class="form-textarea" placeholder="تفاصيل الفحص، العيوب، التوصيات..."><?= sanitize($inspection['notes'] ?? '') ?></textarea>

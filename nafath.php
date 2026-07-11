@@ -1,11 +1,17 @@
 <?php
 require_once 'config.php';
+require_once __DIR__ . '/includes/integrations.php';
 requireLogin();
 
 $user_id = (int)$_SESSION['user_id'];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_nafath'])) {
+    $national_id = trim($_POST['national_id'] ?? '');
+    $mobile = $_SESSION['user_phone'] ?? '';
+    if ($national_id) {
+        nafathRequestVerification($national_id, $mobile);
+    }
     if ($db_connected) {
         try {
             $conn->query("ALTER TABLE users ADD COLUMN sanad_limit DECIMAL(12,2) DEFAULT 0.00");

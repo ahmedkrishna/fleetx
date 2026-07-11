@@ -51,7 +51,7 @@ $role_label = $role_labels[$role] ?? 'عضو';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حسابي | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--profile">
 
@@ -61,7 +61,6 @@ $role_label = $role_labels[$role] ?? 'عضو';
 $hero_title = sanitize($user_name);
 $hero_desc = 'إدارة المحفظة والمزايدات والمفضلة وإعدادات حسابك';
 $hero_bg = 'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'حسابي';
 $hero_meta_html = '<div class="fx-profile-hero-meta">
   <div class="fx-profile-hero-avatar">' . mb_substr($user_name, 0, 1) . '</div>
@@ -104,7 +103,7 @@ include 'includes/page-hero.inc.php';
             </div>
             <div class="fx-wallet-actions">
               <a href="/wallet-topup.php" class="btn btn-primary"><i class="ph ph-plus"></i> شحن المحفظة</a>
-              <button class="btn btn-outline" onclick="alert('خاصية الاسترداد تتطلب مراجعة حسابك البنكي أولاً.')"><i class="ph ph-arrow-down"></i> استرداد</button>
+              <button type="button" class="btn btn-outline" onclick="if(typeof showToast==='function') showToast('خاصية الاسترداد تتطلب مراجعة حسابك البنكي أولاً.','info');"><i class="ph ph-arrow-down"></i> استرداد</button>
             </div>
           </div>
         </div>
@@ -193,7 +192,7 @@ include 'includes/page-hero.inc.php';
       <?php elseif ($tab === 'settings'): ?>
         <div class="fx-profile-card fx-profile-card--home">
           <h3>إعدادات الحساب</h3>
-          <form onsubmit="event.preventDefault(); alert('تم حفظ الإعدادات!');">
+          <form onsubmit="event.preventDefault(); if(typeof showToast==='function') showToast('تم حفظ الإعدادات!','success');">
             <div class="fx-profile-settings-group">
               <label class="fx-profile-settings-label">الاسم الكامل</label>
               <input type="text" class="form-control" value="<?= sanitize($user_name) ?>">

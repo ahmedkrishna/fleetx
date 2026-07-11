@@ -40,12 +40,14 @@ try {
     $stmt2->bind_param('idi', $user_id, $price, $auction_id);
     $stmt2->execute();
     
-    // Notify seller
-    createNotification($conn, $auction['seller_id'] ?? 1, 'auction_won',
-        'تم بيع سيارتك!', 
-        "تم شراء {$auction['make']} {$auction['model']} بسعر " . formatPrice($price),
-        "/seller/dashboard.php"
-    );
+    $seller_uid = (int)($auction['seller_user_id'] ?? fleetx_seller_user_id($conn, (int)$auction['seller_id']));
+    if ($seller_uid > 0) {
+        createNotification($conn, $seller_uid, 'auction_won',
+            'تم بيع سيارتك!',
+            "تم شراء {$auction['make']} {$auction['model']} بسعر " . formatPrice($price),
+            '/seller.php?section=dashboard'
+        );
+    }
     
     $conn->commit();
     header('Location: /checkout.php?id=' . $auction_id . '&bought=1');

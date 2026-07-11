@@ -9,17 +9,19 @@ require_once 'config.php';
   <title>التسجيل | FleetX</title>
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-onboarding-body">
+<body class="fx-onboarding-body fx-auth-body--light">
 
 <header class="fx-flow-topbar">
   <a href="/index.php" class="fx-flow-topbar__logo"><img src="<?= fleetx_logo_src() ?>" alt="FleetX"></a>
   <a href="/index.php" class="fx-flow-topbar__link"><i class="ph ph-house"></i> الرئيسية</a>
 </header>
 
-<div class="onboarding-container">
+<div class="onboarding-container container fx-page-body">
   <div>
     <div class="logo-container">
-      <p class="fx-onboarding-tagline fx-onboarding-tagline--center">اختر نوع حسابك للبدء في المنصة</p>
+      <span class="fx-home-eyebrow fx-auth-eyebrow"><i class="ph-fill ph-gavel"></i> FleetX</span>
+      <h1 class="fx-onboarding-tagline fx-onboarding-tagline--center">اختر نوع حسابك للبدء في المنصة</h1>
+      <p class="fx-onboarding-sub">بائع أسطول، تاجر معتمد، أو تصفح كزائر — كل المسارات تبدأ من هنا.</p>
     </div>
 
     <div class="onboarding-grid">
@@ -47,5 +49,6 @@ require_once 'config.php';
   </div>
 </div>
 
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>

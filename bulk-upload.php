@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>رفع مجمّع | FleetX</title>
   <meta name="description" content="ارفع أسطولك بالكامل دفعة واحدة عبر ملف Excel أو CSV">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--bulk">
 <?php include 'includes/navbar.php'; ?>
@@ -140,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fleet_file'])) {
 $hero_title = 'رفع مجمّع للأسطول';
 $hero_desc = 'أضف مئات السيارات دفعة واحدة عبر ملف Excel أو CSV';
 $hero_bg = 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'بوابة البائعين';
 $hero_back_href = '/seller.php';
 $hero_back_label = '← العودة للوحة البائع';
@@ -320,11 +319,11 @@ include 'includes/page-hero.inc.php';
       </tbody>
     </table>
     </div>
-    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
-      <a href="/seller.php?section=fleet" class="btn btn-primary" style="border-radius:50px; padding:12px 28px; font-size:14px;">
+    <div class="fx-bulk-actions">
+      <a href="/seller.php?section=fleet" class="btn btn-primary">
         <i class="ph ph-car"></i> عرض الأسطول الكامل
       </a>
-      <a href="/seller.php?section=fleet" class="btn btn-outline" style="border-radius:50px; padding:12px 28px; font-size:14px;">
+      <a href="/seller.php?section=fleet" class="btn btn-outline">
         <i class="ph ph-magnifying-glass"></i> إرسال الكل للفحص
       </a>
     </div>
@@ -333,7 +332,7 @@ include 'includes/page-hero.inc.php';
 
 </div>
 
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<?php include 'includes/footer.php'; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ── Drag & Drop ───────────────────────────────────────────
@@ -521,25 +520,6 @@ function downloadTemplate(e) {
   URL.revokeObjectURL(url);
 }
 
-// ── Toast notification ────────────────────────────────────
-function showToast(msg, type='info') {
-  const colors = { success:'#16a34a', error:'#dc2626', info:'#0284c7', warning:'#d97706' };
-  const toast = document.createElement('div');
-  toast.style.cssText = `
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:${colors[type]}; color:#fff; padding:14px 24px;
-    border-radius:50px; font-size:14px; font-weight:800;
-    box-shadow:0 8px 24px rgba(0,0,0,0.2); z-index:9999;
-    animation: toastIn 0.3s ease;
-  `;
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3500);
-}
-
-const style = document.createElement('style');
-style.textContent = '@keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }';
-document.head.appendChild(style);
 </script>
 </body>
 </html>

@@ -4,16 +4,16 @@
     <div class="footer-grid-xm">
       <!-- Brand & About -->
       <div>
-        <a href="/index.php" style="display:inline-block; margin-bottom:20px;">
-          <img src="/assets/images/logo.png" alt="FleetX" style="height:44px; filter: brightness(0) invert(1);">
+        <a href="/index.php" class="fx-footer-brand">
+          <img src="/assets/images/logo.png" alt="FleetX" class="fx-footer-logo">
         </a>
-        <p style="margin-bottom:24px; line-height:1.8; color:#fff; font-size:14px">
+        <p class="fx-footer-about">
           منصة FleetX هي العلامة التجارية الرائدة لتنظيم وإدارة مزادات سيارات الأساطيل وشركات التأجير في المملكة العربية السعودية. نوفر بيئة تداول ذكية وآمنة وموثوقة بالكامل مدعومة بتقنية الذكاء الاصطناعي.
         </p>
-        <div style="display:flex; gap:12px">
-          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-x-logo"></i></a>
-          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-linkedin-logo"></i></a>
-          <a href="#" style="width:40px; height:40px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:var(--transition); color:#fff; font-size:18px" onmouseover="this.style.background='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';"><i class="ph ph-facebook-logo"></i></a>
+        <div class="fx-footer-social footer-social-xm">
+          <a href="#" class="fx-footer-social__link" aria-label="X"><i class="ph ph-x-logo"></i></a>
+          <a href="#" class="fx-footer-social__link" aria-label="LinkedIn"><i class="ph ph-linkedin-logo"></i></a>
+          <a href="#" class="fx-footer-social__link" aria-label="Facebook"><i class="ph ph-facebook-logo"></i></a>
         </div>
       </div>
 
@@ -49,9 +49,9 @@
           <li><a href="/terms.php">سياسة الخصوصية والاستخدام</a></li>
           <li><a href="#">إخلاء المسؤولية القانونية</a></li>
         </ul>
-        <div style="margin-top: 24px; display: flex; gap: 10px;">
-          <div style="width:50px; height:50px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff"><i class="ph ph-shield-check"></i></div>
-           <div style="width:50px; height:50px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff"><i class="ph ph-lock-key"></i></div>
+        <div class="fx-footer-trust">
+          <div class="fx-footer-trust__badge" title="منصة موثّقة"><i class="ph ph-shield-check"></i></div>
+          <div class="fx-footer-trust__badge" title="تشفير آمن"><i class="ph ph-lock-key"></i></div>
         </div>
       </div>
     </div>
@@ -62,7 +62,7 @@
         <strong>إخلاء المسؤولية:</strong> المزايدة على السيارات والتجارة بها تتطلب مسؤولية مالية عالية. يُرجى التحقق من التقارير الفنية للسيارة وقراءة كراسة الشروط بعناية قبل دفع التأمين.
       </div>
       <div class="fx-footer-copy">
-        <a href="https://www.bearand.com" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:800; transition:color 0.3s ease;">bearand</a>
+        <a href="https://www.bearand.com" target="_blank" rel="noopener" class="fx-footer-bearand">bearand</a>
         <span>&copy; <?= date('Y') ?> FleetX SA. All Rights Reserved.</span>
       </div>
     </div>
@@ -70,8 +70,8 @@
 </footer>
 
 <!-- WhatsApp Floating Widget -->
-<a href="https://wa.me/201066442622" target="_blank" class="whatsapp-float reveal active" title="تواصل معنا عبر واتساب">
-  <i class="ph-fill ph-whatsapp-logo" style="font-size: 32px; color: #fff;"></i>
+<a href="https://wa.me/201066442622" target="_blank" rel="noopener" class="whatsapp-float reveal active" title="تواصل معنا عبر واتساب">
+  <i class="ph-fill ph-whatsapp-logo"></i>
 </a>
 
 <!-- Toast Container -->
@@ -93,16 +93,19 @@
     }
   }
   window.addEventListener("scroll", reveal);
-  reveal(); // Trigger on load
-  
-  // Inject favorites for JS consumption (DB-backed when logged in)
+  reveal();
+
+  window.FX_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
+  window.FX_LOGIN_URL = '/login.php';
+  window.FX_GUEST_MSG_BID = <?= json_encode(fleetx_t('guest_bid_login'), JSON_UNESCAPED_UNICODE) ?>;
+  window.FX_GUEST_MSG_FAV = <?= json_encode(fleetx_t('guest_fav_login'), JSON_UNESCAPED_UNICODE) ?>;
+
   window.userFavorites = <?= json_encode(
       isLoggedIn() && $db_connected
           ? getUserFavoriteIds($conn, (int)$_SESSION['user_id'])
           : array_map('intval', $_SESSION['favorites'] ?? [])
   ) ?>;
-  
-  // Sync favorites UI on load
+
   function syncFavoritesUI() {
       if (!window.userFavorites) return;
       document.querySelectorAll('.card-fav').forEach(btn => {
@@ -119,4 +122,17 @@
   }
   document.addEventListener('DOMContentLoaded', syncFavoritesUI);
 </script>
-<script src="/assets/js/fleetx.js"></script>
+<script src="<?= fleetx_js_href() ?>"></script>
+<?php if (!empty($_SESSION['fx_toast'])):
+  $fx_toast_msg = $_SESSION['fx_toast']['message'];
+  $fx_toast_type = $_SESSION['fx_toast']['type'] ?? 'success';
+  unset($_SESSION['fx_toast']);
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof showToast === 'function') {
+    showToast(<?= json_encode($fx_toast_msg, JSON_UNESCAPED_UNICODE) ?>, <?= json_encode($fx_toast_type) ?>);
+  }
+});
+</script>
+<?php endif; ?>

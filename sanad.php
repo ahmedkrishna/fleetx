@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once __DIR__ . '/includes/integrations.php';
 requireLogin();
 
 $user_id = (int)$_SESSION['user_id'];
@@ -24,6 +25,14 @@ if (!$is_verified) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['amount'])) {
     $amount = floatval($_POST['amount']);
     if ($amount > 0) {
+        $nid = '';
+        if ($db_connected) {
+            $nst = $conn->prepare('SELECT national_id FROM users WHERE id=?');
+            $nst->bind_param('i', $user_id);
+            $nst->execute();
+            $nid = $nst->get_result()->fetch_assoc()['national_id'] ?? '';
+        }
+        if ($nid) sanadCheckLimit($nid);
         if ($db_connected) {
             try {
                 $conn->query("ALTER TABLE users ADD COLUMN sanad_limit DECIMAL(12,2) DEFAULT 0.00");
@@ -129,11 +138,12 @@ if ($db_connected) {
   }
   function submitSanad() {
       if (!document.getElementById('amountInput').value) {
-          alert('يرجى اختيار قيمة السند أولاً');
+          if (typeof showToast === 'function') showToast('يرجى اختيار قيمة السند أولاً', 'warning');
           return;
       }
       document.getElementById('sanadForm').submit();
   }
 </script>
+<?php include 'includes/toast-snippet.inc.php'; ?>
 </body>
 </html>

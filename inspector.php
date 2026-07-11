@@ -53,7 +53,7 @@ if ($db_connected) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة الفحص | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--inspector">
 
@@ -63,7 +63,6 @@ if ($db_connected) {
 $hero_title = 'لوحة الفاحصين';
 $hero_desc = 'مرحباً ' . sanitize($_SESSION['user_name']) . ' — إدارة طلبات الفحص والتقارير';
 $hero_bg = 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'الفحص الفني';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-hourglass"></i> ' . (int)$pending_count . ' بانتظار الفحص</span>'
     . '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-check-circle"></i> ' . (int)$completed_count . ' مكتمل</span>';

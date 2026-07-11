@@ -41,18 +41,8 @@ if ($db_connected) {
     $cnt->execute();
     $total = (int)$cnt->get_result()->fetch_row()[0];
 } else {
-    if (!isset($_SESSION['favorites']) || !is_array($_SESSION['favorites'])) {
-        $_SESSION['favorites'] = [];
-    }
-    $index = array_search($id, $_SESSION['favorites']);
-    if ($index !== false) {
-        unset($_SESSION['favorites'][$index]);
-        $_SESSION['favorites'] = array_values($_SESSION['favorites']);
-    } else {
-        $_SESSION['favorites'][] = $id;
-        $is_favorite = true;
-    }
-    $total = count($_SESSION['favorites']);
+    echo json_encode(['success' => false, 'message' => 'قاعدة البيانات غير متصلة']);
+    exit;
 }
 
 echo json_encode([

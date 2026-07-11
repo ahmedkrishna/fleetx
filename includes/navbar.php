@@ -16,6 +16,7 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
 $navbar_logo_src = fleetx_logo_src();
 ?>
 
+<?= fleetx_db_banner_html() ?>
 <nav class="navbar" id="navbar">
   <div class="container">
     <div class="navbar-inner">
@@ -27,43 +28,43 @@ $navbar_logo_src = fleetx_logo_src();
 
       <!-- Nav Links -->
       <ul class="navbar-links" id="navLinks">
-        <li><a href="/auctions.php" class="<?= ($current_page==='auctions.php' && !isset($_GET['type'])) ? 'active' : '' ?>">المزادات الحية</a></li>
-        <li><a href="/auctions.php?type=instant" class="<?= (isset($_GET['type']) && $_GET['type']==='instant') ? 'active' : '' ?>">الشراء الفوري</a></li>
-        <li><a href="/companies.php" class="<?= $current_page==='companies.php' ? 'active' : '' ?>">دليل الشركات</a></li>
-        <li><a href="/map.php" class="<?= $current_page==='map.php' ? 'active' : '' ?>">خريطة المزادات</a></li>
+        <li><a href="/auctions.php" class="<?= ($current_page==='auctions.php' && !isset($_GET['type'])) ? 'active' : '' ?>"><?= fleetx_t('nav_auctions') ?></a></li>
+        <li><a href="/auctions.php?type=instant" class="<?= (isset($_GET['type']) && $_GET['type']==='instant') ? 'active' : '' ?>"><?= fleetx_t('nav_instant') ?></a></li>
+        <li><a href="/companies.php" class="<?= $current_page==='companies.php' ? 'active' : '' ?>"><?= fleetx_t('nav_companies') ?></a></li>
+        <li><a href="/map.php" class="<?= $current_page==='map.php' ? 'active' : '' ?>"><?= fleetx_t('nav_map') ?></a></li>
 
         <?php if ($is_seller || $is_admin): ?>
         <li class="nav-dropdown" id="addDropdown">
           <a href="#" class="<?= $current_page==='add-auction.php' ? 'active' : '' ?>" onclick="toggleDropdown('addDropdown'); return false;">
-            <i class="ph ph-plus-circle" style="font-size:16px;"></i> أضف إعلان
+            <i class="ph ph-plus-circle fx-nav-add-icon"></i> أضف إعلان
           </a>
           <div class="nav-dropdown-content">
             <a href="/add-auction.php">
-              <i class="ph-fill ph-gavel" style="color:var(--primary); font-size:18px;"></i>
+              <i class="ph-fill ph-gavel fx-nav-dropdown-icon fx-nav-dropdown-icon--primary"></i>
               <div>
-                <div>جدولة مزاد مباشر</div>
-                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">حدد وقت البداية والنهاية</div>
+                <div class="fx-nav-dropdown-title">جدولة مزاد مباشر</div>
+                <div class="fx-nav-dropdown-desc">حدد وقت البداية والنهاية</div>
               </div>
             </a>
             <a href="/add-auction.php?type=instant">
-              <i class="ph-fill ph-lightning" style="color:#f59e0b; font-size:18px;"></i>
+              <i class="ph-fill ph-lightning fx-nav-dropdown-icon fx-nav-dropdown-icon--amber"></i>
               <div>
-                <div>بيع فوري</div>
-                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">سعر ثابت بدون مزايدة</div>
+                <div class="fx-nav-dropdown-title">بيع فوري</div>
+                <div class="fx-nav-dropdown-desc">سعر ثابت بدون مزايدة</div>
               </div>
             </a>
             <a href="/bulk-upload.php">
-              <i class="ph-fill ph-upload-simple" style="color:#8b5cf6; font-size:18px;"></i>
+              <i class="ph-fill ph-upload-simple fx-nav-dropdown-icon fx-nav-dropdown-icon--violet"></i>
               <div>
-                <div>رفع مجمّع Excel</div>
-                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">رفع أسطول كامل دفعة واحدة</div>
+                <div class="fx-nav-dropdown-title">رفع مجمّع Excel</div>
+                <div class="fx-nav-dropdown-desc">رفع أسطول كامل دفعة واحدة</div>
               </div>
             </a>
           </div>
         </li>
         <?php endif; ?>
 
-        <li><a href="/about.php" class="<?= $current_page==='about.php' ? 'active' : '' ?>">كيف يعمل</a></li>
+        <li><a href="/about.php" class="<?= $current_page==='about.php' ? 'active' : '' ?>"><?= fleetx_t('nav_about') ?></a></li>
       </ul>
 
       <!-- Actions -->
@@ -84,7 +85,7 @@ $navbar_logo_src = fleetx_logo_src();
           <div class="notif-dropdown hide-on-mobile" id="notifDropdown">
             <button class="notif-btn" onclick="toggleDropdown('notifDropdown'); return false;" aria-label="الإشعارات">
               <i class="ph ph-bell"></i>
-              <span class="notif-badge" id="notifBadge" style="display:<?= $notif_count > 0 ? 'flex' : 'none' ?>;">
+              <span class="notif-badge<?= $notif_count > 0 ? ' is-visible' : '' ?>" id="notifBadge">
                 <?= $notif_count > 9 ? '9+' : $notif_count ?>
               </span>
             </button>
@@ -100,15 +101,15 @@ $navbar_logo_src = fleetx_logo_src();
             </div>
           </div>
 
-          <a href="<?= $dash_url ?>" class="btn btn-outline btn-sm hide-on-mobile" style="border-radius: var(--radius-round)">
+          <a href="<?= $dash_url ?>" class="btn btn-outline btn-sm hide-on-mobile fx-btn-round">
             <i class="ph ph-squares-four ph-space-left"></i> <?= $dash_label ?>
           </a>
-          <span class="hide-on-mobile" style="color:rgba(255,255,255,0.6); font-size:13px; font-weight:600; margin:0 4px;"><?= htmlspecialchars($_SESSION['user_name'] ?? '') ?></span>
-          <a href="/logout.php" class="btn btn-outline btn-sm hide-on-mobile" style="opacity:0.6; margin-right:4px; border-radius: var(--radius-round); border-color: transparent">خروج</a>
+          <span class="hide-on-mobile fx-nav-user-name"><?= htmlspecialchars($_SESSION['user_name'] ?? '') ?></span>
+          <a href="/logout.php" class="btn btn-outline btn-sm hide-on-mobile fx-nav-logout">خروج</a>
 
         <?php else: ?>
-          <a href="/login.php" class="btn-login btn-login--green-stroke hide-on-mobile">دخول المنصة</a>
-          <a href="/register.php" class="btn btn-primary btn-sm hide-on-mobile" style="border-radius: var(--radius-round)">سجل الآن</a>
+          <a href="/login.php" class="btn-login btn-login--green-stroke hide-on-mobile"><?= fleetx_t('nav_login') ?></a>
+          <a href="/register.php" class="btn btn-primary btn-sm hide-on-mobile fx-btn-round"><?= fleetx_t('nav_register') ?></a>
         <?php endif; ?>
 
         <button class="navbar-toggle" id="navToggle" aria-label="قائمة">
@@ -137,21 +138,21 @@ $navbar_logo_src = fleetx_logo_src();
       <li><a href="/about.php"><i class="ph ph-question"></i> كيف يعمل</a></li>
 
       <?php if (!$is_logged): ?>
-        <li style="margin-top:16px; display:flex; gap:12px;">
+        <li class="fx-mobile-cta-row">
           <a href="/login.php" class="btn-login btn-login--green-stroke fx-mobile-login">دخول المنصة</a>
           <a href="/register.php" class="btn btn-primary fx-mobile-register">تسجيل جديد</a>
         </li>
         <li>
-          <a href="/index.php?guest=1" style="display:block; text-align:center; color:rgba(255,255,255,0.5); font-size:13px; margin-top:8px;">تصفح بدون تسجيل</a>
+          <a href="/index.php?guest=1" class="fx-mobile-guest-link">تصفح بدون تسجيل</a>
         </li>
       <?php else: ?>
-        <li style="margin-top:24px; border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; flex-direction:column; align-items:center;">
+        <li class="fx-mobile-auth-section">
           <div class="mobile-auth-modern">
             <a href="<?= $dash_url ?>" class="btn-mobile-auth btn-green-stroke">
-              <i class="ph-fill ph-user" style="font-size:20px; color:var(--primary);"></i> <?= htmlspecialchars($_SESSION['user_name'] ?? 'حسابي') ?>
+              <i class="ph-fill ph-user fx-mobile-auth-icon fx-mobile-auth-icon--primary"></i> <?= htmlspecialchars($_SESSION['user_name'] ?? 'حسابي') ?>
             </a>
             <a href="/logout.php" class="btn-mobile-auth btn-white-stroke">
-              <i class="ph-bold ph-sign-out" style="font-size:20px; color:#fff;"></i> تسجيل الخروج
+              <i class="ph-bold ph-sign-out fx-mobile-auth-icon fx-mobile-auth-icon--white"></i> تسجيل الخروج
             </a>
           </div>
         </li>
@@ -179,7 +180,14 @@ document.addEventListener('click', function(e) {
 
 // Mobile toggle
 document.getElementById('navToggle')?.addEventListener('click', function() {
-  document.getElementById('mobileMenu')?.classList.toggle('open');
+  const menu = document.getElementById('mobileMenu');
+  menu?.classList.toggle('open');
+  const icon = this.querySelector('i');
+  if (icon) {
+    icon.className = menu?.classList.contains('open')
+      ? 'ph ph-x navbar-toggle-icon'
+      : 'ph ph-list navbar-toggle-icon';
+  }
 });
 
 <?php if ($is_logged): ?>
@@ -202,9 +210,9 @@ function renderNotifications(data) {
   if (badge) {
     if (data.unread_count > 0) {
       badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
-      badge.style.display = 'flex';
+      badge.classList.add('is-visible');
     } else {
-      badge.style.display = 'none';
+      badge.classList.remove('is-visible');
     }
   }
 
@@ -248,7 +256,7 @@ function markAllRead() {
     .then(() => {
       document.querySelectorAll('.notif-item.unread').forEach(i => i.classList.remove('unread'));
       const badge = document.getElementById('notifBadge');
-      if (badge) badge.style.display = 'none';
+      if (badge) badge.classList.remove('is-visible');
     })
     .catch(() => {});
 }

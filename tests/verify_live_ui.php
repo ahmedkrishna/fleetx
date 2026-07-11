@@ -19,7 +19,7 @@ foreach ($pages as $p) {
 
 $index = @file_get_contents("$base/index.php");
 check('Navbar map link on index', $index && str_contains($index, 'href="/map.php"') && str_contains($index, 'خريطة المزادات'));
-check('Homepage map CTA', $index && str_contains($index, 'خريطة المزادات'));
+check('Homepage navbar map link', $index && str_contains($index, 'href="/map.php"'));
 
 $map = @file_get_contents("$base/map.php");
 check('Map page hero title', $map && (str_contains($map, 'خريطة السيارات') || str_contains($map, 'fx-page-hero')));

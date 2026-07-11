@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>إضافة سيارة للبيع الفوري | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--seller-form">
 
@@ -185,7 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $hero_title = 'إضافة سيارة للبيع الفوري المباشر';
 $hero_desc = 'اعرض سيارة أسطولك بسعر محدد مسبقاً للشراء الفوري السريع دون مزايدات.';
 $hero_bg = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'بوابة البائعين';
 $hero_back_href = '/seller.php';
 $hero_back_label = '← العودة للوحة البائع';

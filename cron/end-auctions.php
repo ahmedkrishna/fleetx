@@ -72,46 +72,32 @@ while ($auction = $expired->fetch_assoc()) {
             $met_reserve = ($reserve <= 0 || $sale_price >= $reserve);
             
             if ($met_reserve) {
-                // 3. Mark auction as ended with winner
-                $upd = $conn->prepare("UPDATE auctions SET status='ended', winner_id=?, sale_price=? WHERE id=?");
+                // 3. End auction — seller must accept before sale completes
+                $upd = $conn->prepare("UPDATE auctions SET status='ended', winner_id=?, sale_price=?, seller_decision='pending' WHERE id=?");
                 $upd->bind_param('idi', $winner_id, $sale_price, $auction_id);
                 $upd->execute();
-                
-                // 4. Create transaction
-                $fee    = $sale_price * (PLATFORM_FEE_PERCENT / 100);
-                $payout = $sale_price - $fee;
-                
-                $tx = $conn->prepare("
-                    INSERT INTO transactions (auction_id, buyer_id, seller_id, sale_price, platform_fee, seller_payout, payment_status)
-                    VALUES (?, ?, ?, ?, ?, ?, 'pending')
-                ");
-                $tx->bind_param('iiiddd', $auction_id, $winner_id, $auction['seller_id'], $sale_price, $fee, $payout);
-                $tx->execute();
-                
-                // 5. Update vehicle status
-                $conn->query("UPDATE vehicles SET status='sold' WHERE id=" . (int)$auction['vehicle_id']);
-                
-                // 6. Notify winner
-                notifyUser($conn, $winner_id, 'auction_won',
-                    'تهانينا! فزت بالمزاد',
-                    "فزت بمزاد {$car_name} بمبلغ " . formatPrice($sale_price) . ". أكمل عملية الدفع الآن.",
-                    "/checkout.php?id={$auction_id}",
-                    ['in_app', 'sms', 'whatsapp']
-                );
 
-                // 7. Notify seller
+                // 4. Notify seller to accept/reject
                 $seller_user_stmt = $conn->prepare("SELECT user_id FROM seller_companies WHERE id=?");
                 $seller_user_stmt->bind_param('i', $auction['seller_id']);
                 $seller_user_stmt->execute();
                 $seller_user = $seller_user_stmt->get_result()->fetch_assoc();
                 if ($seller_user) {
                     notifyUser($conn, (int)$seller_user['user_id'], 'auction_end',
-                        'تم بيع سيارتك!',
-                        "تم بيع {$car_name} بمبلغ " . formatPrice($sale_price) . ". سيتم تحويل المستحقات خلال 3 أيام عمل.",
-                        "/seller.php?section=payouts",
+                        'انتهى المزاد — قرارك مطلوب',
+                        "انتهى مزاد {$car_name} بمبلغ " . formatPrice($sale_price) . ". قبول أو رفض البيع من لوحة البائع.",
+                        "/seller.php?section=results",
                         ['in_app', 'sms']
                     );
                 }
+
+                // 5. Notify winner (pending seller approval)
+                notifyUser($conn, $winner_id, 'auction_won',
+                    'أنت أعلى مزايد!',
+                    "أنت الفائز بمزاد {$car_name} بمبلغ " . formatPrice($sale_price) . ". بانتظار موافقة البائع.",
+                    "/buyer.php?section=bids",
+                    ['in_app', 'sms']
+                );
                 
                 // 8. Notify all other bidders
                 $losers = $conn->prepare("

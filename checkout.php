@@ -48,37 +48,51 @@ $vat = $price * 0.15;
 $total = $price + $vat;
 $wallet = (float)($_SESSION['wallet_balance'] ?? 0);
 
+$extra_total = 0;
+$extra_services = [];
+if (!empty($_POST['extra_transfer'])) { $extra_total += 1500; $extra_services[] = ['name'=>'نقل ملكية','price'=>1500]; }
+if (!empty($_POST['extra_delivery'])) { $extra_total += 500; $extra_services[] = ['name'=>'توصيل','price'=>500]; }
+if (!empty($_POST['extra_gold'])) { $extra_total += 3000; $extra_services[] = ['name'=>'باقة ذهبية','price'=>3000]; }
+$inspection_fee = ($db_connected) ? fleetx_inspection_fee($conn) : 0;
+$grand_total = $total + $extra_total + $inspection_fee;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $method = $_POST['payment_method'] ?? '';
     $success = false;
     $error = '';
+    $pay_total = $grand_total;
 
     if ($method == 'wallet') {
-        if ($wallet >= $total) {
-            $_SESSION['wallet_balance'] -= $total;
+        if ($wallet >= $pay_total) {
+            $_SESSION['wallet_balance'] -= $pay_total;
             if ($db_connected) {
                 $conn->begin_transaction();
                 try {
-                    // Update wallet balance using prepared statement
                     $wstmt = $conn->prepare("UPDATE users SET wallet_balance = wallet_balance - ? WHERE id = ?");
-                    $wstmt->bind_param('di', $total, $user_id);
+                    $wstmt->bind_param('di', $pay_total, $user_id);
                     $wstmt->execute();
                     
-                    // Create or update transaction
+                    $fee_pct = fleetx_platform_fee_percent($conn);
+                    $fee = $price * ($fee_pct / 100);
+                    $payout = $price - $fee;
+                    $extras_json = json_encode($extra_services, JSON_UNESCAPED_UNICODE);
+                    $vat_amt = round($price * 0.15, 2);
                     $check = $conn->prepare("SELECT id FROM transactions WHERE auction_id = ?");
                     $check->bind_param('i', $id);
                     $check->execute();
+                    $tx_id = 0;
                     if ($check->get_result()->num_rows > 0) {
-                        $upd = $conn->prepare("UPDATE transactions SET payment_status='paid', payment_method='wallet', paid_at=NOW() WHERE auction_id=?");
-                        $upd->bind_param('i', $id);
+                        $upd = $conn->prepare("UPDATE transactions SET payment_status='paid', payment_method='wallet', paid_at=NOW(), inspection_fee=?, extra_services=?, vat_amount=? WHERE auction_id=?");
+                        $upd->bind_param('dssi', $inspection_fee, $extras_json, $vat_amt, $id);
                         $upd->execute();
+                        $tx_id = (int)$conn->query("SELECT id FROM transactions WHERE auction_id=$id")->fetch_row()[0];
                     } else {
-                        $fee = $price * (PLATFORM_FEE_PERCENT / 100);
-                        $payout = $price - $fee;
-                        $ins = $conn->prepare("INSERT INTO transactions (auction_id, buyer_id, seller_id, sale_price, platform_fee, seller_payout, payment_method, payment_status, paid_at) VALUES (?,?,?,?,?,?,'wallet','paid',NOW())");
-                        $ins->bind_param('iiiddd', $id, $user_id, $vehicle['seller_id'], $price, $fee, $payout);
+                        $ins = $conn->prepare("INSERT INTO transactions (auction_id, buyer_id, seller_id, sale_price, platform_fee, seller_payout, inspection_fee, extra_services, vat_amount, payment_method, payment_status, paid_at) VALUES (?,?,?,?,?,?,?,?,?,'wallet','paid',NOW())");
+                        $ins->bind_param('iiiddddsd', $id, $user_id, $vehicle['seller_id'], $price, $fee, $payout, $inspection_fee, $extras_json, $vat_amt);
                         $ins->execute();
+                        $tx_id = (int)$conn->insert_id;
                     }
+                    if ($tx_id) fleetx_create_invoice($conn, $tx_id);
                     
                     // Update auction
                     $conn->query("UPDATE auctions SET status='ended', winner_id=$user_id, sale_price=$price WHERE id=$id");
@@ -104,41 +118,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $success = true; // mock
             }
             if ($success) {
-                echo "<script>alert('تم سحب المبلغ من محفظتك وإتمام الشراء بنجاح!'); window.location.href='/buyer.php?section=purchases';</script>";
+                fleetx_set_toast('تم سحب المبلغ من محفظتك وإتمام الشراء بنجاح!');
+                header('Location: /buyer.php?section=purchases');
                 exit;
             }
         } else {
             $error = "رصيد المحفظة غير كافٍ. يرجى الشحن أولاً أو استخدام الدفع بالبطاقة.";
         }
-    } else {
-        // Card / Bank payment (simulated)
-        if ($db_connected) {
-            $conn->begin_transaction();
-            try {
-                $ref = 'PAY-' . strtoupper(substr(md5(uniqid()), 0, 10));
-                $check = $conn->prepare("SELECT id FROM transactions WHERE auction_id = ?");
-                $check->bind_param('i', $id);
-                $check->execute();
-                if ($check->get_result()->num_rows > 0) {
-                    $upd = $conn->prepare("UPDATE transactions SET payment_status='paid', payment_method=?, payment_ref=?, paid_at=NOW() WHERE auction_id=?");
-                    $upd->bind_param('ssi', $method, $ref, $id);
-                    $upd->execute();
-                } else {
-                    $fee = $price * (PLATFORM_FEE_PERCENT / 100);
-                    $payout = $price - $fee;
-                    $ins = $conn->prepare("INSERT INTO transactions (auction_id, buyer_id, seller_id, sale_price, platform_fee, seller_payout, payment_method, payment_ref, payment_status, paid_at) VALUES (?,?,?,?,?,?,?,?,'paid',NOW())");
-                    $ins->bind_param('iiidddss', $id, $user_id, $vehicle['seller_id'], $price, $fee, $payout, $method, $ref);
-                    $ins->execute();
-                }
-                $conn->query("UPDATE auctions SET status='ended', winner_id=$user_id, sale_price=$price WHERE id=$id");
-                
-                $conn->commit();
-            } catch (Exception $e) {
-                $conn->rollback();
+    } elseif (in_array($method, ['card', 'mada', 'apple_pay', 'sadad'], true)) {
+        if ($db_connected && fleetx_table_exists($conn, 'payment_intents')) {
+            $intent = paymentGatewayCreateIntent($conn, $id, $user_id, $pay_total, $method, [
+                'extra_services' => $extra_services,
+                'inspection_fee' => $inspection_fee,
+            ]);
+            if ($intent && !empty($intent['redirect'])) {
+                header('Location: ' . $intent['redirect']);
+                exit;
             }
         }
-        echo "<script>alert('تمت عملية الدفع بنجاح!'); window.location.href='/buyer.php?section=purchases';</script>";
-        exit;
+        $error = 'تعذّر بدء عملية الدفع. حاول مرة أخرى أو استخدم المحفظة.';
+    } else {
+        $error = 'طريقة دفع غير مدعومة.';
     }
 }
 
@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= sanitize($page_title) ?> | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--checkout">
 
@@ -159,7 +159,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $hero_title = 'إتمام الشراء والدفع الآمن';
 $hero_desc = 'يرجى مراجعة تفاصيل الفاتورة واختيار طريقة الدفع المناسبة.';
 $hero_bg = 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'الدفع الآمن';
 include 'includes/page-hero.inc.php';
 ?>
@@ -221,18 +220,51 @@ include 'includes/page-hero.inc.php';
                 <div class="fx-checkout-option-sub">الرصيد المتاح: <span class="font-en"><?= number_format($wallet) ?> SAR</span></div>
               </div>
             </div>
-            <i class="ph-fill ph-wallet" style="font-size: 24px; color: var(--primary);"></i>
+            <i class="ph-fill ph-wallet fx-checkout-icon fx-checkout-icon--primary"></i>
           </label>
           
           <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
             <div class="fx-checkout-option-inner">
               <input type="radio" name="payment_method" value="card">
               <div>
-                <div class="fx-checkout-option-title">البطاقة الائتمانية / مدى</div>
-                <div class="fx-checkout-option-sub">سيتم توجيهك لبوابة الدفع الآمنة</div>
+                <div class="fx-checkout-option-title">البطاقة الائتمانية</div>
+                <div class="fx-checkout-option-sub">Visa / Mastercard — بوابة دفع آمنة</div>
               </div>
             </div>
-            <i class="ph-fill ph-credit-card" style="font-size: 24px; color: var(--text-muted);"></i>
+            <i class="ph-fill ph-credit-card fx-checkout-icon fx-checkout-icon--muted"></i>
+          </label>
+
+          <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <div class="fx-checkout-option-inner">
+              <input type="radio" name="payment_method" value="mada">
+              <div>
+                <div class="fx-checkout-option-title">مدى</div>
+                <div class="fx-checkout-option-sub">بطاقات مدى السعودية</div>
+              </div>
+            </div>
+            <i class="ph-fill ph-credit-card fx-checkout-icon fx-checkout-icon--muted"></i>
+          </label>
+
+          <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <div class="fx-checkout-option-inner">
+              <input type="radio" name="payment_method" value="apple_pay">
+              <div>
+                <div class="fx-checkout-option-title">Apple Pay</div>
+                <div class="fx-checkout-option-sub">دفع سريع عبر Apple Pay</div>
+              </div>
+            </div>
+            <i class="ph-fill ph-device-mobile fx-checkout-icon fx-checkout-icon--muted"></i>
+          </label>
+
+          <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <div class="fx-checkout-option-inner">
+              <input type="radio" name="payment_method" value="sadad">
+              <div>
+                <div class="fx-checkout-option-title">سداد</div>
+                <div class="fx-checkout-option-sub">الدفع عبر نظام سداد</div>
+              </div>
+            </div>
+            <i class="ph-fill ph-bank fx-checkout-icon fx-checkout-icon--muted"></i>
           </label>
 
         </div>
@@ -362,11 +394,12 @@ include 'includes/page-hero.inc.php';
       });
   });
   
-  // Trigger initial state
   const initialSelected = document.querySelector('input[name="payment_method"]:checked');
   if(initialSelected && initialSelected.value === 'card') {
       ccForm.classList.add('is-visible');
   }
+
+
 </script>
 </body>
 </html>

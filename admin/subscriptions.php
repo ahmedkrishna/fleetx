@@ -1,227 +1,119 @@
 <?php
 require_once '../config.php';
-
-// Verify admin role (with local mock bypass if database is down)
-if ($db_connected) {
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-        header('Location: ../login.php');
-        exit;
-    }
-} else {
-    if (!isset($_SESSION['user_id'])) {
-        $_SESSION['user_id'] = 3;
-        $_SESSION['user_name'] = 'م. أحمد السعدي (محاكي)';
-        $_SESSION['user_role'] = 'admin';
-    }
+requireLogin();
+if (getUserRole() !== 'admin') {
+    header('Location: ' . getDashboardUrl());
+    exit;
 }
 
 $success_msg = '';
-$error_msg = '';
+$tab = $_GET['tab'] ?? 'seller';
 
-// Handle Actions (Activate / Cancel)
-if ($db_connected) {
-    // Direct action links (GET parameters)
-    if (isset($_GET['action']) && isset($_GET['id'])) {
-        $act_id = intval($_GET['id']);
+if ($db_connected && isset($_GET['action'], $_GET['id'], $_GET['tab'])) {
+    $id = (int)$_GET['id'];
+    $t = $_GET['tab'];
+    if ($t === 'buyer' && fleetx_table_exists($conn, 'buyer_subscriptions')) {
         if ($_GET['action'] === 'activate') {
-            $stmt = $conn->prepare("UPDATE subscriptions SET status = 'active' WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("i", $act_id);
-                if ($stmt->execute()) {
-                    $success_msg = 'تم تنشيط الاشتراك بنجاح!';
-                }
-                $stmt->close();
-            }
+            $conn->query("UPDATE buyer_subscriptions SET is_active=1 WHERE id=$id");
+            $success_msg = 'تم تفعيل اشتراك المشتري';
         } elseif ($_GET['action'] === 'cancel') {
-            $stmt = $conn->prepare("UPDATE subscriptions SET status = 'cancelled' WHERE id = ?");
-            if ($stmt) {
-                $stmt->bind_param("i", $act_id);
-                if ($stmt->execute()) {
-                    $success_msg = 'تم إلغاء الاشتراك بنجاح!';
-                }
-                $stmt->close();
-            }
+            $conn->query("UPDATE buyer_subscriptions SET is_active=0 WHERE id=$id");
+            $success_msg = 'تم إلغاء اشتراك المشتري';
+        }
+    } elseif ($t === 'seller') {
+        if ($_GET['action'] === 'activate') {
+            $conn->query("UPDATE subscriptions SET is_active=1 WHERE id=$id");
+            $success_msg = 'تم تفعيل اشتراك البائع';
+        } elseif ($_GET['action'] === 'cancel') {
+            $conn->query("UPDATE subscriptions SET is_active=0 WHERE id=$id");
+            $success_msg = 'تم إلغاء اشتراك البائع';
         }
     }
 }
 
-// Fetch total stats count
-$total_subs_count = 1245;
+$seller_subs = [];
+$buyer_subs = [];
 if ($db_connected) {
-    // Only check if table exists before querying
-    $res_check = $conn->query("SHOW TABLES LIKE 'subscriptions'");
-    if ($res_check && $res_check->num_rows > 0) {
-        $res_cnt = $conn->query("SELECT COUNT(*) FROM subscriptions");
-        if ($res_cnt) {
-            $total_subs_count = intval($res_cnt->fetch_row()[0]);
+    $sql = "SELECT s.*, sc.company_name as entity_name, u.full_name as contact_name, u.email, u.mobile
+            FROM subscriptions s
+            JOIN seller_companies sc ON s.seller_id = sc.id
+            JOIN users u ON sc.user_id = u.id
+            ORDER BY s.id DESC LIMIT 100";
+    $res = @$conn->query($sql);
+    if ($res) while ($r = $res->fetch_assoc()) {
+        $r['computed_status'] = !$r['is_active'] ? 'cancelled' : (strtotime($r['end_date']) < time() ? 'expired' : 'active');
+        $seller_subs[] = $r;
+    }
+    if (fleetx_table_exists($conn, 'buyer_subscriptions')) {
+        $bsql = "SELECT bs.*, u.full_name as entity_name, u.email, u.mobile
+                 FROM buyer_subscriptions bs JOIN users u ON bs.user_id=u.id ORDER BY bs.id DESC LIMIT 100";
+        $bres = $conn->query($bsql);
+        if ($bres) while ($r = $bres->fetch_assoc()) {
+            $r['computed_status'] = !$r['is_active'] ? 'cancelled' : (strtotime($r['end_date']) < time() ? 'expired' : 'active');
+            $buyer_subs[] = $r;
         }
     }
 }
 
-// Fetch all subscriptions list from database
-$subs_list = [];
-if ($db_connected) {
-    $res_check = $conn->query("SHOW TABLES LIKE 'subscriptions'");
-    if ($res_check && $res_check->num_rows > 0) {
-        $sql_subs = "SELECT s.*, u.name as buyer_name, u.email as buyer_email, u.phone as buyer_phone 
-                     FROM subscriptions s 
-                     JOIN users u ON s.user_id = u.id 
-                     ORDER BY s.id DESC";
-        $res_subs = $conn->query($sql_subs);
-        if ($res_subs && $res_subs->num_rows > 0) {
-            while ($row = $res_subs->fetch_assoc()) {
-                $subs_list[] = $row;
-            }
-        }
-    }
-}
-
-
-
-if (!function_exists('sanitize')) {
-    function sanitize($data) {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-}
+$list = $tab === 'buyer' ? $buyer_subs : $seller_subs;
 $admin_page_title = 'إدارة الاشتراكات | FleetX';
 $admin_active = 'subscriptions';
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-<?php include __DIR__ . '/head.inc.php'; ?>
-</head>
+<head><?php include __DIR__ . '/head.inc.php'; ?></head>
 <body class="admin-body">
-
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
-
-<!-- MAIN CONTENT -->
 <main class="admin-content">
-  
-  <!-- Top Bar -->
-  <div class="admin-topbar" style="background:#FFFFFF;border-bottom:1px solid var(--navy-mid)">
-    <div style="display:flex;align-items:center;gap:var(--space-4)">
-      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">
-        <i class="fas fa-bars"></i>
-      </button>
-      <h2 style="font-size:var(--font-size-xl);color:#1E293B">إدارة الاشتراكات</h2>
-    </div>
-    <div style="font-size:var(--font-size-sm);color:var(--gray-500)">
-      إجمالي الاشتراكات: <span style="font-weight:800;color:#0F75BC"><?php echo number_format($total_subs_count); ?> اشتراك</span>
+  <div class="admin-topbar">
+    <h2 style="font-size:var(--font-size-xl);">إدارة الاشتراكات</h2>
+    <div>
+      <a href="?tab=seller" class="btn btn-sm <?= $tab==='seller'?'btn-primary':'btn-secondary' ?>">بائعون</a>
+      <a href="?tab=buyer" class="btn btn-sm <?= $tab==='buyer'?'btn-primary':'btn-secondary' ?>">مشترون</a>
     </div>
   </div>
-
-  <?php if (!empty($success_msg)): ?>
-    <div class="card card-body" style="background:var(--success-pale);border-color:var(--success);color:var(--success);margin-bottom:var(--space-5);padding:var(--space-3) var(--space-4)">
-      <i class="fas fa-check-circle" style="margin-left:8px"></i> <?php echo $success_msg; ?>
-    </div>
-  <?php endif; ?>
-
-  <!-- Filters and Search Table -->
-  <div class="admin-table-wrapper" style="margin-bottom:var(--space-6);background:#FFFFFF;border:1px solid var(--navy-mid)">
-    <div class="tabs-row">
-      <div style="display:flex;gap:var(--space-2)">
-        <button class="user-tab-btn active" onclick="switchTab('all', this)">الكل</button>
-        <button class="user-tab-btn" onclick="switchTab('active', this)">نشط</button>
-        <button class="user-tab-btn" onclick="switchTab('expired', this)">منتهي</button>
-        <button class="user-tab-btn" onclick="switchTab('cancelled', this)">ملغى</button>
-      </div>
-      <div class="admin-search-bar" style="max-width:300px;background:#F8F9FA;border:1px solid var(--navy-mid)">
-        <i class="fas fa-search" style="color:var(--gray-500)"></i>
-        <input type="text" placeholder="بحث باسم المشتري أو الباقة..." id="sub-search" oninput="filterSubs()">
-      </div>
-    </div>
-
-    <!-- Table -->
-    <table class="admin-table" role="table">
+  <?php if ($success_msg): ?><div class="admin-alert-success"><?= $success_msg ?></div><?php endif; ?>
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>اسم المشتري</th>
-          <th>اسم الباقة</th>
-          <th>تاريخ البداية</th>
-          <th>تاريخ النهاية</th>
+          <th>#</th>
+          <th><?= $tab==='seller'?'الشركة':'المشتري' ?></th>
+          <th>الباقة</th>
+          <th>السعر</th>
+          <th>من</th>
+          <th>إلى</th>
           <th>الحالة</th>
-          <th>الإجراءات</th>
+          <th>إجراء</th>
         </tr>
       </thead>
-      <tbody id="subs-table-body">
-        <?php foreach ($subs_list as $sub): ?>
-          <tr data-status="<?php echo $sub['status']; ?>">
-            <td style="font-family:var(--font-en);color:var(--gray-500)">#<?php echo $sub['id']; ?></td>
-            <td>
-              <div style="font-weight:600;font-size:var(--font-size-sm);color:#1E293B"><?php echo sanitize($sub['buyer_name']); ?></div>
-              <div style="font-size:11px;color:var(--gray-500);font-family:var(--font-en)"><?php echo sanitize($sub['buyer_email']); ?></div>
-            </td>
-            <td style="color:#1E293B;font-weight:500;">
-              <?php echo sanitize($sub['plan_name']); ?>
-            </td>
-            <td style="font-family:var(--font-en);font-size:var(--font-size-xs);color:#1E293B">
-              <?php echo date('Y-m-d', strtotime($sub['start_date'])); ?>
-            </td>
-            <td style="font-family:var(--font-en);font-size:var(--font-size-xs);color:#1E293B">
-              <?php echo date('Y-m-d', strtotime($sub['end_date'])); ?>
-            </td>
-            <td>
-              <?php if ($sub['status'] === 'active'): ?>
-                <span class="status-dot active">نشط</span>
-              <?php elseif ($sub['status'] === 'expired'): ?>
-                <span class="status-dot pending" style="background:#FFF3CD;color:#856404;">منتهي</span>
-              <?php elseif ($sub['status'] === 'cancelled'): ?>
-                <span class="status-dot rejected">ملغى</span>
-              <?php endif; ?>
-            </td>
-            <td>
-              <div style="display:flex;gap:var(--space-2)">
-                <?php if ($sub['status'] !== 'active'): ?>
-                  <a href="subscriptions.php?action=activate&id=<?php echo $sub['id']; ?>" class="btn btn-success btn-sm btn-icon" title="تنشيط"><i class="fas fa-check-circle"></i></a>
-                <?php endif; ?>
-                <?php if ($sub['status'] !== 'cancelled'): ?>
-                  <a href="subscriptions.php?action=cancel&id=<?php echo $sub['id']; ?>" class="btn btn-danger btn-sm btn-icon" title="إلغاء" onclick="return confirm('هل أنت متأكد من إلغاء هذا الاشتراك؟')"><i class="fas fa-ban"></i></a>
-                <?php endif; ?>
-              </div>
-            </td>
-          </tr>
+      <tbody>
+        <?php foreach ($list as $sub): ?>
+        <tr>
+          <td>#<?= (int)$sub['id'] ?></td>
+          <td>
+            <strong><?= sanitize($sub['entity_name'] ?? '') ?></strong>
+            <div style="font-size:11px;color:#64748b;"><?= sanitize($sub['email'] ?? $sub['mobile'] ?? '') ?></div>
+          </td>
+          <td><?= sanitize($sub['plan'] ?? '') ?></td>
+          <td><?= number_format($sub['price'] ?? 0) ?> ر.س</td>
+          <td><?= sanitize($sub['start_date'] ?? '') ?></td>
+          <td><?= sanitize($sub['end_date'] ?? '') ?></td>
+          <td><?= sanitize($sub['computed_status'] ?? '') ?></td>
+          <td>
+            <?php if (($sub['computed_status'] ?? '') !== 'active'): ?>
+            <a href="?tab=<?= $tab ?>&action=activate&id=<?= (int)$sub['id'] ?>" class="btn btn-success btn-sm">تفعيل</a>
+            <?php endif; ?>
+            <?php if (($sub['computed_status'] ?? '') !== 'cancelled'): ?>
+            <a href="?tab=<?= $tab ?>&action=cancel&id=<?= (int)$sub['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('إلغاء؟')">إلغاء</a>
+            <?php endif; ?>
+          </td>
+        </tr>
         <?php endforeach; ?>
+        <?php if (empty($list)): ?><tr><td colspan="8">لا توجد اشتراكات</td></tr><?php endif; ?>
       </tbody>
     </table>
   </div>
 </main>
-
-<script>
-  let activeTabStatus = 'all';
-
-  function switchTab(status, element) {
-    document.querySelectorAll('.user-tab-btn').forEach(btn => btn.classList.remove('active'));
-    element.classList.add('active');
-    activeTabStatus = status;
-    filterSubs();
-  }
-
-  function filterSubs() {
-    const search = document.getElementById('sub-search').value.toLowerCase();
-
-    document.querySelectorAll('#subs-table-body tr').forEach(row => {
-      const rowStatus = row.getAttribute('data-status');
-      const buyerText = row.querySelector('td:nth-child(2)').innerText.toLowerCase();
-      const planText = row.querySelector('td:nth-child(3)').innerText.toLowerCase();
-
-      let matchesTab = false;
-      if (activeTabStatus === 'all') {
-        matchesTab = true;
-      } else if (activeTabStatus === rowStatus) {
-        matchesTab = true;
-      }
-
-      const matchesSearch = (search === '' || buyerText.includes(search) || planText.includes(search));
-
-      if (matchesTab && matchesSearch) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
-    });
-  }
-</script>
 </body>
 </html>

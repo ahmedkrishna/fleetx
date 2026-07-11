@@ -26,3 +26,17 @@ scratch/
 
 # FTP credentials (never commit)
 deploy.local.ps1
+
+# Local scratch / agent dumps
+agent-tools/
+_docx_tmp/
+edit-final-extracted/
+edit-final-text.txt
+edit-final.docx
+edit-final.zip
+_ftp_*.php
+_live*.html
+_live*.css
+test-results/
+tests/screenshots/
+tests/tests/

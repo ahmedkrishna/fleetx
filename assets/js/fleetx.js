@@ -565,71 +565,6 @@ function initHomeSwiper(selector, key) {
   return swiper;
 }
 
-/* ── Hero floating digits 1–9 (under image, flee from cursor) ── */
-function initHeroFloatNums() {
-  const host = document.getElementById('fxHeroFloatNums');
-  if (!host || host.dataset.ready === '1') return;
-
-  const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  const items = [];
-
-  digits.forEach((digit, i) => {
-    const el = document.createElement('span');
-    el.className = 'fx-hero-float-num';
-    el.textContent = digit;
-    const state = {
-      el,
-      x: 8 + Math.random() * 84,
-      y: 10 + Math.random() * 72,
-      vx: (Math.random() - 0.5) * 0.08,
-      vy: (Math.random() - 0.5) * 0.08,
-    };
-    el.style.left = state.x + '%';
-    el.style.top = state.y + '%';
-    host.appendChild(el);
-    items.push(state);
-  });
-
-  let mouseX = -9999;
-  let mouseY = -9999;
-  const stage = host.closest('.fx-hero-bg-stage');
-  if (stage) {
-    stage.addEventListener('mousemove', (e) => {
-      const rect = stage.getBoundingClientRect();
-      mouseX = ((e.clientX - rect.left) / rect.width) * 100;
-      mouseY = ((e.clientY - rect.top) / rect.height) * 100;
-    }, { passive: true });
-    stage.addEventListener('mouseleave', () => {
-      mouseX = -9999;
-      mouseY = -9999;
-    });
-  }
-
-  function tick() {
-    items.forEach((s) => {
-      const dx = s.x - mouseX;
-      const dy = s.y - mouseY;
-      const dist = Math.hypot(dx, dy);
-      if (dist < 12 && dist > 0.01) {
-        const force = (12 - dist) * 0.035;
-        s.vx += (dx / dist) * force;
-        s.vy += (dy / dist) * force;
-      }
-      s.vx *= 0.98;
-      s.vy *= 0.98;
-      s.x = Math.min(92, Math.max(4, s.x + s.vx));
-      s.y = Math.min(88, Math.max(6, s.y + s.vy));
-      if (s.x <= 4 || s.x >= 92) s.vx *= -0.6;
-      if (s.y <= 6 || s.y >= 88) s.vy *= -0.6;
-      s.el.style.left = s.x + '%';
-      s.el.style.top = s.y + '%';
-    });
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-  host.dataset.ready = '1';
-}
-
 /* ── Modern bidding signs in hero ──────────────────────── */
 function initHeroBiddingSigns() {
   const container = document.getElementById('fxBiddingSigns');
@@ -648,15 +583,17 @@ function initHeroBiddingSigns() {
     const sign = document.createElement('div');
     sign.className = 'fx-bid-sign ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
     sign.style.top = (15 + Math.random() * 55) + '%';
-    sign.innerHTML =
+    const boardHtml =
       '<div class="fx-bid-sign__board">' +
-        '<i class="ph-fill ph-gavel"></i>' +
         '<div class="fx-bid-sign__text">' +
           '<span class="fx-bid-sign__label">' + bid.text + '<br>على ' + bid.car + '</span>' +
           '<strong class="fx-bid-sign__amount">' + bid.amount + '</strong>' +
         '</div>' +
-      '</div>' +
-      '<div class="fx-bid-sign__stem"></div>';
+      '</div>';
+    const stemHtml = '<div class="fx-bid-sign__stem" aria-hidden="true"></div>';
+    sign.innerHTML = isLeft
+      ? boardHtml + stemHtml
+      : stemHtml + boardHtml;
     sign.addEventListener('click', () => { window.location.href = bid.url; });
     container.appendChild(sign);
     requestAnimationFrame(() => sign.classList.add('is-visible'));
@@ -666,8 +603,9 @@ function initHeroBiddingSigns() {
     }, 4800);
   }
 
-  setTimeout(spawnSign, 900);
-  setInterval(spawnSign, 5200);
+  setTimeout(spawnSign, 500);
+  setTimeout(spawnSign, 2200);
+  setInterval(spawnSign, 3800);
   container.dataset.ready = '1';
 }
 
@@ -806,7 +744,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initOTP();
   initNavDropdown();
   initSwipers();
-  initHeroFloatNums();
   initHeroBiddingSigns();
   initWhyCardMotion();
 });

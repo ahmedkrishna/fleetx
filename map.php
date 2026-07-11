@@ -152,7 +152,7 @@ if (empty($map_vehicles)) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>خريطة المزايدات التفاعلية | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -167,7 +167,6 @@ $hero_title = 'خريطة السيارات التفاعلية';
 $hero_eyebrow = 'مواقع السيارات المتاحة';
 $hero_desc = 'تصفح السيارات المتاحة للمزايدة الفورية والشراء المباشر حسب موقعها الجغرافي في مدن المملكة.';
 $hero_bg = 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-map-trifold"></i> ' . count($map_vehicles) . ' مركبة على الخريطة</span>';
 $hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph-fill ph-map-pin"></i> مدن المملكة</span>';
 $hero_meta_html .= '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-broadcast"></i> تحديث مباشر</span>';

@@ -131,15 +131,15 @@ body.fx-home-index .hiw-tab-col:first-child {
   text-align: right;
 }
 
-/* ── Hero: full-screen desktop/mobile backgrounds + typewriter title ── */
+/* ── Hero: solid light grey gradient + floating fleet images ───────────── */
 body.fx-home-index .fx-hero-wrap--fleet1 {
-  background: #fff !important;
+  background: linear-gradient(165deg, #f8fafc 0%, #eef2f6 48%, #e2e8f0 100%) !important;
 }
 
 body.fx-home-index .fx-hero-wrapper--fleet1 {
   position: relative;
   min-height: 100svh;
-  background-color: #fff !important;
+  background: linear-gradient(165deg, #f8fafc 0%, #eef2f6 48%, #e2e8f0 100%) !important;
   background-image: none !important;
   background-size: unset !important;
   background-position: unset !important;
@@ -153,105 +153,52 @@ body.fx-home-index .fx-hero-wrapper--fleet1 {
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
+  isolation: isolate;
 }
 
-.fx-hero-bg-image--fleet1 {
+.fx-hero-bg-gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(165deg, #f8fafc 0%, #eef2f6 48%, #e2e8f0 100%);
+  pointer-events: none;
+}
+
+.fx-hero-bg-image {
   position: absolute;
   inset: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
-  background-color: #fff;
-  background-image: url('/assets/images/fleetxhero-desktop.png');
+  background-color: transparent;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  will-change: transform;
 }
 
-/* ── Hero auction chart — forex-style lines under artwork ─────────────── */
-.fx-hero-auction-chart {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  height: clamp(140px, 28vh, 300px);
-  pointer-events: none;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 62%, transparent 100%);
-  mask-image: linear-gradient(to top, #000 0%, #000 62%, transparent 100%);
+.fx-hero-bg-image--float {
+  animation: fx-hero-image-float 16s ease-in-out infinite;
 }
 
-.fx-hero-chart__glow {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 70%;
-  background: radial-gradient(ellipse 80% 100% at 50% 100%, rgba(27, 201, 118, 0.08) 0%, transparent 70%);
+@keyframes fx-hero-image-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
 }
 
-.fx-hero-chart__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+@media (prefers-reduced-motion: reduce) {
+  .fx-hero-bg-image--float {
+    animation: none;
+  }
 }
 
-.fx-hero-chart__legend {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px 18px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  font-size: 11px;
-  font-weight: 800;
-  color: #334155;
-  z-index: 3;
+.fx-hero-bg-image--desktop {
+  background-image: url('/assets/images/fleetxhero-desktop.png');
 }
 
-.fx-hero-chart__key {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.fx-hero-chart__key i {
-  width: 18px;
-  height: 3px;
-  border-radius: 2px;
-  display: block;
-}
-
-.fx-hero-chart__key--green i { background: #1bc976; }
-.fx-hero-chart__key--blue i { background: #0ea5e9; }
-.fx-hero-chart__key--navy i { background: #1e3a5f; }
-
-.fx-hero-chart__scanner {
-  position: absolute;
-  top: 12%;
-  bottom: 28%;
-  right: 8%;
-  width: 2px;
-  border-radius: 2px;
-  background: linear-gradient(to bottom, transparent, rgba(27, 201, 118, 0.55), transparent);
-  animation: fx-hero-chart-scan 3.8s ease-in-out infinite;
-  z-index: 2;
-}
-
-@keyframes fx-hero-chart-scan {
-  0%, 100% { transform: translateX(0); opacity: 0.45; }
-  50% { transform: translateX(-28px); opacity: 0.9; }
+.fx-hero-bg-image--mobile {
+  display: none;
+  background-image: url('/assets/images/fleetxhero-mobile.png');
 }
 
 .fx-hero-section--fleet1 {
@@ -279,7 +226,7 @@ body.fx-home-index .fx-hero-typewriter-text {
 
 body.fx-home-index .fx-hero-subtitle--fleet1,
 body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
-  color: var(--primary) !important;
+  color: var(--fx-brand-green, #1bc976) !important;
   text-shadow: none !important;
 }
 
@@ -340,10 +287,13 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
     padding-bottom: 0 !important;
   }
 
-  .fx-hero-bg-image--fleet1 {
-    background-image: url('/assets/images/fleetxhero-mobile.png');
-    background-size: cover;
-    background-position: center center;
+  body.fx-home-index .fx-hero-bg-image--desktop {
+    display: none;
+  }
+
+  body.fx-home-index .fx-hero-bg-image--mobile {
+    display: block;
+    z-index: 1;
   }
 
   .fx-hero-section--fleet1 {
@@ -377,88 +327,58 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
     font-size: 13px !important;
     max-width: 92% !important;
   }
-
-  .fx-hero-auction-chart {
-    height: clamp(120px, 24vh, 220px);
-  }
-
-  .fx-hero-chart__legend {
-    bottom: 10px;
-    gap: 8px 12px;
-    padding: 5px 10px;
-    font-size: 10px;
-    max-width: 92%;
-  }
-
-  .fx-hero-chart__scanner {
-    display: none;
-  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .fx-hero-chart__scanner {
-    animation: none;
-    opacity: 0.35;
-  }
-}
-
-/* ── Auctions swiper: center card larger, full card corners visible ───── */
+/* ── Section 2: homepage swiper carousel (center card larger) ──────────── */
 .fx-home-auctions,
 .fx-home-auctions > .container,
 .fx-home-auctions .auctions-tab-content {
   overflow: visible;
 }
 
-.auctions-swiper {
-  overflow: visible !important;
-  padding: 28px 20px 60px !important;
-}
-
-.auctions-swiper .swiper-wrapper {
+.fx-home-auctions .auctions-swiper {
+  margin-top: 8px;
+  padding: 12px 0 56px !important;
   overflow: visible;
 }
 
-.auctions-swiper .swiper-slide {
-  transform: scale(0.82) !important;
-  opacity: 0.48 !important;
-  overflow: visible;
+.fx-home-auctions .auctions-swiper .swiper-slide {
+  height: auto;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.45s ease;
+  transform: scale(0.88);
+  opacity: 0.55;
 }
 
-.auctions-swiper .swiper-slide-prev,
-.auctions-swiper .swiper-slide-next {
-  transform: scale(0.9) !important;
-  opacity: 0.68 !important;
-}
-
-.auctions-swiper .swiper-slide-active {
-  transform: scale(1) !important;
-  opacity: 1 !important;
+.fx-home-auctions .auctions-swiper .swiper-slide-active {
+  transform: scale(1);
+  opacity: 1;
   z-index: 3;
 }
 
-.auctions-swiper .swiper-slide .auction-card.fx-card {
-  border-radius: var(--radius-lg);
-  overflow: visible;
+.fx-home-auctions .auctions-swiper .swiper-slide .auction-card {
+  height: 100%;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.45s ease;
 }
 
-@media (max-width: 768px) {
-  .auctions-swiper {
-    padding: 16px 8px 48px !important;
-  }
+.fx-home-auctions .auctions-swiper .swiper-slide-active .auction-card {
+  transform: scale(1.03);
+  box-shadow: 0 22px 48px rgba(11, 15, 25, 0.12) !important;
+}
 
-  .auctions-swiper .swiper-slide,
-  .auctions-swiper .swiper-slide-prev,
-  .auctions-swiper .swiper-slide-next,
-  .auctions-swiper .swiper-slide-active {
-    transform: scale(1) !important;
-    opacity: 1 !important;
-  }
+.fx-home-auctions .auctions-swiper .swiper-slide .auction-card.featured-card {
+  border-color: var(--fx-brand-blue) !important;
+  box-shadow: 0 0 18px rgba(14, 165, 233, 0.28) !important;
+}
+
+.fx-home-auctions .auctions-swiper .swiper-slide .auction-card.vip-card {
+  border-color: var(--fx-brand-gold) !important;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.35) !important;
 }
 
 /* ── HIW: v1 dark sticky browser tabs (buyer + seller) ─────────────────── */
 .fx-hiw-section--dark {
   position: relative;
-  background: #0b0f19;
+  background: var(--fx-brand-navy);
 }
 
 .fx-hiw-section--dark .hiw-wrapper--sticky,
@@ -481,8 +401,9 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 }
 
 .fx-hiw-section--dark .browser-tabs-container {
-  max-width: 1000px;
-  margin: 0 auto;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 .fx-hiw-section--dark .hiw-dark-title,
@@ -497,11 +418,47 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 
 .fx-hiw-section--dark .hiw-panel,
 .fx-hiw-section--dark .browser-content.hiw-panel {
+  display: block !important;
   background: #172030 !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  border-radius: 24px !important;
+  border-radius: 0 24px 24px 24px !important;
   padding: 40px !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  min-height: 380px;
+}
+
+.fx-hiw-section--dark .hiw-tab-content {
+  display: none;
+  gap: 40px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.fx-hiw-section--dark .hiw-tab-content.active {
+  display: flex !important;
+}
+
+.fx-hiw-section--dark .hiw-tab-col:first-child {
+  flex: 1.1;
+  min-width: 280px;
+}
+
+.fx-hiw-section--dark .hiw-tab-col:last-child {
+  flex: 1;
+  min-width: 260px;
+}
+
+.fx-hiw-section--dark .hiw-tab-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+
+.fx-hiw-section--dark .hiw-tab-desc {
+  font-size: 15px;
+  line-height: 1.85;
+  margin-bottom: 0;
 }
 
 .fx-hiw-section--dark .b-tab {
@@ -563,10 +520,16 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   .fx-hiw-section--dark .hiw-panel,
   .fx-hiw-section--dark .browser-content.hiw-panel {
     padding: 24px !important;
+    min-height: auto;
+  }
+
+  .fx-hiw-section--dark .hiw-tab-content.active {
+    flex-direction: column;
   }
 
   .fx-hiw-section--dark .hiw-tab-col {
     min-width: 100%;
+    width: 100%;
   }
 }
 
@@ -832,6 +795,9 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
   backdrop-filter: blur(10px);
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .fx-why-card--trust:hover,
@@ -906,6 +872,9 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  align-self: flex-start;
   font-size: 12px;
   font-weight: 800;
   color: var(--primary);
@@ -923,9 +892,9 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   grid-column: span 12;
   padding: 28px 32px 32px;
   border-radius: var(--radius-xl);
-  background: #fff;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.06);
+  background: linear-gradient(145deg, var(--fx-brand-navy-surface) 0%, #111827 48%, var(--fx-brand-navy) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 48px rgba(11, 15, 25, 0.32);
 }
 
 .fx-why-journey__head {
@@ -936,13 +905,13 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 .fx-why-journey__head h3 {
   font-size: 20px;
   font-weight: 900;
-  color: var(--text-dark);
+  color: #fff;
   margin: 0 0 8px;
 }
 
 .fx-why-journey__head p {
   font-size: 14px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.68);
   margin: 0;
   line-height: 1.7;
 }
@@ -975,16 +944,16 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   text-align: center;
   padding: 12px 10px;
   border-radius: var(--radius-lg);
-  background: #f8fafc;
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
 }
 
 .fx-why-journey__steps li:hover {
   transform: translateY(-4px);
-  background: #fff;
-  border-color: rgba(27, 201, 118, 0.2);
-  box-shadow: 0 10px 28px rgba(27, 201, 118, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(27, 201, 118, 0.28);
+  box-shadow: 0 10px 28px rgba(27, 201, 118, 0.12);
 }
 
 .fx-why-journey__icon {
@@ -1005,14 +974,14 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
   display: block;
   font-size: 15px;
   font-weight: 900;
-  color: var(--text-dark);
+  color: #fff;
   margin-bottom: 4px;
 }
 
 .fx-why-journey__steps small {
   display: block;
   font-size: 12px;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.58);
   line-height: 1.5;
 }
 
@@ -1323,5 +1292,481 @@ body.fx-home-index .fx-hero-content--fleet1 .hero-subtitle {
 
   .fx-companies-toolbar h2 {
     justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   Phase 25 — Homepage UI refresh (hero, cards v1, HIW, why, stats, contact)
+   ========================================================================== */
+
+/* ── Navbar: light glass over grey hero ────────────────────────────────── */
+body.fx-home-index .navbar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar.scrolled {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar-links a {
+  color: #475569 !important;
+}
+
+body.fx-home-index .navbar-links a:hover,
+body.fx-home-index .navbar-links a.active {
+  color: #0f172a !important;
+}
+
+body.fx-home-index .navbar-toggle,
+body.fx-home-index .navbar-toggle-icon {
+  color: #0f172a !important;
+}
+
+body.fx-home-index .navbar .notif-btn {
+  color: #334155 !important;
+}
+
+body.fx-home-index .navbar .notif-btn:hover {
+  color: var(--fx-brand-green, #1bc976) !important;
+}
+
+body.fx-home-index .navbar .btn-outline,
+body.fx-home-index .navbar .fx-btn-round,
+body.fx-home-index .navbar .fx-nav-logout {
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .navbar .btn-outline:hover,
+body.fx-home-index .navbar .fx-btn-round:hover,
+body.fx-home-index .navbar .fx-nav-logout:hover {
+  color: var(--fx-brand-green, #1bc976) !important;
+  border-color: rgba(27, 201, 118, 0.45) !important;
+  background: rgba(27, 201, 118, 0.08) !important;
+}
+
+body.fx-home-index .navbar .fx-nav-user-name {
+  color: #64748b !important;
+}
+
+body.fx-home-index .navbar .btn-login--green-stroke {
+  color: var(--fx-brand-green, #1bc976) !important;
+  border-color: var(--fx-brand-green, #1bc976) !important;
+  background: transparent !important;
+}
+
+body.fx-home-index .navbar .btn-primary {
+  background: var(--primary-gradient) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+body.fx-home-index .navbar .btn,
+body.fx-home-index .navbar .btn-primary,
+body.fx-home-index .navbar .btn-login,
+body.fx-home-index .navbar .btn-login--green-stroke,
+body.fx-home-index .navbar .fx-btn-round {
+  box-shadow: none !important;
+}
+
+body.fx-home-index .navbar .btn-login--green-stroke:hover {
+  color: #fff !important;
+  background: var(--fx-brand-green, #1bc976) !important;
+  border-color: var(--fx-brand-green, #1bc976) !important;
+  box-shadow: 0 6px 20px rgba(27, 201, 118, 0.28) !important;
+  transform: translateY(-1px);
+}
+
+body.fx-home-index .navbar-logo img {
+  filter: none;
+}
+
+/* ── Hero: solid gradient base + images on top + fade titles ───────────── */
+body.fx-home-index .fx-hero-bg-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+body.fx-home-index .fx-hero-bg-image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: transparent !important;
+}
+
+body.fx-home-index .fx-hero-section--fleet1,
+body.fx-home-index .fx-hero-content--fleet1 {
+  position: relative;
+  z-index: 3;
+}
+
+.fx-hero-motion {
+  transition: opacity 0.52s ease-in-out;
+}
+
+.fx-hero-motion.is-exit {
+  opacity: 0;
+}
+
+.fx-hero-motion.is-enter {
+  opacity: 0;
+}
+
+.fx-hero-motion.is-visible {
+  opacity: 1;
+}
+
+body.fx-home-index #heroMainTitle.fx-hero-motion.is-visible {
+  animation: fx-hero-title-glow 5.5s ease-in-out infinite;
+}
+
+@keyframes fx-hero-title-glow {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 28px rgba(27, 201, 118, 0.18); }
+}
+
+body.fx-home-index #heroSubtitle.fx-hero-motion.is-visible {
+  letter-spacing: 0.01em;
+}
+
+/* ── Unified v1 cards site-wide (classic layout + timer v2) ───────────── */
+.auction-card.fx-card-unified,
+.auctions-grid .auction-card,
+.fx-home-auctions .auctions-swiper .auction-card,
+.fx-home-cards-grid .auction-card {
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05) !important;
+  overflow: hidden;
+}
+
+.auction-card.fx-card-unified:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.09) !important;
+}
+
+.auction-card.fx-card-unified .ac-img-wrap {
+  height: 220px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.auction-card.fx-card-unified .ac-body {
+  padding: 18px 20px 20px;
+}
+
+.auction-card.fx-card-unified .ac-price-row > div {
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.auction-card.fx-card-unified .ac-price-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--v2 {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 108px;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.04));
+  border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--instant {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(14, 165, 233, 0.04));
+  border: 1px solid rgba(14, 165, 233, 0.18);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--ended,
+.auction-card.fx-card-unified .ac-timer-box--upcoming {
+  background: rgba(100, 116, 139, 0.08);
+  border: 1px solid rgba(100, 116, 139, 0.14);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--v2 .ac-timer-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live .ac-timer-label {
+  color: #dc2626;
+}
+
+.auction-card.fx-card-unified .ac-timer-box--instant .ac-timer-label {
+  color: #0284c7;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips div {
+  background: #fff;
+  color: #0f172a;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  min-width: 26px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.auction-card.fx-card-unified .ac-timer-box--live .fx-timer-chips div {
+  color: #dc2626;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips span {
+  color: #94a3b8;
+  font-weight: 900;
+  font-size: 11px;
+}
+
+.auction-card.fx-card-unified .fx-timer-chips.urgent div {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.auction-card.fx-card-unified .ac-timer-date {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0284c7;
+}
+
+/* ── HIW: rounded panel + page-aligned width ───────────────────────────── */
+.fx-hiw-section--dark .browser-tabs-container {
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.fx-hiw-section--dark .hiw-panel,
+.fx-hiw-section--dark .browser-content.hiw-panel {
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.fx-hiw-section--dark .browser-tabs {
+  margin-bottom: -1px;
+  padding-inline: 4px;
+}
+
+/* ── Why FleetX: centered head, dark cards, clean icons ────────────────── */
+.fx-why-fleetx__head--center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 48px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fx-why-fleetx__head--center .fx-why-fleetx__title,
+.fx-why-fleetx__head--center .fx-why-fleetx__lead {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fx-why-fleetx__head-badges {
+  display: none !important;
+}
+
+.fx-why-card--spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.fx-why-card__spotlight-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(145deg, rgba(11, 15, 25, 0.88) 0%, rgba(18, 26, 43, 0.82) 55%, rgba(11, 15, 25, 0.9) 100%),
+    url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1400&q=80') center/cover no-repeat;
+  z-index: 0;
+}
+
+.fx-why-card--spotlight .fx-why-card__body {
+  position: relative;
+  z-index: 1;
+}
+
+.fx-why-card--trust,
+.fx-why-card--ai {
+  background: linear-gradient(145deg, #1a2332 0%, #111827 48%, #0b1220 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 16px 40px rgba(11, 15, 25, 0.28) !important;
+}
+
+.fx-why-card--trust h3,
+.fx-why-card--ai h3 {
+  color: #fff !important;
+}
+
+.fx-why-card--trust p,
+.fx-why-card--ai p {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.fx-why-card--trust .fx-why-card__pill,
+.fx-why-card--ai .fx-why-card__pill {
+  width: fit-content !important;
+  max-width: 100%;
+  align-self: flex-start !important;
+  background: rgba(27, 201, 118, 0.14) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(27, 201, 118, 0.22);
+}
+
+.fx-why-card__icon--plain,
+.fx-why-card--spotlight .fx-why-card__icon--plain {
+  width: auto !important;
+  height: auto !important;
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 40px !important;
+  color: var(--fx-brand-green) !important;
+  margin-bottom: 14px !important;
+  align-self: flex-start !important;
+  text-align: right !important;
+  display: block !important;
+}
+
+.fx-why-card--trust .fx-why-card__icon--plain,
+.fx-why-card--ai .fx-why-card__icon--plain {
+  color: #6ee7b7 !important;
+}
+
+.fx-why-card--spotlight .fx-why-card__icon--plain {
+  color: #4ade80 !important;
+}
+
+.fx-why-card__ring,
+.fx-why-card__glow {
+  display: none !important;
+}
+
+.fx-why-journey__icon {
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  font-size: 36px !important;
+  color: var(--fx-brand-green) !important;
+  margin-bottom: 10px !important;
+}
+
+/* ── Why journey: dark wide card (overrides legacy white) ──────────────── */
+.fx-why-journey {
+  background: linear-gradient(145deg, var(--fx-brand-navy-surface) 0%, #111827 48%, var(--fx-brand-navy) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.fx-why-journey__head h3 {
+  color: #fff !important;
+}
+
+.fx-why-journey__head p {
+  color: rgba(255, 255, 255, 0.68) !important;
+}
+
+.fx-why-journey__steps li {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.fx-why-journey__steps strong {
+  color: #fff !important;
+}
+
+.fx-why-journey__steps small {
+  color: rgba(255, 255, 255, 0.58) !important;
+}
+
+/* ── HIW: full container width alignment ───────────────────────────────── */
+.fx-hiw-section--dark .hiw-wrapper .container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.fx-hiw-section--dark .browser-tabs-container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* ── Stats: larger success & sales icons ───────────────────────────────── */
+.fx-home-stats-section .ac-stat-mobile__icon {
+  font-size: 68px !important;
+  margin-bottom: 20px !important;
+  line-height: 1;
+}
+
+.fx-home-stats-section .main-stats-container {
+  gap: 100px;
+}
+
+/* ── Contact: right-aligned copy ─────────────────────────────────────── */
+body.fx-home-index .fx-home-contact,
+body.fx-home-index .fx-home-contact .contact-grid,
+body.fx-home-index .fx-home-contact .contact-info-col,
+body.fx-home-index .fx-home-contact .contact-form-col,
+body.fx-home-index .fx-home-contact .fx-contact-form-card {
+  text-align: right !important;
+}
+
+body.fx-home-index .fx-home-contact .fx-contact-item {
+  justify-content: flex-start;
+  text-align: right;
+}
+
+body.fx-home-index .fx-home-contact .fx-contact-form-title,
+body.fx-home-index .fx-home-contact .fx-form-label {
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .fx-home-auctions .auctions-swiper .swiper-slide {
+    transform: scale(0.92);
+    opacity: 0.65;
+  }
+
+  .fx-home-stats-section .ac-stat-mobile__icon {
+    font-size: 56px !important;
+  }
+
+  .auction-card.fx-card-unified .ac-timer-box--v2 {
+    min-width: 96px;
+    padding: 6px 10px;
   }
 }

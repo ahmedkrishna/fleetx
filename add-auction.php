@@ -112,6 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $msg = 'الرجاء إدخال سعر بداية مزاد صحيح';
     } else {
         if ($db_connected && $seller_id) {
+            $can_add = sellerCanAddVehicle($conn, (int)$seller_id);
+            if (!$can_add['allowed']) {
+                $msg = $can_add['reason'];
+            } else {
             $schedule_now = isset($_POST['schedule_now']) && $_POST['schedule_now'] === '1';
             $status = $schedule_now ? 'approved' : 'pending';
             $autodata = estimateAutoDataPrice($make, $model, $year, $mileage);
@@ -127,12 +131,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $title = $make . ' ' . $model . ' ' . $year;
                     $now = date('Y-m-d H:i:s');
                     $end_time = date('Y-m-d H:i:s', strtotime("+$duration_hours hours"));
-                    $ins_auc = $conn->prepare("INSERT INTO auctions (vehicle_id, seller_id, event_id, title, type, status, starting_price, current_price, reserve_price, bid_increment, start_time, end_time) VALUES (?, ?, ?, ?, 'live', 'active', ?, ?, ?, ?, ?, ?)");
+                    $ins_auc = $conn->prepare("INSERT INTO auctions (vehicle_id, seller_id, event_id, title, type, status, starting_price, current_price, reserve_price, bid_increment, start_time, end_time, admin_approved) VALUES (?, ?, ?, ?, 'live', 'draft', ?, ?, ?, ?, ?, ?, 0)");
                     $ins_auc->bind_param('iiisddddss', $vehicle_id, $seller_id, $event_id, $title, $starting_price, $starting_price, $reserve_price, $bid_increment, $now, $end_time);
                     if ($ins_auc->execute()) {
-                        $conn->query("UPDATE vehicles SET status='in_auction' WHERE id=$vehicle_id");
+                        notifyUser($conn, 1, 'system', 'مزاد جديد بانتظار الموافقة', $title, '/admin/approvals.php');
                         $success = true;
-                        $msg = 'تم إدراج وجدولة السيارة في المزاد الحي بنجاح!';
+                        $msg = 'تم إرسال المزاد للموافقة — سيتم نشره بعد مراجعة الإدارة';
                     } else {
                         $msg = 'تم إضافة المركبة لكن فشل جدولة المزاد: ' . $conn->error;
                     }
@@ -142,6 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } else {
                 $msg = 'حدث خطأ أثناء إدراج المركبة: ' . $conn->error;
+            }
             }
         } else {
             // Mock submission success (for offline demo)
@@ -181,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>جدولة مزاد سيارة جديد | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--seller-form">
 
@@ -191,7 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $hero_title = 'إدراج وجدولة مزاد جديد';
 $hero_desc = 'اعرض سيارتك في مزاد علني حي مباشر للمشترين والمستثمرين لزيادة العوائد.';
 $hero_bg = 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'بوابة البائعين';
 $hero_back_href = '/seller.php';
 $hero_back_label = '← العودة للوحة البائع';

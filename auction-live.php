@@ -41,6 +41,11 @@ if ($db_connected) {
     if ($vr) $bid_viewers = (int)$vr->fetch_row()[0];
 }
 $viewers = max(12, $bid_viewers * 3 + rand(8, 24));
+$can_bid = isLoggedIn();
+if ($can_bid && $db_connected) {
+    $bid_check = buyerCanBid($conn, (int)getUserId());
+    $can_bid = !empty($bid_check['allowed']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -48,13 +53,7 @@ $viewers = max(12, $bid_viewers * 3 + rand(8, 24));
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>غرفة المزاد المباشر: <?= sanitize($title_car) ?> | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
-  <style>
-    @media (max-width: 992px) {
-      .fx-page-shell--live .fx-live-room > .live-gallery-panel,
-      .fx-page-shell--live .fx-live-room > .pbb-board { order: 0 !important; }
-    }
-  </style>
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--live">
 
@@ -67,7 +66,6 @@ $hero_title = $title_car;
 $hero_bg = $coverImage;
 $hero_back_href = '/event.php?id=' . ($auction['event_id'] ?? 1);
 $hero_back_label = '← العودة إلى الحدث';
-$hero_modifier = 'light';
 $hero_eyebrow = 'غرفة المزاد المباشر';
 $hero_meta_html = '
   <span class="fx-page-hero__chip fx-page-hero__chip--accent"><span class="fx-live-dot"></span> مزاد حي</span>
@@ -75,6 +73,10 @@ $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph ph-gavel"></i> ' . number_format($current_price) . ' ر.س</span>
   <span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . sanitize($auction['city'] ?? 'الرياض') . '</span>';
 $hero_actions_html = '<button type="button" class="btn btn-outline fx-vehicle-fav-btn" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
+if (!isLoggedIn()) {
+    $hero_actions_html .= '<a href="/login.php?redirect=' . urlencode('/auction-live.php?id=' . (int)$id) . '" class="btn btn-primary" style="margin-right:8px;"><i class="ph ph-sign-in"></i> ' . fleetx_t('guest_bid_login') . '</a>';
+}
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact';
 include 'includes/page-hero.inc.php';
 ?>
 
@@ -168,6 +170,22 @@ include 'includes/page-hero.inc.php';
 
     <!-- Actions -->
     <div class="pbb-action-area">
+        <?php if (!$can_bid && !isLoggedIn()): ?>
+        <div class="fx-guest-bid-banner" style="padding:20px;text-align:center;background:rgba(27,201,118,0.08);border-radius:12px;margin-bottom:16px;">
+          <p style="margin-bottom:12px;font-weight:700;"><?= fleetx_t('guest_bid_login') ?></p>
+          <a href="/login.php?redirect=<?= urlencode('/auction-live.php?id=' . (int)$id) ?>" class="btn btn-primary">تسجيل الدخول</a>
+          <a href="/register.php" class="btn btn-outline" style="margin-right:8px;">إنشاء حساب</a>
+        </div>
+        <?php elseif (!$can_bid): ?>
+        <div class="fx-guest-bid-banner" style="padding:16px;background:#fff7ed;border-radius:12px;margin-bottom:16px;color:#9a3412;">
+          <i class="ph ph-warning-circle"></i>
+          <?php
+            $bc = buyerCanBid($conn, (int)getUserId());
+            echo htmlspecialchars($bc['reason'] ?? 'لا يمكنك المزايدة حالياً');
+            if (!empty($bc['link'])) echo ' <a href="' . htmlspecialchars($bc['link']) . '" style="font-weight:700;">متابعة</a>';
+          ?>
+        </div>
+        <?php else: ?>
         <div class="pbb-quick-grid">
             <button class="pbb-btn-quick" onclick="addBid(500)">+500</button>
             <button class="pbb-btn-quick" onclick="addBid(1000)">+1K</button>
@@ -178,7 +196,9 @@ include 'includes/page-hero.inc.php';
             <input type="number" id="custom-bid-input" class="pbb-input" placeholder="أدخل مبلغك (SAR)..." step="500">
             <button class="pbb-btn-submit" onclick="submitCustomBid()">مزايدة الآن</button>
         </div>
+        <?php endif; ?>
 
+        <?php if ($can_bid): ?>
         <!-- AI Toggle -->
         <div class="pbb-ai-wrapper" id="ai-wrapper-box">
             <div class="pbb-ai-header">
@@ -204,8 +224,11 @@ include 'includes/page-hero.inc.php';
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>
     
+    <?php $fx_bundle_compact = true; include __DIR__ . '/includes/fx-service-bundles.inc.php'; ?>
+
     <div class="pbb-terms">بالنقر، أنت توافق على شروط وأحكام المزاد المباشر وتلتزم بالشراء.</div>
 </div>
 
@@ -299,20 +322,30 @@ function handleAIToggle(checkbox) {
     }
 }
 
-function startAI() {
+async function startAI() {
     const val = parseInt(document.getElementById('ai-max-bid').value);
     if (isNaN(val) || val <= currentPrice) {
         if(typeof showToast === 'function') showToast("يرجى إدخال حد أقصى أعلى من السعر الحالي.", 'warning');
         return;
     }
+    const res = await fetch('/api/auto-bid.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ auction_id: auctionId, max_amount: val })
+    });
+    const data = await res.json();
+    if (!data.success) {
+        if(typeof showToast === 'function') showToast(data.error || 'تعذر التفعيل', 'error');
+        return;
+    }
     aiMaxBid = val;
     aiBiddingActive = true;
-    
     document.getElementById('ai-max-display').innerText = aiMaxBid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     document.getElementById('ai-config-body').classList.remove('show');
     document.getElementById('ai-active-body').classList.add('show');
-    
-    if(typeof showToast === 'function') showToast("تم تفعيل المساعد الذكي بنجاح", 'success');
+    if (data.placed_bid && data.placed_bid.success && typeof showToast === 'function') {
+        showToast('تم تفعيل المزايدة التلقائية وإرسال أول مزايدة', 'success');
+    } else if(typeof showToast === 'function') showToast("تم تفعيل المساعد الذكي بنجاح", 'success');
 }
 
 async function fetchBids() {
@@ -347,6 +380,10 @@ async function fetchBids() {
 
 async function placeBidAPI(amount, isAuto = false) {
   try {
+    if (window.FX_LOGGED_IN === false && typeof window.requireLogin === 'function') {
+      window.requireLogin(window.FX_GUEST_MSG_BID);
+      return;
+    }
     if(!isAuto && aiBiddingActive) {
         if(typeof showToast === 'function') showToast("المساعد الذكي مفعل. أوقفه أولاً للقيام بمزايدة يدوية.", 'warning');
         return;

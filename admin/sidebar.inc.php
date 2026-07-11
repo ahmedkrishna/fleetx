@@ -32,8 +32,14 @@ $admin_active = $admin_active ?? '';
     <a href="approvals.php" class="admin-nav-link<?= $admin_active === 'approvals' ? ' active' : '' ?>" id="nav-approvals">
       <i class="fas fa-check-double"></i> موافقات الإعلانات
     </a>
+    <a href="activity.php" class="admin-nav-link<?= $admin_active === 'activity' ? ' active' : '' ?>" id="nav-activity">
+      <i class="fas fa-list-check"></i> سجل النشاط
+    </a>
 
     <div class="admin-nav-section" style="color:var(--text-muted)">إعدادات المنصة</div>
+    <a href="settings.php" class="admin-nav-link<?= $admin_active === 'settings' ? ' active' : '' ?>" id="nav-settings">
+      <i class="fas fa-sliders"></i> إعدادات المنصة
+    </a>
     <a href="/index.php" class="admin-nav-link">
       <i class="fas fa-arrow-right"></i> الموقع الرئيسي
     </a>
