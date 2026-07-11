@@ -61,7 +61,6 @@ $hero_title = $event['title'];
 $hero_bg = 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80';
 $hero_back_href = '/auctions.php';
 $hero_back_label = '← العودة لقاعة المزادات';
-$hero_modifier = 'light';
 $hero_eyebrow = 'حدث مزاد نشط';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph-fill ph-buildings"></i> ' . sanitize($event['seller'] ?? ($event['seller_company'] ?? 'الوطنية للتأجير')) . '</span>
@@ -87,7 +86,7 @@ $hero_actions_html = '
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= sanitize($title) ?> | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--listing">
 
@@ -117,7 +116,8 @@ $hero_actions_html = '
             'id' => $a['id'],
             'href' => $href,
             'title' => $title_car,
-            'image' => getCarImage($a['make'], $a['image_url']),
+            'image_url' => $a['image_url'] ?? '',
+            'make' => trim(($a['make'] ?? '') . ' ' . ($a['model'] ?? '')),
             'type' => $a['type'] ?? 'live',
             'status' => 'active',
             'city' => $a['city'] ?? 'الرياض',

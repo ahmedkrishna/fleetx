@@ -38,6 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['topup_amount'])) {
     exit;
 }
 
+// ── Handle buyer subscription POST ─────────────────────────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['subscribe_plan']) && $db_connected && fleetx_table_exists($conn, 'buyer_subscriptions')) {
+    $plan = $_POST['subscribe_plan'] ?? 'pro';
+    $prices = ['free' => 0, 'pro' => (float)(fleetx_get_setting($conn, 'buyer_pro_price', 299)), 'enterprise' => 999];
+    $price = $prices[$plan] ?? 299;
+    $start = date('Y-m-d');
+    $end = date('Y-m-d', strtotime('+1 year'));
+    $conn->query("UPDATE buyer_subscriptions SET is_active=0 WHERE user_id=" . (int)$user_id);
+    $stmt = $conn->prepare('INSERT INTO buyer_subscriptions (user_id, plan, price, start_date, end_date, is_active) VALUES (?,?,?,?,?,1)');
+    $stmt->bind_param('isdss', $user_id, $plan, $price, $start, $end);
+    $stmt->execute();
+    fleetx_set_toast('تم تفعيل باقة ' . $plan . ' بنجاح');
+    header('Location: ?section=subscription');
+    exit;
+}
+
 // ── Handle settings save POST ──────────────────────────────
 $settings_success = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
@@ -66,13 +82,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             $stmt->execute();
         }
     }
-    $settings_success = true;
-    header('Location: ?section=settings&saved=1');
+    fleetx_set_toast('تم حفظ التغييرات بنجاح');
+    header('Location: ?section=settings');
     exit;
 }
 
-// Check for saved flag
-$show_saved_toast = isset($_GET['saved']) && $_GET['saved'] == '1';
+$buyer_section_meta = [
+    'dashboard' => ['icon' => 'ph-fill ph-squares-four', 'icon_class' => 'fx-dash-title-icon', 'label' => 'لوحة التحكم'],
+    'bids'      => ['icon' => 'ph-fill ph-gavel', 'icon_class' => 'fx-dash-title-icon', 'label' => 'مزايداتي'],
+    'purchases' => ['icon' => 'ph-fill ph-shopping-bag', 'icon_class' => 'fx-dash-title-icon', 'label' => 'مشترياتي'],
+    'favorites' => ['icon' => 'ph-fill ph-heart', 'icon_class' => 'fx-dash-title-icon fx-dash-title-icon--danger', 'label' => 'المفضلة'],
+    'wallet'    => ['icon' => 'ph-fill ph-wallet', 'icon_class' => 'fx-dash-title-icon', 'label' => 'المحفظة'],
+    'subscription' => ['icon' => 'ph-fill ph-crown', 'icon_class' => 'fx-dash-title-icon', 'label' => 'الاشتراك'],
+    'settings'  => ['icon' => 'ph-fill ph-gear', 'icon_class' => 'fx-dash-title-icon', 'label' => 'إعدادات الحساب'],
+];
+
+$buyer_subscription = $db_connected ? getBuyerSubscription($conn, (int)$user_id) : null;
+$buyer_sec = $buyer_section_meta[$section] ?? $buyer_section_meta['dashboard'];
 
 // Hero quick stats
 $buyer_wallet_hero = $_SESSION['wallet_balance'] ?? 0;
@@ -107,23 +133,15 @@ if ($db_connected) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة المشتري | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   </head>
 <body class="fx-home fx-page-shell fx-page-shell--buyer">
 <?php include 'includes/navbar.php'; ?>
-
-<?php if ($show_saved_toast): ?>
-<div class="success-toast">
-  <i class="ph ph-check-circle" style="font-size:20px; color:#fff;"></i>
-  تم حفظ التغييرات بنجاح
-</div>
-<?php endif; ?>
 
 <?php
 $hero_title = 'مرحباً بك، ' . sanitize($user_name);
 $hero_desc = 'تابع مزايداتك، مشترياتك، ومحفظتك من مكان واحد';
 $hero_bg = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'لوحة المشتري';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-wallet"></i> ' . number_format((float)$buyer_wallet_hero) . ' ر.س محفظة</span>'
     . '<span class="fx-page-hero__chip"><i class="ph-fill ph-gavel"></i> ' . (int)$buyer_active_bids_hero . ' مزايدة نشطة</span>'
@@ -150,6 +168,7 @@ include 'includes/page-hero.inc.php';
       <li><a href="?section=purchases" class="<?= $section==='purchases'?'active':'' ?>"><i class="ph ph-shopping-bag"></i> مشترياتي</a></li>
       <li><a href="?section=favorites" class="<?= $section==='favorites'?'active':'' ?>"><i class="ph ph-heart"></i> المفضلة</a></li>
       <li><a href="?section=wallet" class="<?= $section==='wallet'?'active':'' ?>"><i class="ph ph-wallet"></i> المحفظة</a></li>
+      <li><a href="?section=subscription" class="<?= $section==='subscription'?'active':'' ?>"><i class="ph ph-crown"></i> الاشتراك</a></li>
       <li><a href="?section=settings" class="<?= $section==='settings'?'active':'' ?>"><i class="ph ph-gear"></i> إعدادات الحساب</a></li>
       <li><a href="/logout.php" class="danger"><i class="ph ph-sign-out"></i> تسجيل خروج</a></li>
     </ul>
@@ -173,20 +192,11 @@ include 'includes/page-hero.inc.php';
     <!-- Header Bar -->
     <div class="buyer-header-bar fx-buyer-card">
       <h1 class="buyer-title">
-        <?php
-          switch($section) {
-            case 'dashboard': echo '<i class="ph-fill ph-squares-four" style="color:var(--primary)"></i> لوحة التحكم'; break;
-            case 'bids':      echo '<i class="ph-fill ph-gavel" style="color:var(--primary)"></i> مزايداتي'; break;
-            case 'purchases': echo '<i class="ph-fill ph-shopping-bag" style="color:var(--primary)"></i> مشترياتي'; break;
-            case 'favorites': echo '<i class="ph-fill ph-heart" style="color:var(--danger)"></i> المفضلة'; break;
-            case 'wallet':    echo '<i class="ph-fill ph-wallet" style="color:var(--primary)"></i> المحفظة'; break;
-            case 'settings':  echo '<i class="ph-fill ph-gear" style="color:var(--primary)"></i> إعدادات الحساب'; break;
-            default:          echo '<i class="ph-fill ph-squares-four" style="color:var(--primary)"></i> لوحة التحكم';
-          }
-        ?>
+        <i class="<?= $buyer_sec['icon'] ?> <?= $buyer_sec['icon_class'] ?>"></i> <?= htmlspecialchars($buyer_sec['label']) ?>
       </h1>
       <?php if ($section === 'bids'): ?>
-        <a href="/auctions.php" class="btn btn-primary" style="border-radius:30px; padding:10px 24px; font-size:14px;"><i class="ph ph-plus" style="color:#fff"></i> تصفح المزادات</a>
+        <a href="/api/export-report.php?type=buyer_bids" class="btn btn-outline btn--pill"><i class="ph ph-download-simple"></i> تصدير</a>
+        <a href="/auctions.php" class="btn btn-primary btn--pill"><i class="ph ph-plus"></i> تصفح المزادات</a>
       <?php endif; ?>
     </div>
 
@@ -279,7 +289,7 @@ include 'includes/page-hero.inc.php';
       <!-- Stat Cards -->
       <div class="stat-grid fx-buyer-stats">
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(99,102,241,0.1); color: #6366f1;">
+          <div class="stat-icon stat-icon--indigo">
             <i class="ph ph-hash"></i>
           </div>
           <div>
@@ -288,7 +298,7 @@ include 'includes/page-hero.inc.php';
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(14,165,233,0.1); color: var(--info);">
+          <div class="stat-icon stat-icon--info">
             <i class="ph ph-gavel"></i>
           </div>
           <div>
@@ -297,7 +307,7 @@ include 'includes/page-hero.inc.php';
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: var(--success);">
+          <div class="stat-icon stat-icon--success">
             <i class="ph ph-trophy"></i>
           </div>
           <div>
@@ -306,7 +316,7 @@ include 'includes/page-hero.inc.php';
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background: rgba(27,201,118,0.1); color: var(--primary);">
+          <div class="stat-icon stat-icon--primary">
             <i class="ph ph-wallet"></i>
           </div>
           <div>
@@ -331,7 +341,7 @@ include 'includes/page-hero.inc.php';
             }
         }
       ?>
-      <div class="activity-section" style="margin-bottom:24px; background:#fff; border-radius:20px; padding:24px; border:1px solid var(--border-light);">
+      <div class="activity-section fx-buyer-chart-card">
         <h3 class="activity-header">المزايدات الشهرية</h3>
         <canvas id="buyerBidsChart" height="80"></canvas>
       </div>
@@ -365,11 +375,11 @@ include 'includes/page-hero.inc.php';
                   if ($result && $result->num_rows > 0) {
                       $has_activity = true;
                       while ($row = $result->fetch_assoc()) {
-                          echo '<div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-light);">';
-                          echo '<div style="width:42px;height:42px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;"><i class="ph ph-bell" style="font-size:18px;"></i></div>';
-                          echo '<div style="flex:1;"><div style="font-weight:700;color:var(--text-dark);font-size:14px;">' . sanitize($row['message']) . '</div>';
-                          echo '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' . sanitize($row['created_at']) . '</div></div>';
-                          echo '</div>';
+                          $activity_icon = 'ph ph-bell';
+                          $activity_variant = 'default';
+                          $activity_title = sanitize($row['message']);
+                          $activity_time = sanitize($row['created_at']);
+                          include 'includes/dashboard/activity-row.inc.php';
                       }
                   }
                   $stmt->close();
@@ -382,22 +392,24 @@ include 'includes/page-hero.inc.php';
               $fbr = $fb->get_result();
               while ($frow = $fbr->fetch_assoc()) {
                   $has_activity = true;
-                  echo '<div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-light);">';
-                  echo '<div style="width:42px;height:42px;border-radius:50%;background:rgba(27,201,118,0.1);display:flex;align-items:center;justify-content:center;"><i class="ph ph-gavel" style="font-size:18px;color:var(--primary);"></i></div>';
-                  echo '<div style="flex:1;"><div style="font-weight:700;color:var(--text-dark);font-size:14px;">مزايدة ' . number_format($frow['amount']) . ' ر.س على ' . sanitize($frow['title']) . '</div>';
-                  echo '<div style="font-size:12px;color:var(--text-muted);">' . sanitize($frow['created_at']) . '</div></div></div>';
+                  $activity_icon = 'ph ph-gavel';
+                  $activity_variant = 'primary';
+                  $activity_title = 'مزايدة ' . number_format($frow['amount']) . ' ر.س على ' . sanitize($frow['title']);
+                  $activity_time = sanitize($frow['created_at']);
+                  include 'includes/dashboard/activity-row.inc.php';
               }
           }
           if (!$has_activity):
         ?>
-        <div style="text-align:center; padding: 40px 20px;">
-          <div style="width:80px;height:80px;border-radius:50%;background:rgba(14,165,233,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-            <i class="ph ph-clock-counter-clockwise" style="font-size:36px; color:var(--info);"></i>
-          </div>
-          <h4 style="font-weight:800; color:var(--text-dark); margin-bottom:8px;">لا يوجد نشاط حتى الآن</h4>
-          <p style="color:var(--text-muted); font-size:14px;">ستظهر هنا مزايداتك ومعاملاتك الأخيرة</p>
-          <a href="/auctions.php" class="btn btn-primary" style="margin-top:20px; border-radius:30px; padding:12px 28px;">تصفح المزادات</a>
-        </div>
+        <?php
+          $empty_icon = 'ph ph-clock-counter-clockwise';
+          $empty_variant = 'info';
+          $empty_title = 'لا يوجد نشاط حتى الآن';
+          $empty_desc = 'ستظهر هنا مزايداتك ومعاملاتك الأخيرة';
+          $empty_cta_href = '/auctions.php';
+          $empty_cta_label = 'تصفح المزادات';
+          include 'includes/dashboard/empty-state.inc.php';
+        ?>
         <?php endif; ?>
       </div>
 
@@ -451,18 +463,19 @@ include 'includes/page-hero.inc.php';
     ?>
 
       <?php if (empty($user_bids)): ?>
-        <div class="buyer-empty">
-          <div class="empty-icon" style="background: rgba(14,165,233,0.1);">
-            <i class="ph-fill ph-gavel" style="color: var(--info);"></i>
-          </div>
-          <h3>لم تقم بأي مزايدة بعد</h3>
-          <p>تصفح المزادات النشطة وابدأ المزايدة على السيارات التي تهمك</p>
-          <a href="/auctions.php" class="btn btn-primary" style="margin-top:24px; border-radius:30px; padding:12px 30px; font-weight:800;">تصفح المزادات</a>
-        </div>
+        <?php
+          $empty_icon = 'ph-fill ph-gavel';
+          $empty_variant = 'info';
+          $empty_title = 'لم تقم بأي مزايدة بعد';
+          $empty_desc = 'تصفح المزادات النشطة وابدأ المزايدة على السيارات التي تهمك';
+          $empty_cta_href = '/auctions.php';
+          $empty_cta_label = 'تصفح المزادات';
+          include 'includes/dashboard/empty-state.inc.php';
+        ?>
       <?php else: ?>
         <div class="fx-dash-card-grid">
           <?php foreach ($user_bids as $bid):
-            $bid_img = (!empty($bid['image_url']) && strlen($bid['image_url']) > 4) ? $bid['image_url'] : getCarImage($bid['make'] ?? 'default');
+            $bid_img = fleetx_card_image($bid['image_url'] ?? '', intval($bid['id'] ?? 0), 'instant', $bid['make'] ?? '');
             $is_winning = $bid['is_winning'] ?? ($bid['amount'] >= $bid['current_price']);
             $timer = $bid['end_time'] ? timeLeft($bid['end_time']) : null;
           ?>
@@ -477,28 +490,28 @@ include 'includes/page-hero.inc.php';
               <h3 class="bid-card-title"><?= sanitize($bid['auction_title']) ?></h3>
 
               <div class="bid-info-row">
-                <span class="bid-info-label"><i class="ph ph-map-pin" style="font-size:14px;"></i> المدينة</span>
+                <span class="bid-info-label"><i class="ph ph-map-pin bid-info-icon"></i> المدينة</span>
                 <span class="bid-info-value"><?= sanitize($bid['city'] ?? 'الرياض') ?></span>
               </div>
               <div class="bid-info-row">
-                <span class="bid-info-label"><i class="ph ph-tag" style="font-size:14px;"></i> مزايدتك</span>
+                <span class="bid-info-label"><i class="ph ph-tag bid-info-icon"></i> مزايدتك</span>
                 <span class="bid-info-value price"><?= number_format($bid['amount']) ?> ر.س</span>
               </div>
               <div class="bid-info-row">
-                <span class="bid-info-label"><i class="ph ph-trophy" style="font-size:14px;"></i> السعر الحالي</span>
+                <span class="bid-info-label"><i class="ph ph-trophy bid-info-icon"></i> السعر الحالي</span>
                 <span class="bid-info-value price"><?= number_format($bid['current_price']) ?> ر.س</span>
               </div>
               <?php if ($timer && $timer['total'] > 0): ?>
               <div class="bid-info-row">
-                <span class="bid-info-label"><i class="ph ph-timer" style="font-size:14px;"></i> المتبقي</span>
-                <span class="bid-info-value" style="font-family:var(--font-en); font-size:13px; direction:ltr;">
+                <span class="bid-info-label"><i class="ph ph-timer bid-info-icon"></i> المتبقي</span>
+                <span class="bid-info-value bid-timer-val">
                   <?= $timer['days'] ?>d <?= $timer['hours'] ?>h <?= $timer['mins'] ?>m
                 </span>
               </div>
               <?php endif; ?>
 
-              <a href="/auction-room.php?id=<?= $bid['auction_id'] ?>" class="btn btn-primary" style="width:100%; justify-content:center; border-radius:var(--radius-round); margin-top:16px; font-size:14px;">
-                <i class="ph ph-arrow-left" style="color:#fff;"></i> دخول غرفة المزاد
+              <a href="/auction-room.php?id=<?= $bid['auction_id'] ?>" class="btn btn-primary btn--pill btn--block">
+                <i class="ph ph-arrow-left"></i> دخول غرفة المزاد
               </a>
             </div>
           </div>
@@ -545,18 +558,19 @@ include 'includes/page-hero.inc.php';
     ?>
 
       <?php if (empty($purchases)): ?>
-        <div class="buyer-empty">
-          <div class="empty-icon" style="background: rgba(16,185,129,0.1);">
-            <i class="ph-fill ph-shopping-bag" style="color: var(--success);"></i>
-          </div>
-          <h3>لم تقم بأي عملية شراء بعد</h3>
-          <p>عند الفوز بمزاد أو إتمام عملية شراء فوري، ستظهر مشترياتك هنا</p>
-          <a href="/auctions.php" class="btn btn-primary" style="margin-top:24px; border-radius:30px; padding:12px 30px; font-weight:800;">تصفح المزادات</a>
-        </div>
+        <?php
+          $empty_icon = 'ph-fill ph-shopping-bag';
+          $empty_variant = 'success';
+          $empty_title = 'لم تقم بأي عملية شراء بعد';
+          $empty_desc = 'عند الفوز بمزاد أو إتمام عملية شراء فوري، ستظهر مشترياتك هنا';
+          $empty_cta_href = '/auctions.php';
+          $empty_cta_label = 'تصفح المزادات';
+          include 'includes/dashboard/empty-state.inc.php';
+        ?>
       <?php else: ?>
         <div class="fx-dash-card-grid">
           <?php foreach ($purchases as $p):
-            $p_img = (!empty($p['image_url']) && strlen($p['image_url']) > 4) ? $p['image_url'] : getCarImage($p['make'] ?? 'default');
+            $p_img = fleetx_card_image($p['image_url'] ?? '', intval($p['id'] ?? 0), 'instant', $p['make'] ?? '');
           ?>
           <div class="bid-card">
             <div class="bid-card-img">
@@ -575,9 +589,9 @@ include 'includes/page-hero.inc.php';
               </div>
               <div class="bid-info-row">
                 <span class="bid-info-label">تاريخ الشراء</span>
-                <span class="bid-info-value" style="font-size:13px;"><?= sanitize($p['created_at'] ?? '') ?></span>
+                <span class="bid-info-value bid-date-val"><?= sanitize($p['created_at'] ?? '') ?></span>
               </div>
-              <a href="/vehicle-details.php?id=<?= $p['auction_id'] ?? $p['id'] ?>" class="btn btn-primary" style="width:100%; justify-content:center; border-radius:var(--radius-round); margin-top:16px; font-size:14px;">
+              <a href="/vehicle-details.php?id=<?= $p['auction_id'] ?? $p['id'] ?>" class="btn btn-primary btn--pill btn--block">
                 عرض التفاصيل
               </a>
             </div>
@@ -595,24 +609,25 @@ include 'includes/page-hero.inc.php';
     ?>
 
       <?php if (empty($fav_items)): ?>
-        <div class="buyer-empty">
-          <div class="empty-icon" style="background: rgba(239, 68, 68, 0.1);">
-            <i class="ph-fill ph-heart" style="color: #ef4444;"></i>
-          </div>
-          <h3>لم تقم بإضافة أي مركبات للمفضلة بعد</h3>
-          <p>تصفح صالة المزادات والمبيعات الفورية واضغط على أيقونة القلب لحفظها هنا</p>
-          <a href="/auctions.php" class="btn btn-primary" style="margin-top:24px; border-radius:30px; padding:12px 30px; font-weight:800;">تصفح المركبات الآن</a>
-        </div>
+        <?php
+          $empty_icon = 'ph-fill ph-heart';
+          $empty_variant = 'danger';
+          $empty_title = 'لم تقم بإضافة أي مركبات للمفضلة بعد';
+          $empty_desc = 'تصفح صالة المزادات والمبيعات الفورية واضغط على أيقونة القلب لحفظها هنا';
+          $empty_cta_href = '/auctions.php';
+          $empty_cta_label = 'تصفح المركبات الآن';
+          include 'includes/dashboard/empty-state.inc.php';
+        ?>
       <?php else: ?>
         <div class="fav-grid">
           <?php foreach ($fav_items as $item):
             $title_car = $item['title'] ?? (($item['make'] ?? '') . ' ' . ($item['model'] ?? '') . ' ' . ($item['year'] ?? ''));
-            $img = (!empty($item['image_url']) && strlen($item['image_url']) > 4) ? $item['image_url'] : getCarImage($item['make'] ?? 'default');
+            $img = fleetx_card_image($item['image_url'] ?? '', intval($item['id'] ?? 0), ($item['type'] ?? '') === 'instant' ? 'instant' : 'live', $item['make'] ?? '');
             $is_instant = ($item['type'] ?? '') === 'instant';
           ?>
-            <div class="auction-card" style="cursor:pointer; background:#fff;" onclick="window.location.href='<?= $is_instant ? '/vehicle-details.php' : '/auction-room.php' ?>?id=<?= $item['id'] ?>'">
-              <div class="card-fav active" onclick="event.stopPropagation(); toggleFavorite(<?= $item['id'] ?>, this)" style="z-index:20;">
-                <i class="ph-fill ph-heart" style="color:var(--danger);"></i>
+            <div class="auction-card fx-fav-card" onclick="window.location.href='<?= $is_instant ? '/vehicle-details.php' : '/auction-room.php' ?>?id=<?= $item['id'] ?>'">
+              <div class="card-fav active fx-fav-heart" onclick="event.stopPropagation(); toggleFavorite(<?= $item['id'] ?>, this)">
+                <i class="ph-fill ph-heart"></i>
               </div>
               <div class="ac-img-wrap">
                 <img src="<?= $img ?>" alt="<?= sanitize($title_car) ?>" loading="lazy">
@@ -669,10 +684,10 @@ include 'includes/page-hero.inc.php';
           <div class="wallet-balance-amount"><?= number_format($wallet_bal) ?> <span>ر.س</span></div>
           <div class="fx-wallet-card-actions">
             <button class="wallet-btn" onclick="openTopupModal()">
-              شحن الرصيد <i class="ph ph-plus" style="color:#fff; font-size:16px;"></i>
+              شحن الرصيد <i class="ph ph-plus"></i>
             </button>
             <button class="wallet-btn wallet-btn-secondary">
-              استرداد <i class="ph ph-arrow-down" style="color:#fff; font-size:16px;"></i>
+              استرداد <i class="ph ph-arrow-down"></i>
             </button>
           </div>
         </div>
@@ -680,16 +695,16 @@ include 'includes/page-hero.inc.php';
           <div class="verify-icon">
             <i class="ph ph-shield-check"></i>
           </div>
-          <h4 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">حسابك موثق ونشط</h4>
-          <p style="color: var(--text-muted); font-size: 14px;">تم التحقق من بيانات النفاذ الوطني ويمكنك المزايدة بحرية.</p>
+          <h4 class="fx-wallet-verify-title">حسابك موثق ونشط</h4>
+          <p class="fx-wallet-verify-desc">تم التحقق من بيانات النفاذ الوطني ويمكنك المزايدة بحرية.</p>
         </div>
       </div>
 
       <!-- Recent Transactions -->
       <div class="transactions-section">
-        <h3 class="transactions-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 class="transactions-header fx-tx-header">
           <span>أحدث العمليات</span>
-          <button class="btn btn-outline" style="font-size:13px; padding:6px 12px; border-radius:var(--radius-md);" onclick="alert('جاري التصدير...')"><i class="ph ph-download-simple"></i> تصدير CSV</button>
+          <a href="/api/export-report.php?type=buyer_purchases" class="btn btn-outline btn-sm"><i class="ph ph-download-simple"></i> تصدير CSV</a>
         </h3>
         <?php
           $has_transactions = false;
@@ -711,14 +726,15 @@ include 'includes/page-hero.inc.php';
                       $has_transactions = true;
                       while ($row = $result->fetch_assoc()) {
                           $is_credit = ($row['type'] ?? '') === 'topup' || ($row['seller_id'] ?? 0) == $user_id;
-                          $icon_bg = $is_credit ? 'rgba(16,185,129,0.1)' : 'rgba(244,63,94,0.1)';
-                          $icon_color = $is_credit ? 'var(--success)' : 'var(--danger)';
-                          $icon_name = $is_credit ? 'ph-arrow-up-right' : 'ph-arrow-down-left';
-                          echo '<div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-light);">';
-                          echo '<div style="width:42px;height:42px;border-radius:50%;background:' . $icon_bg . ';display:flex;align-items:center;justify-content:center;"><i class="ph ' . $icon_name . '" style="font-size:18px;color:' . $icon_color . ';"></i></div>';
-                          echo '<div style="flex:1;"><div style="font-weight:700;color:var(--text-dark);font-size:14px;">' . sanitize($row['description'] ?? ($is_credit ? 'إيداع' : 'خصم')) . '</div>';
-                          echo '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">' . sanitize($row['created_at'] ?? '') . '</div></div>';
-                          echo '<div style="font-weight:900;font-family:var(--font-en);color:' . ($is_credit ? 'var(--success)' : 'var(--danger)') . ';">' . ($is_credit ? '+' : '-') . number_format($row['amount'] ?? 0) . ' ر.س</div>';
+                          $tx_icon = $is_credit ? 'ph-arrow-up-right' : 'ph-arrow-down-left';
+                          $tx_variant = $is_credit ? 'credit' : 'debit';
+                          $tx_desc = sanitize($row['description'] ?? ($is_credit ? 'إيداع' : 'خصم'));
+                          $tx_time = sanitize($row['created_at'] ?? '');
+                          $tx_amount = ($is_credit ? '+' : '-') . number_format($row['amount'] ?? 0) . ' ر.س';
+                          echo '<div class="fx-tx-item">';
+                          echo '<div class="fx-tx-item__icon fx-tx-item__icon--' . $tx_variant . '"><i class="ph ' . $tx_icon . '"></i></div>';
+                          echo '<div class="fx-activity-item__body"><div class="fx-activity-item__title">' . $tx_desc . '</div><div class="fx-activity-item__time">' . $tx_time . '</div></div>';
+                          echo '<div class="fx-tx-item__amount fx-tx-item__amount--' . $tx_variant . '">' . $tx_amount . '</div>';
                           echo '</div>';
                       }
                   }
@@ -727,10 +743,15 @@ include 'includes/page-hero.inc.php';
           }
           if (!$has_transactions):
         ?>
-        <div style="text-align:center; padding: 40px 20px; border: 1px dashed var(--border-light); border-radius: var(--radius-md);">
-          <i class="ph ph-receipt" style="font-size: 48px; color: var(--text-light-muted); margin-bottom: 12px;"></i>
-          <p style="color:var(--text-muted); font-size:15px;">لا توجد عمليات مالية سابقة</p>
-        </div>
+        <?php
+          $empty_icon = 'ph ph-receipt';
+          $empty_variant = 'primary';
+          $empty_title = 'لا توجد عمليات مالية سابقة';
+          $empty_desc = 'ستظهر هنا عمليات الشحن والشراء والاسترداد';
+          $empty_cta_href = '';
+          $empty_cta_label = '';
+          include 'includes/dashboard/empty-state.inc.php';
+        ?>
         <?php endif; ?>
       </div>
 
@@ -767,6 +788,43 @@ include 'includes/page-hero.inc.php';
 
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SECTION: SUBSCRIPTION                                  -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <?php elseif ($section === 'subscription'):
+      $buyer_plans = [
+        'free' => ['name' => 'مجاني', 'price' => 0, 'features' => ['تصفح المزادات', 'مزايدة بعد توثيق نفاذ', '3 مزايدات نشطة']],
+        'pro' => ['name' => 'احترافي', 'price' => (float)(fleetx_get_setting($conn, 'buyer_pro_price', 299) ?? 299), 'features' => ['مزايدات غير محدودة', 'تنبيهات SMS', 'أولوية الدعم', 'بحث محفوظ غير محدود']],
+        'enterprise' => ['name' => 'مؤسسات', 'price' => 999, 'features' => ['حسابات متعددة', 'تقارير مخصصة', 'مدير حساب', 'API']],
+      ];
+      $active_plan = $buyer_subscription['plan'] ?? 'free';
+    ?>
+    <div class="plans-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;">
+      <?php foreach ($buyer_plans as $key => $bp):
+        $is_current = ($active_plan === $key);
+      ?>
+      <div class="plan-card fx-buyer-card" style="padding:24px;border:1px solid var(--border-light);border-radius:16px;<?= $is_current ? 'border-color:var(--primary);box-shadow:0 0 0 2px rgba(27,201,118,.15);' : '' ?>">
+        <h3 style="font-weight:900;margin:0 0 8px;"><?= $bp['name'] ?></h3>
+        <div style="font-size:28px;font-weight:900;color:var(--primary);margin-bottom:16px;">
+          <?= $bp['price'] > 0 ? number_format($bp['price']) . ' <span style="font-size:14px">ر.س/سنة</span>' : 'مجاناً' ?>
+        </div>
+        <ul style="list-style:none;padding:0;margin:0 0 20px;">
+          <?php foreach ($bp['features'] as $f): ?>
+          <li style="padding:6px 0;font-size:14px;"><i class="ph-fill ph-check-circle" style="color:var(--primary);"></i> <?= $f ?></li>
+          <?php endforeach; ?>
+        </ul>
+        <?php if ($is_current): ?>
+          <button class="btn btn-outline" disabled style="width:100%;">باقتك الحالية</button>
+        <?php else: ?>
+          <form method="POST"><input type="hidden" name="subscribe_plan" value="<?= $key ?>"><button type="submit" class="btn btn-primary" style="width:100%;">اشترك الآن</button></form>
+        <?php endif; ?>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php if ($buyer_subscription): ?>
+    <p style="margin-top:20px;color:var(--text-muted);font-size:14px;">الباقة النشطة حتى <?= sanitize($buyer_subscription['end_date']) ?></p>
+    <?php endif; ?>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <!-- SECTION: SETTINGS                                      -->
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <?php elseif ($section === 'settings'):
@@ -776,7 +834,7 @@ include 'includes/page-hero.inc.php';
 
       // Try to load from DB
       if ($db_connected) {
-          $stmt = $conn->prepare('SELECT name, phone, city FROM users WHERE id = ?');
+          $stmt = $conn->prepare('SELECT full_name, mobile, city FROM users WHERE id = ?');
           if ($stmt) {
               $stmt->bind_param('i', $user_id);
               $stmt->execute();
@@ -887,10 +945,6 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeTopupModal();
 });
 
-// ── Toast auto-remove ──────────────────────────────────────
-document.querySelectorAll('.success-toast').forEach(t => {
-  setTimeout(() => t.remove(), 3000);
-});
 </script>
 </body>
 </html>

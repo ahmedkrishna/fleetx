@@ -98,31 +98,168 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $section === 'settings') {
     }
 }
 
-// Handle Push to Inspection
+// Upload company legal documents
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_document']) && $section === 'settings') {
+    $doc_type = in_array($_POST['doc_type'] ?? '', ['cr','vat','istimara','insurance','other'], true) ? $_POST['doc_type'] : 'other';
+    if ($db_connected && $company_id && isset($_FILES['doc_file']) && $_FILES['doc_file']['error'] === UPLOAD_ERR_OK) {
+        $dir = __DIR__ . '/uploads/documents/';
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
+        $ext = strtolower(pathinfo($_FILES['doc_file']['name'], PATHINFO_EXTENSION));
+        if (in_array($ext, ['pdf','jpg','jpeg','png'], true)) {
+            $fname = 'doc_' . $company_id . '_' . time() . '.' . $ext;
+            if (move_uploaded_file($_FILES['doc_file']['tmp_name'], $dir . $fname) && fleetx_table_exists($conn, 'company_documents')) {
+                $url = '/uploads/documents/' . $fname;
+                $dstmt = $conn->prepare('INSERT INTO company_documents (seller_id, doc_type, file_url) VALUES (?,?,?)');
+                $dstmt->bind_param('iss', $company_id, $doc_type, $url);
+                $dstmt->execute();
+                notifyUser($conn, 1, 'system', 'مستند جديد للمراجعة', 'رفعت شركة ' . $company['company_name'] . ' مستنداً قانونياً', '/admin/approvals.php');
+                fleetx_set_toast('تم رفع المستند — بانتظار مراجعة الإدارة');
+            }
+        }
+    }
+    header('Location: ?section=settings');
+    exit;
+}
+
+// Handle Push to Inspection (admin gate — no auto-assign)
 if (isset($_GET['push_inspection'])) {
     $vehicle_id = intval($_GET['push_inspection']);
     if ($db_connected && $vehicle_id > 0 && !empty($company_id)) {
+        $insp_fee = fleetx_inspection_fee($conn);
         $conn->begin_transaction();
         try {
-            $stmt = $conn->prepare("UPDATE vehicles SET status='pending' WHERE id=? AND seller_id=?");
+            $wstmt = $conn->prepare('SELECT wallet_balance, user_id FROM seller_companies sc JOIN users u ON sc.user_id=u.id WHERE sc.id=?');
+            $wstmt->bind_param('i', $company_id);
+            $wstmt->execute();
+            $wrow = $wstmt->get_result()->fetch_assoc();
+            $seller_user_id = (int)($wrow['user_id'] ?? $user_id);
+            $wallet = (float)($wrow['wallet_balance'] ?? 0);
+            if ($insp_fee > 0 && $wallet < $insp_fee) {
+                throw new Exception('insufficient_wallet');
+            }
+            $stmt = $conn->prepare("UPDATE vehicles SET status='awaiting_admin' WHERE id=? AND seller_id=? AND status IN ('pending','withdrawn','suspended')");
             $stmt->bind_param('ii', $vehicle_id, $company_id);
             $stmt->execute();
+            if ($stmt->affected_rows === 0) throw new Exception('invalid');
 
-            $inspector_id = getDefaultInspectorId($conn);
-            $stmt2 = $conn->prepare("INSERT INTO inspections (vehicle_id, inspector_id, status, inspection_date) VALUES (?, ?, 'pending', CURDATE()) ON DUPLICATE KEY UPDATE status='pending'");
-            $stmt2->bind_param('ii', $vehicle_id, $inspector_id);
+            $stmt2 = $conn->prepare("INSERT INTO inspections (vehicle_id, inspector_id, status, inspection_date) VALUES (?, NULL, 'awaiting_admin', CURDATE()) ON DUPLICATE KEY UPDATE status='awaiting_admin', inspector_id=NULL, admin_approved=0, seller_approved=NULL");
+            $stmt2->bind_param('i', $vehicle_id);
             $stmt2->execute();
 
+            if ($insp_fee > 0 && $seller_user_id) {
+                $fee_stmt = $conn->prepare('UPDATE users SET wallet_balance = wallet_balance - ? WHERE id=?');
+                $fee_stmt->bind_param('di', $insp_fee, $seller_user_id);
+                $fee_stmt->execute();
+            }
+
             $conn->commit();
-
-            notifyUser($conn, 1, 'system', 'طلب فحص جديد', 'قامت شركة ' . $company['company_name'] . ' بطلب فحص مركبة جديدة', '/admin/inspections.php');
-            notifyUser($conn, $inspector_id, 'system', 'طلب فحص جديد', 'تم تعيين فحص مركبة جديدة لك', '/inspector.php', ['in_app', 'sms']);
-
+            notifyUser($conn, 1, 'system', 'طلب فحص جديد', 'قامت شركة ' . $company['company_name'] . ' بطلب فحص مركبة — بانتظار موافقة الإدارة', '/admin/approvals.php', ['in_app', 'email']);
+            $fee_msg = $insp_fee > 0 ? ' (تم خصم ' . number_format($insp_fee) . ' ر.س رسوم الفحص)' : '';
+            fleetx_set_toast('تم إرسال طلب الفحص — بانتظار موافقة الإدارة' . $fee_msg);
             header('Location: ?section=fleet&msg=pushed');
             exit;
         } catch (Exception $e) {
             $conn->rollback();
+            if ($e->getMessage() === 'insufficient_wallet') {
+                fleetx_set_toast('رصيد المحفظة غير كافٍ لرسوم الفحص (' . number_format(fleetx_inspection_fee($conn)) . ' ر.س)', 'error');
+                header('Location: ?section=wallet&msg=insufficient');
+                exit;
+            }
         }
+    }
+}
+
+// Suspend / unsuspend vehicle
+if (isset($_GET['suspend'])) {
+    $vid = (int)$_GET['suspend'];
+    if ($db_connected && $vid > 0 && $company_id) {
+        $stmt = $conn->prepare("UPDATE vehicles SET status='suspended' WHERE id=? AND seller_id=? AND status NOT IN ('sold','in_auction')");
+        $stmt->bind_param('ii', $vid, $company_id);
+        $stmt->execute();
+        fleetx_set_toast('تم إيقاف المركبة مؤقتاً');
+        header('Location: ?section=fleet');
+        exit;
+    }
+}
+if (isset($_GET['unsuspend'])) {
+    $vid = (int)$_GET['unsuspend'];
+    if ($db_connected && $vid > 0 && $company_id) {
+        $stmt = $conn->prepare("UPDATE vehicles SET status='pending' WHERE id=? AND seller_id=? AND status='suspended'");
+        $stmt->bind_param('ii', $vid, $company_id);
+        $stmt->execute();
+        fleetx_set_toast('تم إعادة تفعيل المركبة');
+        header('Location: ?section=fleet');
+        exit;
+    }
+}
+
+// Seller approve / reject completed inspection
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['inspection_action'])) {
+    $insp_id = (int)($_POST['inspection_id'] ?? 0);
+    $action = $_POST['inspection_action'];
+    if ($db_connected && $insp_id > 0 && $company_id) {
+        $chk = $conn->prepare("SELECT i.id, i.vehicle_id, v.make, v.model, v.year FROM inspections i JOIN vehicles v ON i.vehicle_id=v.id WHERE i.id=? AND v.seller_id=? AND i.status='completed' AND i.seller_approved IS NULL");
+        $chk->bind_param('ii', $insp_id, $company_id);
+        $chk->execute();
+        $insp = $chk->get_result()->fetch_assoc();
+        if ($insp) {
+            if ($action === 'approve') {
+                $conn->query("UPDATE inspections SET seller_approved=1 WHERE id=" . (int)$insp_id);
+                $conn->query("UPDATE vehicles SET status='approved' WHERE id=" . (int)$insp['vehicle_id']);
+                fleetx_set_toast('تم اعتماد تقرير الفحص — يمكنك نشر المركبة في المزاد');
+            } elseif ($action === 'reject') {
+                $conn->query("UPDATE inspections SET seller_approved=0, status='rejected' WHERE id=" . (int)$insp_id);
+                $conn->query("UPDATE vehicles SET status='withdrawn' WHERE id=" . (int)$insp['vehicle_id']);
+                fleetx_set_toast('تم رفض تقرير الفحص');
+            }
+        }
+        header('Location: ?section=reports');
+        exit;
+    }
+}
+
+// Seller accept / reject auction result
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['auction_decision'])) {
+    $auction_id = (int)($_POST['auction_id'] ?? 0);
+    $decision = $_POST['auction_decision'];
+    if ($db_connected && $auction_id > 0 && $company_id) {
+        $astmt = $conn->prepare("SELECT a.*, v.id as vid, v.make, v.model, v.year FROM auctions a JOIN vehicles v ON a.vehicle_id=v.id WHERE a.id=? AND a.seller_id=? AND a.status='ended' AND a.seller_decision='pending'");
+        $astmt->bind_param('ii', $auction_id, $company_id);
+        $astmt->execute();
+        $auc = $astmt->get_result()->fetch_assoc();
+        if ($auc) {
+            $car_name = $auc['title'] ?: $auc['make'] . ' ' . $auc['model'] . ' ' . $auc['year'];
+            if ($decision === 'accept' && $auc['winner_id']) {
+                $conn->begin_transaction();
+                try {
+                    $fee = (float)$auc['sale_price'] * (PLATFORM_FEE_PERCENT / 100);
+                    $payout = (float)$auc['sale_price'] - $fee;
+                    $chk = $conn->prepare('SELECT id FROM transactions WHERE auction_id=?');
+                    $chk->bind_param('i', $auction_id);
+                    $chk->execute();
+                    if ($chk->get_result()->num_rows === 0) {
+                        $tx = $conn->prepare("INSERT INTO transactions (auction_id, buyer_id, seller_id, sale_price, platform_fee, seller_payout, payment_status) VALUES (?,?,?,?,?,?,'pending')");
+                        $tx->bind_param('iiiddd', $auction_id, $auc['winner_id'], $company_id, $auc['sale_price'], $fee, $payout);
+                        $tx->execute();
+                    }
+                    $conn->query("UPDATE auctions SET seller_decision='accepted' WHERE id=$auction_id");
+                    $conn->query("UPDATE vehicles SET status='sold' WHERE id=" . (int)$auc['vid']);
+                    notifyUser($conn, (int)$auc['winner_id'], 'auction_won', 'تم قبول البيع', "وافق البائع على بيع {$car_name}. أكمل الدفع الآن.", '/checkout.php?id=' . $auction_id, ['in_app', 'sms']);
+                    $conn->commit();
+                    fleetx_set_toast('تم قبول نتيجة المزاد');
+                } catch (Exception $e) {
+                    $conn->rollback();
+                }
+            } elseif ($decision === 'reject') {
+                $conn->query("UPDATE auctions SET seller_decision='rejected' WHERE id=$auction_id");
+                if ($auc['winner_id']) {
+                    notifyUser($conn, (int)$auc['winner_id'], 'auction_end', 'رفض البائع البيع', "لم يقبل البائع بيع {$car_name}.", '/auctions.php');
+                }
+                fleetx_set_toast('تم رفض نتيجة المزاد');
+            }
+        }
+        header('Location: ?section=results');
+        exit;
     }
 }
 
@@ -143,10 +280,11 @@ if (isset($_GET['publish_auction'])) {
                 $start = date('Y-m-d H:i:s');
                 $end = date('Y-m-d H:i:s', strtotime('+48 hours'));
                 $price = floatval($veh['autodata_price_min'] ?? 50000);
-                $ins = $conn->prepare("INSERT INTO auctions (vehicle_id, seller_id, title, type, status, starting_price, current_price, bid_increment, start_time, end_time) VALUES (?,?,?,'live','active',?,?,500,?,?)");
+                $ins = $conn->prepare("INSERT INTO auctions (vehicle_id, seller_id, title, type, status, starting_price, current_price, bid_increment, start_time, end_time, admin_approved) VALUES (?,?,?,'live','draft',?,?,500,?,?,0)");
                 $ins->bind_param('iissdss', $vehicle_id, $company_id, $title, $price, $price, $start, $end);
                 $ins->execute();
-                $conn->query("UPDATE vehicles SET status='in_auction' WHERE id=$vehicle_id");
+                notifyUser($conn, 1, 'system', 'مزاد جديد بانتظار الموافقة', 'طلب نشر مزاد: ' . $title, '/admin/approvals.php');
+                fleetx_set_toast('تم إرسال المزاد للموافقة — سيتم نشره بعد مراجعة الإدارة');
             }
             header('Location: ?section=fleet&msg=published');
             exit;
@@ -316,33 +454,49 @@ if ($db_connected) {
                 'interior' => $r['interior_score'] ?? 90,
                 'mechanical' => $r['mechanical_score'] ?? 90,
                 'overall' => round((($r['exterior_score'] ?? 90) + ($r['interior_score'] ?? 90) + ($r['mechanical_score'] ?? 90) + ($r['electronics_score'] ?? 90)) / 4),
-                'status' => $r['status'] ?? 'passed'
+                'status' => $r['status'] ?? 'pending',
+                'seller_approved' => $r['seller_approved'] ?? null,
+                'report_pdf' => $r['report_pdf'] ?? '',
             ];
         }
     }
 }
 
-// Payout transactions
-$payouts = [];
-if ($db_connected) {
-    $stmt_payouts = $conn->prepare("SELECT t.*, v.make, v.model, v.year FROM transactions t JOIN auctions a ON t.auction_id = a.id JOIN vehicles v ON a.vehicle_id = v.id WHERE t.seller_id = ? ORDER BY t.created_at DESC LIMIT 20");
-    if ($stmt_payouts) {
-        $stmt_payouts->bind_param('i', $company_id);
-        $stmt_payouts->execute();
-        $res = $stmt_payouts->get_result();
-        while ($r = $res->fetch_assoc()) {
-            $payouts[] = [
-                'id' => 'TXN-' . date('Ymd', strtotime($r['created_at'])) . '-' . str_pad($r['id'], 3, '0', STR_PAD_LEFT),
-                'date' => date('Y-m-d', strtotime($r['created_at'])),
-                'vehicle' => $r['make'].' '.$r['model'].' '.$r['year'],
-                'amount' => $r['sale_price'],
-                'commission' => $r['platform_fee'],
-                'net' => $r['seller_payout'],
-                'status' => ($r['payment_status'] === 'paid' ? 'completed' : 'pending')
-            ];
-        }
+$seller_bids = [];
+$pending_auction_results = [];
+if ($db_connected && $company_id) {
+    $bstmt = $conn->prepare("
+        SELECT b.amount, b.created_at, u.full_name as bidder_name, a.id as auction_id, a.title, a.status,
+               v.make, v.model, v.year
+        FROM bids b
+        JOIN auctions a ON b.auction_id=a.id
+        JOIN users u ON b.user_id=u.id
+        JOIN vehicles v ON a.vehicle_id=v.id
+        WHERE a.seller_id=?
+        ORDER BY b.created_at DESC LIMIT 50
+    ");
+    if ($bstmt) {
+        $bstmt->bind_param('i', $company_id);
+        $bstmt->execute();
+        $bres = $bstmt->get_result();
+        while ($br = $bres->fetch_assoc()) $seller_bids[] = $br;
+    }
+    $rstmt = $conn->prepare("
+        SELECT a.*, u.full_name as winner_name, v.make, v.model, v.year
+        FROM auctions a
+        LEFT JOIN users u ON a.winner_id=u.id
+        JOIN vehicles v ON a.vehicle_id=v.id
+        WHERE a.seller_id=? AND a.status='ended' AND a.seller_decision='pending' AND a.winner_id IS NOT NULL
+        ORDER BY a.end_time DESC
+    ");
+    if ($rstmt) {
+        $rstmt->bind_param('i', $company_id);
+        $rstmt->execute();
+        $rres = $rstmt->get_result();
+        while ($rr = $rres->fetch_assoc()) $pending_auction_results[] = $rr;
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -350,7 +504,7 @@ if ($db_connected) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة البائع | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   </head>
 <body class="fx-home fx-page-shell fx-page-shell--seller">
 <?php include 'includes/navbar.php'; ?>
@@ -362,7 +516,6 @@ if (!empty($company['is_verified'])) {
 }
 $hero_desc = 'إدارة كاملة لأسطولك ومزاداتك ومستحقاتك المالية';
 $hero_bg = 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80';
-$hero_modifier = 'light';
 $hero_eyebrow = 'لوحة البائع';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-car"></i> ' . (int)$fleet_count . ' مركبة معروضة</span>'
     . '<span class="fx-page-hero__chip"><i class="ph-fill ph-currency-circle-dollar"></i> ' . number_format((float)$total_sales) . ' ر.س مبيعات</span>'
@@ -393,11 +546,14 @@ include 'includes/page-hero.inc.php';
     <ul class="fx-profile-nav fx-seller-nav">
       <li><a href="?section=dashboard" class="<?= $section==='dashboard'?'active':'' ?>"><i class="ph ph-chart-bar"></i> لوحة التحكم</a></li>
       <li><a href="?section=fleet" class="<?= $section==='fleet'?'active':'' ?>"><i class="ph ph-car"></i> أسطولي المعروض</a></li>
+      <li><a href="?section=bids" class="<?= $section==='bids'?'active':'' ?>"><i class="ph ph-gavel"></i> المزايدات الواردة</a></li>
+      <li><a href="?section=results" class="<?= $section==='results'?'active':'' ?>"><i class="ph ph-handshake"></i> نتائج المزادات</a></li>
       <li class="fx-seller-nav-label">إضافة إعلان</li>
       <li><a href="/add-auction.php" class="fx-seller-nav-sub <?= $section==='add_auction'?'active':'' ?>"><i class="ph ph-gavel fx-icon-primary"></i> جدولة مزاد مباشر</a></li>
       <li><a href="/add-auction.php?type=instant" class="fx-seller-nav-sub"><i class="ph ph-lightning fx-icon-warning"></i> بيع فوري</a></li>
       <li><a href="/bulk-upload.php" class="fx-seller-nav-sub"><i class="ph ph-upload-simple fx-icon-purple"></i> رفع مجمّع Excel</a></li>
       <li><a href="?section=payouts" class="<?= $section==='payouts'?'active':'' ?>"><i class="ph ph-money"></i> المستحقات المالية</a></li>
+      <li><a href="?section=wallet" class="<?= $section==='wallet'?'active':'' ?>"><i class="ph ph-wallet"></i> المحفظة</a></li>
       <li><a href="?section=reports" class="<?= $section==='reports'?'active':'' ?>"><i class="ph ph-clipboard-text"></i> تقارير الفحص</a></li>
       <li><a href="?section=subscription" class="<?= $section==='subscription'?'active':'' ?>"><i class="ph ph-crown"></i> الباقة والاشتراك</a></li>
       <li><a href="?section=settings" class="<?= $section==='settings'?'active':'' ?>"><i class="ph ph-gear"></i> إعدادات الحساب</a></li>
@@ -415,7 +571,10 @@ include 'includes/page-hero.inc.php';
         <option value="/add-auction.php">جدولة مزاد مباشر</option>
         <option value="/add-auction.php?type=instant">بيع فوري</option>
         <option value="/bulk-upload.php">رفع مجمّع Excel</option>
+        <option value="?section=bids" <?= $section==='bids'?'selected':'' ?>>المزايدات الواردة</option>
+        <option value="?section=results" <?= $section==='results'?'selected':'' ?>>نتائج المزادات</option>
         <option value="?section=payouts" <?= $section==='payouts'?'selected':'' ?>>المستحقات المالية</option>
+        <option value="?section=wallet" <?= $section==='wallet'?'selected':'' ?>>المحفظة</option>
         <option value="?section=reports" <?= $section==='reports'?'selected':'' ?>>تقارير الفحص</option>
         <option value="?section=subscription" <?= $section==='subscription'?'selected':'' ?>>الباقة والاشتراك</option>
         <option value="?section=settings" <?= $section==='settings'?'selected':'' ?>>إعدادات الحساب</option>
@@ -567,19 +726,38 @@ include 'includes/page-hero.inc.php';
       $status_classes = ['active' => 'status-active', 'pending' => 'status-pending', 'ended' => 'status-ended', 'sold' => 'status-sold'];
       foreach (array_slice($fleet_auctions, 0, 12) as $idx => $car):
         $title = $car['title'] ?? ($car['make'] . ' ' . $car['model'] . ' ' . $car['year']);
-        $img = getCarImage($car['make'] ?? '', $car['image_url'] ?? null);
+        $vid = intval($car['vehicle_id'] ?? $car['id'] ?? $idx);
+        $make_label = trim(($car['make'] ?? '') . ' ' . ($car['model'] ?? ''));
+        $img_type = (($car['type'] ?? '') === 'instant') ? 'instant' : 'live';
+        $img = fleetx_card_image($car['image_url'] ?? '', $vid, $img_type, $make_label);
+        $fallback_img = fleetx_card_image('', $vid, $img_type, $make_label);
+        $fallback_img2 = fleetx_card_image('', $vid + 5, $img_type, $make_label);
+        $img_onerror = "var i=this;if(!i.dataset.fbx){i.dataset.fbx='1';i.src='" . htmlspecialchars($fallback_img, ENT_QUOTES) . "'}"
+            . "else if(i.dataset.fbx==='1'){i.dataset.fbx='2';i.src='" . htmlspecialchars($fallback_img2, ENT_QUOTES) . "'}"
+            . "else{i.onerror=null}";
         $bids = $car['bid_count'] ?? 0;
         $price = $car['current_price'] ?? $car['starting_price'] ?? 0;
         $views = 0; // Live data
         $vst = $car['v_status'] ?? 'pending';
-        $vstatus_labels = ['pending' => 'بانتظار الفحص', 'approved' => 'معتمدة', 'in_auction' => 'في المزاد', 'sold' => 'مباعة', 'withdrawn' => 'مسحوبة'];
+        $vstatus_labels = [
+          'pending' => 'مسودة', 'awaiting_admin' => 'بانتظار الإدارة',
+          'inspection_scheduled' => 'مجدول للفحص', 'awaiting_seller_approval' => 'بانتظار موافقتك',
+          'approved' => 'معتمدة', 'in_auction' => 'في المزاد', 'sold' => 'مباعة',
+          'withdrawn' => 'مسحوبة', 'suspended' => 'موقوفة',
+        ];
         $st = !empty($car['id']) ? ($car['status'] ?? 'active') : $vst;
         $st_class = $status_classes[$st] ?? ($vst === 'approved' ? 'status-active' : 'status-pending');
         $st_label = $statuses[$st] ?? ($vstatus_labels[$vst] ?? 'قيد المراجعة');
       ?>
       <div class="fleet-card">
         <div class="fleet-card-img">
-          <img src="<?= sanitize($img) ?>" alt="<?= sanitize($title) ?>" loading="lazy">
+          <img
+            src="<?= htmlspecialchars($img) ?>"
+            alt="<?= sanitize($title) ?>"
+            loading="lazy"
+            decoding="async"
+            onerror="<?= $img_onerror ?>"
+          >
           <span class="fleet-card-status <?= $st_class ?>"><?= $st_label ?></span>
         </div>
         <div class="fleet-card-body">
@@ -603,8 +781,13 @@ include 'includes/page-hero.inc.php';
             </div>
           </div>
           <div class="fleet-card-actions" style="flex-wrap: wrap;">
-            <?php if (in_array($car['v_status'] ?? '', ['pending', 'withdrawn'], true)): ?>
+            <?php if (in_array($car['v_status'] ?? '', ['pending', 'withdrawn', 'suspended'], true)): ?>
             <a href="?section=fleet&push_inspection=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:#f59e0b; color:#fff; width:100%; margin-bottom:8px;"><i class="ph ph-magnifying-glass" style="font-size:14px;"></i> إرسال للفحص</a>
+            <?php endif; ?>
+            <?php if (($car['v_status'] ?? '') === 'suspended'): ?>
+            <a href="?section=fleet&unsuspend=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:#10b981; color:#fff; width:100%; margin-bottom:8px;"><i class="ph ph-play"></i> إعادة التفعيل</a>
+            <?php elseif (!in_array($car['v_status'] ?? '', ['sold','in_auction'], true)): ?>
+            <a href="?section=fleet&suspend=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn fleet-btn-edit" style="width:100%; margin-bottom:8px;" onclick="return confirm('إيقاف المركبة مؤقتاً؟')"><i class="ph ph-pause"></i> إيقاف مؤقت</a>
             <?php endif; ?>
             <?php if (($car['v_status'] ?? '') === 'approved' && empty($car['id'])): ?>
             <a href="?section=fleet&publish_auction=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:var(--primary); color:#000; width:100%; margin-bottom:8px;"><i class="ph ph-gavel" style="font-size:14px;"></i> نشر في المزاد</a>
@@ -684,7 +867,7 @@ include 'includes/page-hero.inc.php';
     function fetchVehicleData() {
         const val = document.getElementById('integrationValue').value;
         if (!val) {
-            alert('الرجاء إدخال رقم الشاسيه أو اللوحة أولاً');
+            if (typeof showToast === 'function') showToast('الرجاء إدخال رقم الشاسيه أو اللوحة أولاً', 'warning');
             return;
         }
         
@@ -728,8 +911,26 @@ include 'includes/page-hero.inc.php';
       $payout_total_paid = 0;
       $payout_pending = 0;
       $payout_fees = 0;
+      $payouts = [];
 
       if ($db_connected && isset($company_id)) {
+          $stmt_payouts = $conn->prepare("SELECT t.*, v.make, v.model, v.year FROM transactions t JOIN auctions a ON t.auction_id = a.id JOIN vehicles v ON a.vehicle_id = v.id WHERE t.seller_id = ? ORDER BY t.created_at DESC LIMIT 20");
+          if ($stmt_payouts) {
+              $stmt_payouts->bind_param('i', $company_id);
+              $stmt_payouts->execute();
+              $res = $stmt_payouts->get_result();
+              while ($r = $res->fetch_assoc()) {
+                  $payouts[] = [
+                      'id' => 'TXN-' . date('Ymd', strtotime($r['created_at'])) . '-' . str_pad($r['id'], 3, '0', STR_PAD_LEFT),
+                      'date' => date('Y-m-d', strtotime($r['created_at'])),
+                      'vehicle' => $r['make'].' '.$r['model'].' '.$r['year'],
+                      'amount' => $r['sale_price'],
+                      'commission' => $r['platform_fee'],
+                      'net' => $r['seller_payout'],
+                      'status' => ($r['payment_status'] === 'paid' ? 'completed' : 'pending')
+                  ];
+              }
+          }
           // Available Balance (paid payouts)
           $stmt_av = $conn->prepare('SELECT COALESCE(SUM(seller_payout), 0) FROM transactions WHERE seller_id=? AND payment_status="paid"');
           if ($stmt_av) {
@@ -793,7 +994,7 @@ include 'includes/page-hero.inc.php';
     <div class="payout-table-wrap fx-seller-card">
       <div class="payout-table-header" style="display:flex; justify-content:space-between; align-items:center;">
           <span>سجل التحويلات والمعاملات</span>
-          <button class="btn btn-outline" style="font-size:13px; padding:6px 12px; background:#fff; border-color:var(--border-light);" onclick="alert('جاري التصدير...')"><i class="ph ph-download-simple"></i> تصدير CSV</button>
+          <a href="/api/export-report.php?type=seller_payouts" class="btn btn-outline btn-sm"><i class="ph ph-download-simple"></i> تصدير CSV</a>
       </div>
       <table class="payout-table">
         <thead>
@@ -824,6 +1025,55 @@ include 'includes/page-hero.inc.php';
     </div>
 
     <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION: WALLET                               -->
+    <!-- ══════════════════════════════════════════════ -->
+    <?php elseif ($section === 'wallet'):
+      $seller_wallet = 0;
+      if ($db_connected) {
+          $wst = $conn->prepare('SELECT wallet_balance FROM users WHERE id=?');
+          $wst->bind_param('i', $user_id);
+          $wst->execute();
+          $seller_wallet = (float)($wst->get_result()->fetch_assoc()['wallet_balance'] ?? 0);
+          $_SESSION['wallet_balance'] = $seller_wallet;
+      }
+      $insp_fee = fleetx_inspection_fee($conn);
+    ?>
+
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-wallet fx-icon-primary"></i> المحفظة الرقمية</h1>
+    </div>
+
+    <div class="wallet-grid" style="margin-bottom:24px;">
+      <div class="wallet-balance-card">
+        <i class="ph-fill ph-wallet bg-icon" style="color:#fff;"></i>
+        <h4 class="wallet-balance-label">رصيد المحفظة</h4>
+        <div class="wallet-balance-amount"><?= number_format($seller_wallet) ?> <span>ر.س</span></div>
+        <div class="fx-wallet-card-actions">
+          <a href="/wallet-topup.php" class="wallet-btn">شحن الرصيد <i class="ph ph-plus"></i></a>
+        </div>
+      </div>
+      <div class="wallet-verify-card">
+        <div class="verify-icon"><i class="ph ph-magnifying-glass"></i></div>
+        <h4 class="fx-wallet-verify-title">رسوم الفحص</h4>
+        <p class="fx-wallet-verify-desc">كل طلب فحص يخصم <strong><?= number_format($insp_fee) ?> ر.س</strong> من محفظتك عند الإرسال للإدارة.</p>
+      </div>
+    </div>
+
+    <?php if (isset($_GET['msg']) && $_GET['msg'] === 'insufficient'): ?>
+    <div class="fx-checkout-alert" style="margin-bottom:20px;">
+      <i class="ph ph-warning-circle"></i> رصيد المحفظة غير كافٍ لرسوم الفحص (<?= number_format($insp_fee) ?> ر.س). يرجى الشحن أولاً.
+    </div>
+    <?php endif; ?>
+
+    <div class="fx-seller-card" style="padding:20px;">
+      <h3 style="font-weight:800;margin-bottom:12px;">ملاحظات</h3>
+      <ul style="color:var(--text-muted);line-height:1.8;padding-right:20px;">
+        <li>تُستخدم المحفظة لدفع رسوم الفحص عند إرسال المركبات للتفتيش.</li>
+        <li>مستحقات المبيعات تظهر في قسم <a href="?section=payouts">المستحقات المالية</a>.</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
     <!-- SECTION: REPORTS                              -->
     <!-- ══════════════════════════════════════════════ -->
     <?php elseif ($section === 'reports'): ?>
@@ -847,7 +1097,12 @@ include 'includes/page-hero.inc.php';
           <div class="report-vin">VIN: <?= $report['vin'] ?></div>
         </div>
         <span class="report-status-badge report-<?= $report['status'] ?>">
-          <?= $report['status'] === 'passed' ? 'اجتاز الفحص' : 'قيد المراجعة' ?>
+          <?php
+            if ($report['status'] === 'completed' && $report['seller_approved'] === null) echo 'بانتظار موافقتك';
+            elseif ($report['seller_approved'] === 1) echo 'معتمد';
+            elseif ($report['seller_approved'] === 0) echo 'مرفوض';
+            else echo $report['status'] === 'completed' ? 'مكتمل' : 'قيد المراجعة';
+          ?>
         </span>
       </div>
       <div class="report-scores">
@@ -871,12 +1126,86 @@ include 'includes/page-hero.inc.php';
       <div class="report-meta">
         <span><i class="ph ph-user" style="font-size:16px; color:var(--text-muted);"></i> <?= sanitize($report['inspector']) ?></span>
         <span><i class="ph ph-calendar" style="font-size:16px; color:var(--text-muted);"></i> <?= $report['date'] ?></span>
-        <a href="#" style="color:var(--primary); font-weight:800; margin-right:auto; display:inline-flex; align-items:center; gap:5px;">
+        <?php if (!empty($report['report_pdf'])): ?>
+        <a href="<?= sanitize($report['report_pdf']) ?>" target="_blank" style="color:var(--primary); font-weight:800; margin-right:auto; display:inline-flex; align-items:center; gap:5px;">
           <i class="ph ph-file-pdf" style="font-size:16px; color:var(--primary);"></i> تحميل التقرير
         </a>
+        <?php endif; ?>
       </div>
+      <?php if ($report['status'] === 'completed' && $report['seller_approved'] === null): ?>
+      <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border-light);">
+        <form method="POST" style="flex:1;">
+          <input type="hidden" name="inspection_id" value="<?= (int)$report['id'] ?>">
+          <button type="submit" name="inspection_action" value="approve" class="btn btn-primary" style="width:100%;">اعتماد التقرير ونشر المركبة</button>
+        </form>
+        <form method="POST">
+          <input type="hidden" name="inspection_id" value="<?= (int)$report['id'] ?>">
+          <button type="submit" name="inspection_action" value="reject" class="btn btn-outline" style="color:var(--danger);">رفض التقرير</button>
+        </form>
+      </div>
+      <?php endif; ?>
     </div>
     <?php endforeach; ?>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION: BIDS                                 -->
+    <!-- ══════════════════════════════════════════════ -->
+    <?php elseif ($section === 'bids'): ?>
+
+    <div class="seller-header-bar fx-seller-card" style="display:flex;justify-content:space-between;align-items:center;">
+      <h1 class="seller-section-title"><i class="ph-fill ph-gavel fx-icon-primary"></i> المزايدات الواردة</h1>
+      <a href="/api/export-report.php?type=seller_bids" class="btn btn-outline btn-sm"><i class="ph ph-download-simple"></i> تصدير CSV</a>
+    </div>
+    <div class="payout-table-wrap fx-seller-card">
+      <table class="payout-table">
+        <thead><tr><th>المزاد</th><th>المركبة</th><th>المزايد</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th></tr></thead>
+        <tbody>
+          <?php if (empty($seller_bids)): ?>
+          <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">لا توجد مزايدات بعد</td></tr>
+          <?php else: foreach ($seller_bids as $sb): ?>
+          <tr>
+            <td><?= sanitize($sb['title'] ?? '') ?></td>
+            <td><?= sanitize(($sb['make'] ?? '') . ' ' . ($sb['model'] ?? '') . ' ' . ($sb['year'] ?? '')) ?></td>
+            <td><?= sanitize($sb['bidder_name'] ?? '') ?></td>
+            <td style="font-weight:800;"><?= number_format($sb['amount']) ?> ر.س</td>
+            <td><?= date('Y-m-d H:i', strtotime($sb['created_at'])) ?></td>
+            <td><?= sanitize($sb['status'] ?? '') ?></td>
+          </tr>
+          <?php endforeach; endif; ?>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ══════════════════════════════════════════════ -->
+    <!-- SECTION: AUCTION RESULTS                      -->
+    <!-- ══════════════════════════════════════════════ -->
+    <?php elseif ($section === 'results'): ?>
+
+    <div class="seller-header-bar fx-seller-card">
+      <h1 class="seller-section-title"><i class="ph-fill ph-handshake fx-icon-primary"></i> نتائج المزادات — قبول أو رفض</h1>
+    </div>
+    <?php if (empty($pending_auction_results)): ?>
+    <div class="seller-empty fx-seller-card"><p>لا توجد نتائج مزاد بانتظار قرارك.</p></div>
+    <?php else: foreach ($pending_auction_results as $par): ?>
+    <div class="report-card fx-seller-card">
+      <div class="report-card-header">
+        <div>
+          <div class="report-vehicle-name"><?= sanitize($par['title'] ?: $par['make'].' '.$par['model'].' '.$par['year']) ?></div>
+          <div class="report-vin">الفائز: <?= sanitize($par['winner_name'] ?? '—') ?> · <?= number_format($par['sale_price'] ?? $par['current_price']) ?> ر.س</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <form method="POST" style="flex:1;">
+          <input type="hidden" name="auction_id" value="<?= (int)$par['id'] ?>">
+          <button type="submit" name="auction_decision" value="accept" class="btn btn-primary" style="width:100%;">قبول البيع</button>
+        </form>
+        <form method="POST">
+          <input type="hidden" name="auction_id" value="<?= (int)$par['id'] ?>">
+          <button type="submit" name="auction_decision" value="reject" class="btn btn-outline" style="color:var(--danger);">رفض البيع</button>
+        </form>
+      </div>
+    </div>
+    <?php endforeach; endif; ?>
 
     <!-- ══════════════════════════════════════════════ -->
     <!-- SECTION: SUBSCRIPTION                         -->
@@ -1020,6 +1349,50 @@ include 'includes/page-hero.inc.php';
             <input type="text" name="iban" value="SA44 2000 0001 2345 6789 1234" placeholder="SA..." style="font-family:var(--font-en); direction:ltr; text-align:right;">
           </div>
         </div>
+      </div>
+
+      <?php
+      $company_docs = [];
+      if ($db_connected && $company_id && fleetx_table_exists($conn, 'company_documents')) {
+          $dres = $conn->prepare('SELECT * FROM company_documents WHERE seller_id=? ORDER BY uploaded_at DESC');
+          $dres->bind_param('i', $company_id);
+          $dres->execute();
+          $dr = $dres->get_result();
+          while ($row = $dr->fetch_assoc()) $company_docs[] = $row;
+      }
+      ?>
+      <div class="settings-section">
+        <h3 class="settings-title"><i class="ph-fill ph-file-text" style="color:var(--primary); font-size:22px;"></i> المستندات القانونية</h3>
+        <form method="POST" enctype="multipart/form-data" action="?section=settings" style="margin-bottom:16px;">
+          <input type="hidden" name="upload_document" value="1">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>نوع المستند</label>
+              <select name="doc_type">
+                <option value="cr">سجل تجاري</option>
+                <option value="vat">شهادة ضريبة</option>
+                <option value="istimara">استمارة</option>
+                <option value="insurance">تأمين</option>
+                <option value="other">أخرى</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الملف (PDF/صورة)</label>
+              <input type="file" name="doc_file" accept=".pdf,.jpg,.jpeg,.png" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-outline btn-sm">رفع مستند</button>
+        </form>
+        <?php if ($company_docs): ?>
+        <ul style="list-style:none;padding:0;">
+          <?php foreach ($company_docs as $doc): ?>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;gap:10px;">
+            <span><?= sanitize($doc['doc_type']) ?> — <a href="<?= sanitize($doc['file_url']) ?>" target="_blank">عرض</a></span>
+            <span style="font-size:12px;color:<?= $doc['admin_approved']?'var(--primary)':'#f59e0b' ?>;"><?= $doc['admin_approved']?'معتمد':'بانتظار المراجعة' ?></span>
+          </li>
+          <?php endforeach; ?>
+        </ul>
+        <?php endif; ?>
       </div>
 
       <button type="submit" class="settings-submit">

@@ -35,7 +35,7 @@ if ($db_connected) {
 $approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 0;
 $stats_success_pct = '94';
 $stats_sales_val = '120';
-$stats_sales_unit = 'مليون ر.س';
+$stats_sales_unit = 'M Riyal';
 
 ?>
 <!DOCTYPE html>
@@ -53,7 +53,7 @@ $stats_sales_unit = 'مليون ر.س';
     body.fx-home-index .fx-home-quick-stats,
     body.fx-home-index .fx-home-tabs-link,
     body.fx-home-index .auctions-tabs-wrapper { display: none !important; }
-    body.fx-home-index .fx-auctions-panel { display: block !important; }
+    body.fx-home-index .fx-auctions-shell { display: block !important; }
     body.fx-home-index .fx-home-auctions-block { display: none !important; }
     body.fx-home-index .fx-home-stats-section { background: #060c16 !important; position: relative; overflow: hidden; }
     body.fx-home-index .fx-stats-video-bg { position: absolute; inset: 0; z-index: 0; }
@@ -76,7 +76,6 @@ $stats_sales_unit = 'مليون ر.س';
     <div class="fx-hero-picture fx-hero-picture--mobile fx-hero-picture--float" aria-hidden="true">
       <img src="/assets/images/fleetxhero-mobile.png" alt="" class="fx-hero-picture__img" decoding="async">
     </div>
-    <div class="fx-hero-float-nums" id="fxHeroFloatNums" aria-hidden="true"></div>
     <div id="fxBiddingSigns" class="fx-hero-bid-signs" aria-hidden="true"></div>
   </div>
   <section class="hero fx-hero-section fx-hero-section--fleet1">
@@ -176,13 +175,13 @@ if ($db_connected) {
       <p class="section-subtitle">تصفح مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
     </div>
 
-    <div class="fx-auctions-panel">
+    <div class="fx-auctions-shell">
       <div class="fx-auctions-panel__tabs auctions-tabs fx-home-tabs">
         <button type="button" class="auctions-tab-btn active" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
         <button type="button" class="auctions-tab-btn" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
       </div>
 
-    <div id="tab-content-live" class="auctions-tab-content active">
+      <div id="tab-content-live" class="auctions-tab-content fx-auctions-tab-content active">
       <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
         <div class="swiper-wrapper">
         <?php
@@ -208,7 +207,6 @@ if ($db_connected) {
 
           foreach ($live_cards as $ev_index => $a):
             $title_car = $live_names[$ev_index % count($live_names)];
-            $img = fleetx_card_image($a['image_url'] ?? '', $ev_index, 'live');
             $is_featured = !empty($a['is_featured']);
             $is_vip = ($is_featured && (($a['id'] ?? $ev_index) % 2 !== 0));
             $card_status = $status_cycle[$ev_index % 3];
@@ -217,7 +215,8 @@ if ($db_connected) {
               'id' => $a['id'],
               'href' => $event_href,
               'title' => $title_car,
-              'image' => $img,
+              'image_url' => $a['image_url'] ?? '',
+              'make' => $a['make'] ?? '',
               'type' => 'live',
               'status' => $card_status,
               'city' => $a['city'] ?? 'الرياض',
@@ -246,7 +245,7 @@ if ($db_connected) {
       </div>
     </div>
 
-    <div id="tab-content-instant" class="auctions-tab-content">
+    <div id="tab-content-instant" class="auctions-tab-content fx-auctions-tab-content">
       <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
         <div class="swiper-wrapper">
         <?php
@@ -273,14 +272,14 @@ if ($db_connected) {
 
           foreach ($instant_cards as $inst_index => $a):
             $title_car = $a['title'] ?? ($a['make'] . ' ' . $a['model'] . ' ' . $a['year']);
-            $img = fleetx_card_image($a['image_url'] ?? '', $inst_index, 'instant');
             $is_featured = ($inst_index % 3 === 0);
             $is_vip = ($is_featured && (($a['id'] ?? $inst_index) % 2 !== 0));
             $fx_card = [
               'id' => $a['id'],
               'href' => '/vehicle-details.php?id=' . $a['id'],
               'title' => $title_car,
-              'image' => $img,
+              'image_url' => $a['image_url'] ?? '',
+              'make' => ($a['make'] ?? '') . ' ' . ($a['model'] ?? ''),
               'type' => 'instant',
               'status' => 'active',
               'city' => $a['city'] ?? 'الرياض',
@@ -308,15 +307,15 @@ if ($db_connected) {
         <a href="/auctions.php?type=instant" class="btn btn-outline-dark">عرض جميع المركبات <i class="ph ph-arrow-left"></i></a>
       </div>
     </div>
-    </div><!-- /.fx-auctions-panel -->
+    </div><!-- /.fx-auctions-shell -->
   </div>
 </section>
 
 <script>
   function switchAuctionTab(tabId, btn) {
-    document.querySelectorAll('.fx-auctions-panel .auctions-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.fx-auctions-shell .auctions-tab-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    document.querySelectorAll('.fx-auctions-panel .auctions-tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.fx-auctions-shell .auctions-tab-content').forEach(c => c.classList.remove('active'));
     const panel = document.getElementById('tab-content-' + tabId);
     if (panel) panel.classList.add('active');
     if (window.fxHomeSwipers && window.fxHomeSwipers[tabId]) {
@@ -526,7 +525,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <article class="fx-why-card fx-why-card--trust reveal">
-        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1568605117032-7b0c3cefba0d?w=800&q=80')"></div>
+        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80')"></div>
         <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-shield-check"></i></div>
         <h3>بيئة موثقة بالكامل</h3>
         <p>نتحقق من هوية المشترين والبائعين عبر تكامل مباشر مع النفاذ الوطني الموحد لضمان جدية كل مزايدة.</p>
@@ -534,7 +533,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <article class="fx-why-card fx-why-card--ai reveal">
-        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80')"></div>
+        <div class="fx-why-card__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80')"></div>
         <div class="fx-why-card__icon fx-why-card__icon--plain"><i class="ph ph-robot"></i></div>
         <h3>نظام المزايدة التلقائية</h3>
         <p>حدد سقف ميزانيتك وسيقوم النظام الذكي بالمزايدة بالنيابة عنك بأقل زيادة ممكنة حتى حدك الأقصى.</p>
@@ -542,6 +541,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
       </article>
 
       <div class="fx-why-journey reveal">
+        <div class="fx-why-card__bg-overlay fx-why-journey__bg-overlay" aria-hidden="true" style="--fx-why-overlay:url('https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&q=80')"></div>
         <div class="fx-why-journey__head">
           <h3>رحلة الصفقة من البداية للتسليم</h3>
           <p>أربع مراحل مترابطة داخل منصة واحدة — بدون تعقيد أو أطراف خارجية.</p>
@@ -598,7 +598,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         </div>
         <div class="ac-stat-mobile fx-stat-motion">
           <i class="ph ph-trend-up ac-stat-mobile__icon ac-stat-mobile__icon--primary"></i>
-          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="stats-unit-ar"><?= $stats_sales_unit ?></span></div>
+          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="font-en stats-unit-en"><?= $stats_sales_unit ?></span></div>
           <div class="stats-desc stats-desc--spaced">إجمالي المبيعات عبر المنصة</div>
         </div>
       </div>

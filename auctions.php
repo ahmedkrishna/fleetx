@@ -18,6 +18,8 @@ $year_min = isset($_GET['year_min']) ? intval($_GET['year_min']) : '';
 $year_max = isset($_GET['year_max']) ? intval($_GET['year_max']) : '';
 $price_min = isset($_GET['price_min']) ? intval($_GET['price_min']) : '';
 $price_max = isset($_GET['price_max']) ? intval($_GET['price_max']) : '';
+$mileage_min = isset($_GET['mileage_min']) ? intval($_GET['mileage_min']) : '';
+$mileage_max = isset($_GET['mileage_max']) ? intval($_GET['mileage_max']) : '';
 
 // Data Fetching
 $items = [];
@@ -89,7 +91,7 @@ if ($type_filter === 'live') {
     $all_auctions = $temp_auctions;
     
     // Filtering logic for vehicles
-    $filtered = array_filter($all_auctions, function($a) use ($search_query, $make_filter, $city_filter, $fuel_filter, $year_min, $year_max, $price_min, $price_max) {
+    $filtered = array_filter($all_auctions, function($a) use ($search_query, $make_filter, $city_filter, $fuel_filter, $year_min, $year_max, $price_min, $price_max, $mileage_min, $mileage_max) {
         $title = mb_strtolower($a['title'] ?? ($a['make'].' '.$a['model']));
         if (!empty($search_query) && mb_strpos($title, mb_strtolower($search_query)) === false) return false;
         if (!empty($make_filter) && is_array($make_filter) && !in_array($a['make'] ?? '', $make_filter)) return false;
@@ -100,6 +102,9 @@ if ($type_filter === 'live') {
         $price = $a['current_price'] ?? $a['starting_price'] ?? 0;
         if ($price_min && $price < $price_min) return false;
         if ($price_max && $price > $price_max) return false;
+        $mileage = (int)($a['mileage'] ?? 0);
+        if ($mileage_min && $mileage < $mileage_min) return false;
+        if ($mileage_max && $mileage > $mileage_max) return false;
         return true;
     });
     
@@ -114,7 +119,7 @@ $total_pages = ceil($total_items / $limit);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>المزادات والمركبات المتاحة | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--search">
 
@@ -132,7 +137,6 @@ if ($type_filter === 'instant') {
     $hero_bg = 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&q=80';
     $hero_eyebrow = 'بحث وتصفح';
 }
-$hero_modifier = 'light';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph-fill ph-list-magnifying-glass"></i> ' . number_format($total_items) . ' نتيجة</span>';
 if ($type_filter === 'live') {
     $hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph-fill ph-broadcast"></i> ' . $pill_stats['active'] . ' مزاد نشط</span>';
@@ -143,14 +147,6 @@ include 'includes/page-hero.inc.php';
 ?>
 
 <div class="container fx-page-body fx-page-body--overlap fx-search-page">
-  <div class="fx-search-type-bar">
-    <div class="auctions-tabs fx-home-tabs fx-search-type-tabs">
-      <a href="auctions.php?type=live" class="auctions-tab-btn<?= $type_filter === 'live' ? ' active' : '' ?>"><i class="ph-fill ph-broadcast"></i> المزادات الحية</a>
-      <a href="auctions.php?type=instant" class="auctions-tab-btn<?= $type_filter === 'instant' ? ' active' : '' ?>"><i class="ph-fill ph-lightning"></i> الشراء الفوري</a>
-    </div>
-    <span class="fx-search-result-count"><strong><?= number_format($total_items) ?></strong> نتيجة مطابقة</span>
-  </div>
-
   <div class="auctions-layout fx-search-layout">
     <aside class="fx-filter-panel filter-sidebar">
     <div class="fx-filter-panel__head">
@@ -236,6 +232,25 @@ include 'includes/page-hero.inc.php';
             <input type="number" name="price_max" class="form-control fx-filter-input fx-filter-input--en" placeholder="الأعلى" value="<?= isset($_GET['price_max']) ? $_GET['price_max'] : '' ?>" dir="ltr">
           </div>
         </div>
+
+        <?php if ($type_filter !== 'live'): ?>
+        <div class="filter-group fx-filter-group">
+          <label class="filter-title fx-filter-title">الممشى (كم) <i class="ph ph-gauge"></i></label>
+          <div class="fx-filter-range">
+            <input type="number" name="mileage_min" class="form-control fx-filter-input fx-filter-input--en" placeholder="من" value="<?= $mileage_min ?: '' ?>" dir="ltr">
+            <span class="fx-filter-range-sep">-</span>
+            <input type="number" name="mileage_max" class="form-control fx-filter-input fx-filter-input--en" placeholder="إلى" value="<?= $mileage_max ?: '' ?>" dir="ltr">
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (isLoggedIn()): ?>
+        <div class="filter-group fx-filter-group">
+          <button type="button" class="btn btn-outline btn-sm" style="width:100%;" onclick="saveCurrentSearch()"><i class="ph ph-bookmark-simple"></i> حفظ البحث</button>
+          <div id="saved-searches-list" style="margin-top:10px;font-size:13px;"></div>
+        </div>
+        <?php endif; ?>
+
         <script>
         const carModels = {
           'تويوتا': ['كامري', 'كورولا', 'لاند كروزر', 'هايلوكس', 'يارس', 'راف فور', 'فورتشنر', 'أفالون'],
@@ -298,15 +313,15 @@ include 'includes/page-hero.inc.php';
     <main class="fx-search-main">
       <div class="fx-toolbar fx-search-toolbar">
         <div class="fx-pills filter-pills-group">
-            <button type="button" class="fx-pill active">
+            <a href="auctions.php?type=<?= $type_filter ?>" class="fx-pill fx-pill-link active">
                 الكل <span class="fx-pill-count"><?= $pill_stats['all'] ?></span>
-            </button>
-            <button type="button" class="fx-pill">
+            </a>
+            <a href="auctions.php?type=<?= $type_filter ?>&status[]=active" class="fx-pill fx-pill-link">
                 <?= $type_filter === 'instant' ? 'مباشر' : 'جاري' ?> <span class="fx-pill-count"><?= $pill_stats['active'] ?></span>
-            </button>
-            <button type="button" class="fx-pill">
+            </a>
+            <a href="auctions.php?type=<?= $type_filter ?>&status[]=upcoming" class="fx-pill fx-pill-link">
                 <?= $type_filter === 'instant' ? 'تقسيط' : 'قادم' ?> <span class="fx-pill-count"><?= $pill_stats['upcoming'] ?></span>
-            </button>
+            </a>
         </div>
         <div class="fx-search-sort">
           <label>ترتيب حسب:</label>
@@ -325,20 +340,21 @@ include 'includes/page-hero.inc.php';
           <i class="ph-fill ph-warning-circle"></i>
           <h3>لا توجد نتائج مطابقة</h3>
           <p>حاول تغيير فلاتر البحث والمحاولة مجدداً.</p>
+          <a href="auctions.php?type=<?= $type_filter ?>" class="btn btn-primary btn--pill fx-empty-state__cta">إعادة ضبط الفلاتر</a>
         </div>
       <?php else: ?>
         <div class="fx-listing-grid">
           <?php foreach ($items as $item):
             $is_live = ($type_filter === 'live');
             $link = $is_live ? '/event.php?id=' . $item['id'] : '/vehicle-details.php?id=' . $item['id'];
-            $img = (!empty($item['image_url']) && strlen($item['image_url']) > 4) ? $item['image_url'] : 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80';
             $title = $item['title'] ?? ($item['make'] . ' ' . $item['model'] . ' ' . $item['year']);
             $card_status = $item['status'] ?? 'active';
             $fx_card = [
               'id' => $item['id'],
               'href' => $link,
               'title' => $title,
-              'image' => $img,
+              'image_url' => $item['image_url'] ?? '',
+              'make' => trim(($item['make'] ?? '') . ' ' . ($item['model'] ?? '')),
               'type' => $is_live ? 'live' : 'instant',
               'status' => $card_status,
               'city' => $item['city'] ?? 'الرياض',
@@ -379,3 +395,36 @@ include 'includes/page-hero.inc.php';
 </div>
 
 <?php include 'includes/footer.php'; ?>
+<?php if (isLoggedIn()): ?>
+<script>
+async function loadSavedSearches() {
+  const el = document.getElementById('saved-searches-list');
+  if (!el) return;
+  try {
+    const res = await fetch('/api/saved-searches.php');
+    const data = await res.json();
+    if (!data.success || !data.items.length) { el.innerHTML = '<span style="color:var(--text-muted)">لا توجد عمليات بحث محفوظة</span>'; return; }
+    el.innerHTML = data.items.map(s => {
+      const q = new URLSearchParams(s.filters || {}).toString();
+      return `<div style="margin:6px 0;"><a href="/auctions.php?${q}" style="color:var(--primary);font-weight:700;">${s.name}</a> <button type="button" style="border:none;background:none;color:#999;cursor:pointer" onclick="deleteSavedSearch(${s.id})">×</button></div>`;
+    }).join('');
+  } catch (e) { el.textContent = ''; }
+}
+async function saveCurrentSearch() {
+  const form = document.getElementById('filter-form');
+  const fd = new FormData(form);
+  const filters = {};
+  fd.forEach((v, k) => { if (v) filters[k] = v; });
+  const name = prompt('اسم البحث المحفوظ:', 'بحثي') || 'بحث محفوظ';
+  const res = await fetch('/api/saved-searches.php', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, filters }) });
+  const data = await res.json();
+  if (data.success && typeof showToast === 'function') showToast('تم حفظ البحث', 'success');
+  loadSavedSearches();
+}
+async function deleteSavedSearch(id) {
+  await fetch('/api/saved-searches.php', { method: 'DELETE', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ id }) });
+  loadSavedSearches();
+}
+loadSavedSearches();
+</script>
+<?php endif; ?>

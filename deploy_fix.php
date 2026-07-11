@@ -39,7 +39,31 @@ echo "\nPasswords reset to: 123456 (all users)\n";
 // 3. Ensure buyers have sanad limit
 $conn->query("UPDATE users SET sanad_limit=500000, wallet_balance=50000 WHERE role='buyer' AND sanad_limit=0");
 
-// 4. Stats
+// 4. Backfill missing / broken vehicle images
+$fixed_images = 0;
+$res = $conn->query('SELECT id, make, image_url FROM vehicles');
+if ($res) {
+    $upd = $conn->prepare('UPDATE vehicles SET image_url = ? WHERE id = ?');
+    while ($row = $res->fetch_assoc()) {
+        $current = fleetx_normalize_image_url($row['image_url'] ?? '');
+        if ($current !== '') {
+            continue;
+        }
+        $new_img = fleetx_card_image('', intval($row['id']), 'instant', $row['make'] ?? '');
+        if ($new_img === '') {
+            continue;
+        }
+        $vid = intval($row['id']);
+        $upd->bind_param('si', $new_img, $vid);
+        if ($upd->execute()) {
+            $fixed_images++;
+        }
+    }
+    $upd->close();
+}
+echo "\nVehicle images backfilled: $fixed_images\n";
+
+// 5. Stats
 $u = $conn->query('SELECT COUNT(*) FROM users')->fetch_row()[0];
 $a = $conn->query('SELECT COUNT(*) FROM auctions')->fetch_row()[0];
 $v = $conn->query('SELECT COUNT(*) FROM vehicles')->fetch_row()[0];

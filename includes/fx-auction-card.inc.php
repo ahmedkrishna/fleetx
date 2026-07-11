@@ -18,8 +18,15 @@ $is_vip = !empty($c['is_vip']);
 $is_featured = !empty($c['is_featured']);
 $seed = intval($c['id'] ?? 0);
 
-$image = fleetx_card_image($c['image'] ?? '', $seed, $is_instant ? 'instant' : 'live');
-$fallback_img = fleetx_card_image('', $seed, $is_instant ? 'instant' : 'live');
+$make = (string) ($c['make'] ?? '');
+$img_type = $is_instant ? 'instant' : 'live';
+$raw_image = $c['image_url'] ?? $c['image'] ?? '';
+$image = fleetx_card_image($raw_image, $seed, $img_type, $make);
+$fallback_img = fleetx_card_image('', $seed, $img_type, $make);
+$fallback_img2 = fleetx_card_image('', $seed + 5, $img_type, $make);
+$img_onerror = "var i=this;if(!i.dataset.fbx){i.dataset.fbx='1';i.src='" . htmlspecialchars($fallback_img, ENT_QUOTES) . "'}"
+    . "else if(i.dataset.fbx==='1'){i.dataset.fbx='2';i.src='" . htmlspecialchars($fallback_img2, ENT_QUOTES) . "'}"
+    . "else{i.onerror=null}";
 
 $card_class = 'auction-card auction-card--clickable fx-card-unified';
 $card_class .= $is_instant ? ' fx-card--instant' : ' fx-card--auction';
@@ -45,7 +52,7 @@ $card_id = intval($c['id'] ?? 0);
       alt="<?= htmlspecialchars($title) ?>"
       loading="lazy"
       decoding="async"
-      onerror="this.onerror=null;this.src='<?= htmlspecialchars($fallback_img, ENT_QUOTES) ?>';"
+      onerror="<?= $img_onerror ?>"
     >
     <div class="ac-img-title-overlay" aria-hidden="true"></div>
     <h3 class="ac-title ac-title--on-image"><?= htmlspecialchars($title) ?></h3>

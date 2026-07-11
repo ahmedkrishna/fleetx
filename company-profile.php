@@ -31,10 +31,13 @@ if ($db_connected) {
     $stmt = $conn->prepare("
         SELECT a.*, v.id as vid,
                v.make, v.model, v.year, v.mileage, v.city as vcity, v.image_url,
+               v.autodata_price_min, v.autodata_price_max,
+               i.overall_score, i.report_pdf, i.status as insp_status,
                a.current_price, a.starting_price, a.status as auction_status, a.end_time, a.type as auction_type
         FROM auctions a
         JOIN vehicles v ON a.vehicle_id = v.id
-        WHERE a.seller_id = ? AND a.status IN ('active','live','upcoming')
+        LEFT JOIN inspections i ON i.vehicle_id = v.id AND i.status='completed'
+        WHERE a.seller_id = ? AND a.status IN ('active','live','upcoming') AND (a.admin_approved IS NULL OR a.admin_approved = 1)
         ORDER BY a.end_time ASC
         LIMIT 24
     ");
@@ -66,7 +69,6 @@ $hero_bg = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&
 $hero_back_href = '/companies.php';
 $hero_back_label = '← العودة لدليل الشركات';
 $hero_desc = 'تصفح مزادات ومركبات الشركة المعتمدة على منصة FleetX';
-$hero_modifier = 'light';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . htmlspecialchars($company['city'] ?? 'المملكة') . '</span>
   <span class="fx-page-hero__chip"><i class="ph-fill ph-star"></i> ' . number_format(floatval($company['rating'] ?? 4.5), 1) . ' تقييم</span>';
@@ -88,9 +90,9 @@ $hero_bottom_html = '
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($company['company_name']) ?> | FleetX</title>
   <meta name="description" content="تصفح مزادات وسيارات <?= htmlspecialchars($company['company_name']) ?> على FleetX">
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-home fx-page-shell fx-company-profile-shell">
+<body class="fx-home fx-page-shell fx-page-shell--company-profile">
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 
@@ -129,7 +131,8 @@ $hero_bottom_html = '
         'id' => $auction_id,
         'href' => $href,
         'title' => $title,
-        'image' => getCarImage($v['make'] ?? '', $v['image_url'] ?? ''),
+        'image_url' => $v['image_url'] ?? '',
+        'make' => trim(($v['make'] ?? '') . ' ' . ($v['model'] ?? '')),
         'type' => $v['auction_type'] ?? 'live',
         'status' => $status,
         'city' => $v['vcity'] ?? 'الرياض',
@@ -144,6 +147,12 @@ $hero_bottom_html = '
     ?>
     <div class="fx-card-wrap" data-status="<?= htmlspecialchars($status) ?>" data-type="<?= htmlspecialchars($v['auction_type'] ?? 'live') ?>">
       <?php include 'includes/fx-auction-card.inc.php'; ?>
+      <?php if (!empty($v['autodata_price_min']) && !empty($v['autodata_price_max'])): ?>
+      <div style="font-size:12px;color:#0ea5e9;padding:4px 12px 10px;">AutoData: <?= number_format($v['autodata_price_min']) ?> - <?= number_format($v['autodata_price_max']) ?> ر.س</div>
+      <?php endif; ?>
+      <?php if (!empty($v['report_pdf'])): ?>
+      <div style="padding:0 12px 12px;"><a href="<?= sanitize($v['report_pdf']) ?>" target="_blank" style="font-size:12px;font-weight:700;color:var(--primary);"><i class="ph ph-file-pdf"></i> تقرير الفحص</a></div>
+      <?php endif; ?>
     </div>
     <?php endforeach; ?>
   </div>

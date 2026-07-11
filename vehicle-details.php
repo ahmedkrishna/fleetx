@@ -20,7 +20,7 @@ if (!$is_instant && in_array($auction['status'] ?? '', ['active', 'live'], true)
 }
 
 $title_car = $auction['title'] ?? ($auction['make'].' '.$auction['model'].' '.$auction['year']);
-$img = (!empty($auction['image_url']) && strlen($auction['image_url']) > 4) ? $auction['image_url'] : getCarImage($auction['make']);
+$img = fleetx_card_image($auction['image_url'] ?? '', intval($auction['id'] ?? 0), 'instant', $auction['make'] ?? '');
 
 $gallery_images = isset($auction['gallery_images']) && is_array($auction['gallery_images']) ? $auction['gallery_images'] : [
     $img,
@@ -44,7 +44,7 @@ $min_increment = $auction['bid_increment'] ?? 500;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $is_instant ? 'الشراء الفوري' : 'غرفة المزايدة' ?>: <?= sanitize($title_car) ?> | FleetX</title>
-  <link rel="stylesheet" href="/assets/css/fleetx.css">
+  <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
 <body class="fx-home fx-page-shell fx-page-shell--vehicle">
 
@@ -57,7 +57,6 @@ $hero_title = $title_car;
 $hero_bg = $coverImage;
 $hero_back_href = $is_instant ? '/auctions.php?type=instant' : '/auctions.php';
 $hero_back_label = '← العودة إلى ' . ($is_instant ? 'الشراء الفوري' : 'المزادات');
-$hero_modifier = 'light';
 $hero_eyebrow = $is_instant ? 'شراء فوري' : 'تفاصيل المركبة';
 $hero_meta_html = '<span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . sanitize($auction['vehicle_city'] ?? $auction['city'] ?? 'الرياض') . '</span>';
 $hero_meta_html .= '<span class="fx-page-hero__chip"><i class="ph ph-calendar"></i> ' . sanitize($auction['year'] ?? '2023') . '</span>';
@@ -66,6 +65,7 @@ if ($is_instant) {
     $hero_meta_html .= '<span class="fx-page-hero__chip fx-page-hero__chip--accent"><i class="ph-fill ph-lightning"></i> متاح للشراء الفوري</span>';
 }
 $hero_actions_html = '<button type="button" class="btn btn-outline fx-vehicle-fav-btn" onclick="toggleFavorite(' . (int)$auction['id'] . ', this)"><i class="ph ph-heart"></i> أضف للمفضلة</button>';
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact';
 include 'includes/page-hero.inc.php';
 ?>
 
@@ -166,8 +166,23 @@ include 'includes/page-hero.inc.php';
         </div>
         <?php endif; ?>
 
-        <button class="btn btn-outline btn-ac-full"><i class="ph ph-download-simple"></i> تحميل تقرير الفحص (PDF)</button>
+        <?php
+        $insp_pdf = '';
+        if ($db_connected && !empty($auction['vehicle_id'])) {
+            $ip = $conn->prepare("SELECT report_pdf FROM inspections WHERE vehicle_id=? AND status='completed' ORDER BY id DESC LIMIT 1");
+            $ip->bind_param('i', $auction['vehicle_id']);
+            $ip->execute();
+            $insp_pdf = $ip->get_result()->fetch_assoc()['report_pdf'] ?? '';
+        }
+        ?>
+        <?php if ($insp_pdf): ?>
+        <a href="<?= sanitize($insp_pdf) ?>" target="_blank" class="btn btn-outline btn-ac-full"><i class="ph ph-download-simple"></i> تحميل تقرير الفحص (PDF)</a>
+        <?php else: ?>
+        <button type="button" class="btn btn-outline btn-ac-full" disabled><i class="ph ph-download-simple"></i> تقرير الفحص غير متوفر</button>
+        <?php endif; ?>
       </div>
+
+      <?php $fx_bundle_compact = true; include 'includes/fx-service-bundles.inc.php'; ?>
 
     </div>
 

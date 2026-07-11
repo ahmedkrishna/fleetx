@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '74');
+define('FLEETX_CSS_VER', '84');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -269,23 +269,74 @@ function getTimeDiff($end_time) {
     return timeLeft($end_time);
 }
 
-/** Reliable card image URL with type-specific fallbacks */
-function fleetx_card_image(?string $url, int $seed = 0, string $type = 'live'): string {
-    $live_fallbacks = [
+/** Normalize / validate a vehicle image URL from DB or form */
+function fleetx_normalize_image_url(?string $url): string {
+    $url = trim((string) $url);
+    if ($url === '' || in_array(strtolower($url), ['null', 'none', 'n/a', 'undefined', '0', '-'], true)) {
+        return '';
+    }
+    if (str_contains($url, ',')) {
+        foreach (array_map('trim', explode(',', $url)) as $part) {
+            $normalized = fleetx_normalize_image_url($part);
+            if ($normalized !== '') {
+                return $normalized;
+            }
+        }
+        return '';
+    }
+    if (preg_match('#^https?://#i', $url)) {
+        if (preg_match('#placeholder|dummyimage|blank\.gif|1x1|no-image|noimage#i', $url)) {
+            return '';
+        }
+        if (preg_match('#photo-1568844293986|photo-1568605117032|photo-1503376712341#i', $url)) {
+            return '';
+        }
+        return strlen($url) > 14 ? $url : '';
+    }
+    if (preg_match('#^/#', $url)) {
+        return rtrim(SITE_URL, '/') . $url;
+    }
+    return '';
+}
+
+/** Curated Unsplash car photos — used when DB has no usable image */
+function fleetx_card_fallbacks(string $type = 'live'): array {
+    $shared = [
         'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80&auto=format',
         'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&q=80&auto=format',
-        'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=800&q=80&auto=format',
-    ];
-    $instant_fallbacks = [
+        'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80&auto=format',
         'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80&auto=format',
         'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80&auto=format',
         'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&q=80&auto=format',
+        'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=800&q=80&auto=format',
     ];
-    $fallbacks = ($type === 'instant') ? $instant_fallbacks : $live_fallbacks;
-    $url = trim((string) $url);
-    if ($url !== '' && (preg_match('#^https?://#i', $url) || str_starts_with($url, '/'))) {
-        return $url;
+    if ($type === 'instant') {
+        return array_merge([
+            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80&auto=format',
+            'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?w=800&q=80&auto=format',
+        ], $shared);
     }
+    return $shared;
+}
+
+/** Reliable card image URL with make-aware and seeded fallbacks */
+function fleetx_card_image(?string $url, int $seed = 0, string $type = 'live', string $make = ''): string {
+    $normalized = fleetx_normalize_image_url($url);
+    if ($normalized !== '') {
+        return $normalized;
+    }
+    if (trim($make) !== '') {
+        $by_make = fleetx_car_image_by_make($make);
+        if ($by_make !== '') {
+            return $by_make;
+        }
+    }
+    $fallbacks = fleetx_card_fallbacks($type);
     return $fallbacks[abs($seed) % count($fallbacks)];
 }
 
@@ -875,7 +926,7 @@ function initWalletBalance() {
 // ── Car placeholder images (Unsplash) ─────────────────────
 $CAR_IMAGES = [
     'toyota'   => 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=600&q=80',
-    'hyundai'  => 'https://images.unsplash.com/photo-1568844293986-ca9c5c6f8b8a?w=600&q=80',
+    'hyundai'  => 'https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?w=600&q=80',
     'kia'      => 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&q=80',
     'nissan'   => 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&q=80',
     'ford'     => 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=600&q=80',
@@ -886,16 +937,25 @@ $CAR_IMAGES = [
     'default'  => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=600&q=80',
 ];
 
-function getCarImage($make, $image_url = null) {
+function fleetx_car_image_by_make(string $make): string {
     global $CAR_IMAGES;
-    if ($image_url && is_string($image_url) && str_starts_with(trim($image_url), 'http')) {
-        return trim($image_url);
+    $make_lower = mb_strtolower(trim($make));
+    if ($make_lower === '') {
+        return $CAR_IMAGES['default'] ?? '';
     }
-    $make_lower = mb_strtolower($make ?? '');
     foreach ($CAR_IMAGES as $key => $url) {
-        if (str_contains($make_lower, $key) || str_contains($key, $make_lower)) return $url;
+        if ($key === 'default') {
+            continue;
+        }
+        if (str_contains($make_lower, $key) || str_contains($key, $make_lower)) {
+            return $url;
+        }
     }
-    return $CAR_IMAGES['default'];
+    return $CAR_IMAGES['default'] ?? '';
+}
+
+function getCarImage($make, $image_url = null) {
+    return fleetx_card_image($image_url, 0, 'instant', (string) ($make ?? ''));
 }
 
 // ── Mock data for local dev (if DB not connected) ─────────
