@@ -656,6 +656,21 @@ include 'includes/page-hero.inc.php';
       <canvas id="sellerSalesChart" height="80"></canvas>
     </div>
 
+    <?php if (!empty($fleet_auctions)): ?>
+    <div class="activity-card fx-seller-card">
+      <div class="fx-seller-dash-fleet-head">
+        <h3 class="activity-title"><i class="ph-fill ph-car fx-icon-primary"></i> أحدث المركبات المعروضة</h3>
+        <a href="?section=fleet" class="fx-seller-dash-fleet-link">عرض الأسطول <i class="ph ph-arrow-left"></i></a>
+      </div>
+      <div class="fleet-grid fx-seller-dash-fleet-grid">
+        <?php foreach (array_slice($fleet_auctions, 0, 4) as $idx => $car):
+          $fx_seller_card_compact = true;
+          include 'includes/fx-seller-fleet-card.inc.php';
+        endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
     <div class="activity-card fx-seller-card">
       <h3 class="activity-title"><i class="ph-fill ph-clock-counter-clockwise fx-icon-primary"></i> آخر النشاطات</h3>
       <ul class="activity-list">
@@ -721,86 +736,10 @@ include 'includes/page-hero.inc.php';
     </div>
     <?php else: ?>
     <div class="fleet-grid">
-      <?php
-      $statuses = ['active' => 'نشط', 'pending' => 'قيد المراجعة', 'ended' => 'منتهي', 'sold' => 'مباع'];
-      $status_classes = ['active' => 'status-active', 'pending' => 'status-pending', 'ended' => 'status-ended', 'sold' => 'status-sold'];
-      foreach (array_slice($fleet_auctions, 0, 12) as $idx => $car):
-        $title = $car['title'] ?? ($car['make'] . ' ' . $car['model'] . ' ' . $car['year']);
-        $vid = intval($car['vehicle_id'] ?? $car['id'] ?? $idx);
-        $make_label = trim(($car['make'] ?? '') . ' ' . ($car['model'] ?? ''));
-        $img_type = (($car['type'] ?? '') === 'instant') ? 'instant' : 'live';
-        $img = fleetx_card_image($car['image_url'] ?? '', $vid, $img_type, $make_label);
-        $fallback_img = fleetx_card_image('', $vid, $img_type, $make_label);
-        $fallback_img2 = fleetx_card_image('', $vid + 5, $img_type, $make_label);
-        $img_onerror = "var i=this;if(!i.dataset.fbx){i.dataset.fbx='1';i.src='" . htmlspecialchars($fallback_img, ENT_QUOTES) . "'}"
-            . "else if(i.dataset.fbx==='1'){i.dataset.fbx='2';i.src='" . htmlspecialchars($fallback_img2, ENT_QUOTES) . "'}"
-            . "else{i.onerror=null}";
-        $bids = $car['bid_count'] ?? 0;
-        $price = $car['current_price'] ?? $car['starting_price'] ?? 0;
-        $views = 0; // Live data
-        $vst = $car['v_status'] ?? 'pending';
-        $vstatus_labels = [
-          'pending' => 'مسودة', 'awaiting_admin' => 'بانتظار الإدارة',
-          'inspection_scheduled' => 'مجدول للفحص', 'awaiting_seller_approval' => 'بانتظار موافقتك',
-          'approved' => 'معتمدة', 'in_auction' => 'في المزاد', 'sold' => 'مباعة',
-          'withdrawn' => 'مسحوبة', 'suspended' => 'موقوفة',
-        ];
-        $st = !empty($car['id']) ? ($car['status'] ?? 'active') : $vst;
-        $st_class = $status_classes[$st] ?? ($vst === 'approved' ? 'status-active' : 'status-pending');
-        $st_label = $statuses[$st] ?? ($vstatus_labels[$vst] ?? 'قيد المراجعة');
-      ?>
-      <div class="fleet-card">
-        <div class="fleet-card-img">
-          <img
-            src="<?= htmlspecialchars($img) ?>"
-            alt="<?= sanitize($title) ?>"
-            loading="lazy"
-            decoding="async"
-            onerror="<?= $img_onerror ?>"
-          >
-          <span class="fleet-card-status <?= $st_class ?>"><?= $st_label ?></span>
-        </div>
-        <div class="fleet-card-body">
-          <div class="fleet-card-title"><?= sanitize($title) ?></div>
-          <div class="fleet-card-meta">
-            <span><i class="ph ph-map-pin" style="font-size:14px;"></i> <?= sanitize($car['city'] ?? 'الرياض') ?></span>
-            <span><i class="ph ph-gauge" style="font-size:14px;"></i> <?= number_format($car['mileage'] ?? 0) ?> كم</span>
-            <span><i class="ph ph-calendar" style="font-size:14px;"></i> <?= $car['year'] ?? '2023' ?></span>
-          </div>
-          <?php if (!empty($car['autodata_price_min']) && !empty($car['autodata_price_max'])): ?>
-          <div class="fleet-card-meta" style="color:#0ea5e9; font-weight:700;">
-            <span><i class="ph ph-chart-line-up" style="font-size:14px;"></i> تقييم AutoData: <?= number_format($car['autodata_price_min']) ?> - <?= number_format($car['autodata_price_max']) ?> ر.س</span>
-          </div>
-          <?php endif; ?>
-          <div class="fleet-card-stats">
-            <div class="fleet-card-price"><?= number_format($price) ?> <span class="cur">ر.س</span></div>
-            <div class="fleet-card-bids">
-              <i class="ph ph-gavel" style="font-size:14px; color:var(--text-muted);"></i> <?= $bids ?> مزايدة
-              <span style="margin:0 6px; color:var(--border-light);">|</span>
-              <i class="ph ph-eye" style="font-size:14px; color:var(--text-muted);"></i> <?= $views ?>
-            </div>
-          </div>
-          <div class="fleet-card-actions" style="flex-wrap: wrap;">
-            <?php if (in_array($car['v_status'] ?? '', ['pending', 'withdrawn', 'suspended'], true)): ?>
-            <a href="?section=fleet&push_inspection=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:#f59e0b; color:#fff; width:100%; margin-bottom:8px;"><i class="ph ph-magnifying-glass" style="font-size:14px;"></i> إرسال للفحص</a>
-            <?php endif; ?>
-            <?php if (($car['v_status'] ?? '') === 'suspended'): ?>
-            <a href="?section=fleet&unsuspend=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:#10b981; color:#fff; width:100%; margin-bottom:8px;"><i class="ph ph-play"></i> إعادة التفعيل</a>
-            <?php elseif (!in_array($car['v_status'] ?? '', ['sold','in_auction'], true)): ?>
-            <a href="?section=fleet&suspend=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn fleet-btn-edit" style="width:100%; margin-bottom:8px;" onclick="return confirm('إيقاف المركبة مؤقتاً؟')"><i class="ph ph-pause"></i> إيقاف مؤقت</a>
-            <?php endif; ?>
-            <?php if (($car['v_status'] ?? '') === 'approved' && empty($car['id'])): ?>
-            <a href="?section=fleet&publish_auction=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn" style="background:var(--primary); color:#000; width:100%; margin-bottom:8px;"><i class="ph ph-gavel" style="font-size:14px;"></i> نشر في المزاد</a>
-            <?php endif; ?>
-            <?php if (!empty($car['id'])): ?>
-            <a href="/auction-room.php?id=<?= (int)$car['id'] ?>" class="fleet-btn fleet-btn-view"><i class="ph ph-eye" style="font-size:14px; color:inherit;"></i> عرض</a>
-            <?php endif; ?>
-            <a href="/add-auction.php?vehicle_id=<?= (int)$car['vehicle_id'] ?>" class="fleet-btn fleet-btn-edit"><i class="ph ph-pencil-simple" style="font-size:14px; color:inherit;"></i> تعديل</a>
-            <button class="fleet-btn fleet-btn-delete" onclick="if(confirm('هل أنت متأكد من حذف هذه المركبة؟')) window.location.href='?section=fleet&delete=<?= (int)$car['vehicle_id'] ?>'"><i class="ph ph-trash" style="font-size:16px; color:inherit;"></i></button>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
+      <?php foreach (array_slice($fleet_auctions, 0, 12) as $idx => $car):
+        $fx_seller_card_compact = false;
+        include 'includes/fx-seller-fleet-card.inc.php';
+      endforeach; ?>
     </div>
     <?php endif; ?>
 

@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '87');
+define('FLEETX_CSS_VER', '88');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -347,6 +347,14 @@ function fleetx_img_onerror_handler(int $seed, string $type = 'live', string $ma
     return "var i=this;if(!i.dataset.fbx){i.dataset.fbx='1';i.src='" . htmlspecialchars($fallback_img, ENT_QUOTES) . "'}"
         . "else if(i.dataset.fbx==='1'){i.dataset.fbx='2';i.src='" . htmlspecialchars($fallback_img2, ENT_QUOTES) . "'}"
         . "else{i.onerror=null}";
+}
+
+/** Normalized vehicle thumb src + onerror pair for dashboards and cards */
+function fleetx_vehicle_thumb(?string $url, int $seed, string $type = 'live', string $make = ''): array {
+    return [
+        'src' => fleetx_card_image($url, $seed, $type, $make),
+        'onerror' => fleetx_img_onerror_handler($seed, $type, $make),
+    ];
 }
 
 function getStatusLabel($status) {

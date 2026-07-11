@@ -53,6 +53,7 @@ $files = @(
     'includes/header.php',
     'includes/page-hero.inc.php',
     'includes/fx-auction-card.inc.php',
+    'includes/fx-seller-fleet-card.inc.php',
     'includes/footer.php',
     'includes/toast-snippet.inc.php',
     'includes/dashboard/empty-state.inc.php',
