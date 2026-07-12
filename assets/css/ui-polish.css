@@ -836,7 +836,8 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-page-body--overlap {
-    margin-top: -28px;
+    margin-top: 0 !important;
+    padding-top: 22px !important;
   }
 
   .fx-page-shell--search .fx-search-page {
@@ -844,7 +845,8 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-search-layout {
-    gap: 14px;
+    gap: 16px;
+    margin-top: 4px;
   }
 
   .fx-auctions-mobile-type {
@@ -852,7 +854,7 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-page-hero {
-    padding: 88px 0 32px;
+    padding: 88px 0 60px !important;
     border-radius: 0 0 24px 24px;
   }
 
@@ -2269,5 +2271,20 @@ body.fx-home.fx-page-shell .fx-page-body:not(.fx-page-body--overlap):not(.fx-pag
   body.fx-home.fx-page-shell .fx-page-body--overlap-lg {
     margin-top: 0 !important;
     padding-top: 22px !important;
+  }
+}
+
+/* Auctions/search — desktop rhythm below hero */
+@media (min-width: 992px) {
+  body.fx-home.fx-page-shell--search .fx-page-body--overlap {
+    padding-top: 32px !important;
+  }
+
+  body.fx-home.fx-page-shell--search .fx-search-layout {
+    margin-top: 8px;
+  }
+
+  body.fx-home.fx-page-shell--search .fx-search-toolbar {
+    margin-bottom: 20px;
   }
 }
