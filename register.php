@@ -157,6 +157,7 @@ $auth_revenue_display = $auth_revenue >= 1000000
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body class="fx-auth-body fx-auth-body--light fx-register-body">
+<?php include 'includes/splash.inc.php'; ?>
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">

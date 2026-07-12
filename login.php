@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php endif; ?>
 </head>
 <body class="fx-auth-body fx-auth-body--light">
+<?php include 'includes/splash.inc.php'; ?>
 
 <header class="fx-auth-topbar">
   <a href="/index.php" class="fx-auth-topbar__logo">

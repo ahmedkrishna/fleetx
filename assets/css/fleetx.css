@@ -13,6 +13,7 @@
 /* homepage polish loaded via home-live.css on index only */
 @import url('subpage-polish.css?v=5');
 @import url('site-polish.css?v=18');
+@import url('splash.css?v=100');
 
 /* Phosphor Icons Base */
 .ph {

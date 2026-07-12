@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '99');
+define('FLEETX_CSS_VER', '100');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -102,6 +102,18 @@ function fleetx_user_is_active(?array $user): bool {
 
 function fleetx_css_href(): string {
     return '/assets/css/fleetx.css?v=' . FLEETX_CSS_VER;
+}
+
+/** Show loading splash on public pages (skip admin/API/cron). */
+function fleetx_show_splash(): bool {
+    if (php_sapi_name() === 'cli') return false;
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $script = basename($_SERVER['PHP_SELF'] ?? '');
+    $dir = basename(dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+    if ($dir === 'admin' || $dir === 'api' || $dir === 'cron' || $dir === 'tests') return false;
+    if (str_contains($uri, '/admin/') || str_contains($uri, '/api/')) return false;
+    $skip = ['payment-return.php', 'hotfix.php', 'migrate.php', 'migrate_requirements.php', 'seed.php'];
+    return !in_array($script, $skip, true);
 }
 
 function fleetx_js_href(): string {

@@ -1,5 +1,6 @@
 <?php
 // includes/navbar.php - FleetX Shared Navbar
+include_once __DIR__ . '/splash.inc.php';
 $current_page = basename($_SERVER['PHP_SELF']);
 $is_seller = (getUserRole() === 'seller');
 $is_buyer  = (getUserRole() === 'buyer');
