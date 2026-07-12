@@ -118,10 +118,11 @@ $total_pages = ceil($total_items / $limit);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
   <title>المزادات والمركبات المتاحة | FleetX</title>
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-home fx-page-shell fx-page-shell--search">
+<body class="fx-home fx-page-shell fx-page-shell--search" data-fx-build="<?= FLEETX_CSS_VER ?>">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -152,11 +153,11 @@ include 'includes/page-hero.inc.php';
     <div class="fx-filter-panel__head">
       <h3><i class="ph-fill ph-funnel"></i> فلاتر البحث</h3>
     </div>
-    <div class="mobile-sidebar-toggle" onclick="this.closest('.filter-sidebar').classList.toggle('expanded')">
+    <button type="button" class="mobile-sidebar-toggle" id="fxFilterToggle" aria-expanded="false" aria-controls="fxFilterPanel">
         <span>خيارات البحث المتقدم</span>
-        <i class="ph-fill ph-caret-down shine-arrow"></i>
-    </div>
-    <div class="filter-sidebar-content">
+        <i class="ph-fill ph-caret-down shine-arrow" aria-hidden="true"></i>
+    </button>
+    <div class="filter-sidebar-content" id="fxFilterPanel">
       <form action="auctions.php" method="GET" id="filter-form">
         <input type="hidden" name="type" value="<?= $type_filter ?>">
         
@@ -311,6 +312,14 @@ include 'includes/page-hero.inc.php';
     </div></aside>
     
     <main class="fx-search-main">
+      <div class="fx-auctions-mobile-type" role="navigation" aria-label="نوع العرض">
+        <a href="auctions.php?type=live" class="fx-auctions-mobile-type__link<?= $type_filter === 'live' ? ' is-active' : '' ?>">
+          <i class="ph-fill ph-broadcast"></i> المزادات الحية
+        </a>
+        <a href="auctions.php?type=instant" class="fx-auctions-mobile-type__link<?= $type_filter === 'instant' ? ' is-active' : '' ?>">
+          <i class="ph-fill ph-lightning"></i> الشراء الفوري
+        </a>
+      </div>
       <div class="fx-toolbar fx-search-toolbar">
         <div class="fx-pills filter-pills-group">
             <a href="auctions.php?type=<?= $type_filter ?>" class="fx-pill fx-pill-link active">
@@ -395,6 +404,28 @@ include 'includes/page-hero.inc.php';
 </div>
 
 <?php include 'includes/footer.php'; ?>
+<script>
+(function () {
+  var toggle = document.getElementById('fxFilterToggle');
+  var panel = document.getElementById('fxFilterPanel');
+  var sidebar = document.querySelector('.fx-filter-panel.filter-sidebar');
+  if (!toggle || !sidebar) return;
+  function setExpanded(open) {
+    sidebar.classList.toggle('expanded', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  toggle.addEventListener('click', function () {
+    setExpanded(!sidebar.classList.contains('expanded'));
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sidebar.classList.contains('expanded')) setExpanded(false);
+  });
+  if (panel) {
+    var form = panel.querySelector('form');
+    if (form) form.addEventListener('submit', function () { setExpanded(false); });
+  }
+})();
+</script>
 <?php if (isLoggedIn()): ?>
 <script>
 async function loadSavedSearches() {

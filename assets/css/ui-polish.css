@@ -792,3 +792,205 @@ body.admin-body .fx-dash-mobile-profile--admin {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Auctions / search page — mobile polish
+   ========================================================================== */
+
+.fx-auctions-mobile-type {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.fx-auctions-mobile-type__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fx-auctions-mobile-type__link.is-active {
+  background: var(--primary-gradient);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 18px rgba(27, 201, 118, 0.28);
+}
+.fx-auctions-mobile-type__link.is-active .ph {
+  color: #fff;
+}
+
+@media (max-width: 991px) {
+  .fx-page-shell--search {
+    overflow-x: hidden;
+  }
+
+  .fx-page-shell--search .fx-page-body--overlap {
+    margin-top: -28px;
+  }
+
+  .fx-page-shell--search .fx-search-page {
+    padding-bottom: 48px;
+  }
+
+  .fx-page-shell--search .fx-search-layout {
+    gap: 14px;
+  }
+
+  .fx-auctions-mobile-type {
+    display: grid;
+  }
+
+  .fx-page-shell--search .fx-page-hero {
+    padding: 88px 0 32px;
+    border-radius: 0 0 24px 24px;
+  }
+
+  .fx-page-shell--search .fx-page-hero__title {
+    font-size: clamp(22px, 6vw, 28px);
+    line-height: 1.35;
+  }
+
+  .fx-page-shell--search .fx-page-hero__desc {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .fx-page-shell--search .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-top: 12px;
+  }
+
+  .fx-page-shell--search .fx-page-hero__meta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--search .fx-page-hero__chip {
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .fx-page-shell--search .fx-filter-panel.filter-sidebar {
+    margin-bottom: 0;
+  }
+
+  .fx-page-shell--search .fx-filter-panel .mobile-sidebar-toggle {
+    min-height: 48px;
+    width: 100%;
+    font-size: 14px;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .fx-page-shell--search .fx-filter-panel .filter-sidebar-content {
+    max-height: min(72vh, 540px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .fx-page-shell--search .fx-filter-range {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .fx-page-shell--search .fx-filter-range-sep {
+    display: none;
+  }
+
+  .fx-page-shell--search .fx-filter-submit,
+  .fx-page-shell--search .fx-filter-reset {
+    min-height: 44px;
+  }
+
+  .fx-page-shell--search .fx-search-toolbar {
+    padding: 12px 14px;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .fx-page-shell--search .fx-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin: 0 -2px;
+  }
+
+  .fx-page-shell--search .fx-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--search .fx-pill,
+  .fx-page-shell--search .fx-pill-link {
+    flex-shrink: 0;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .fx-page-shell--search .fx-search-sort {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .fx-page-shell--search .fx-search-sort-select {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .fx-page-shell--search .fx-listing-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fx-page-shell--search .fx-listing-grid .auction-card {
+    max-width: 100%;
+  }
+
+  .fx-page-shell--search .fx-pagination {
+    gap: 8px;
+    margin-top: 24px;
+    padding-bottom: 8px;
+  }
+
+  .fx-page-shell--search .fx-pagination__link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .fx-page-shell--search .fx-empty-state--search {
+    padding: 32px 18px;
+  }
+
+  .fx-page-shell--search .fx-empty-state--search .btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .fx-auctions-mobile-type {
+    grid-template-columns: 1fr;
+  }
+}
