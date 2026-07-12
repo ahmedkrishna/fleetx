@@ -4949,3 +4949,108 @@ body.fx-home-index .fx-home-contact .fx-form-submit {
 body.fx-home-index .whatsapp-float {
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
 }
+
+/* ==========================================================================
+   Hero bid signs — gavel hand on outer edge toward section sides
+   ========================================================================== */
+
+body.fx-home-index .fx-hero-bid-signs {
+  overflow: visible !important;
+}
+
+.fx-bid-sign__gavel {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-gradient, linear-gradient(135deg, #1bc976, #0ea5e9));
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(27, 201, 118, 0.38);
+  z-index: 2;
+}
+
+.fx-bid-sign__gavel i {
+  color: #fff !important;
+  font-size: 20px;
+}
+
+.fx-bid-sign--left,
+.fx-bid-sign--right {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+.fx-bid-sign--left.is-visible {
+  left: 0 !important;
+}
+
+.fx-bid-sign--right.is-visible {
+  right: 0 !important;
+}
+
+/* Stem connects board inward → gavel on outer edge */
+.fx-bid-sign__stem {
+  width: 44px !important;
+  height: 6px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  opacity: 0.92 !important;
+  flex-shrink: 0;
+}
+
+.fx-bid-sign--left .fx-bid-sign__stem {
+  background: linear-gradient(90deg, #0ea5e9, var(--primary)) !important;
+}
+
+.fx-bid-sign--right .fx-bid-sign__stem {
+  background: linear-gradient(90deg, var(--primary), #0ea5e9) !important;
+}
+
+.fx-bid-sign--left .fx-bid-sign__gavel {
+  margin-inline-start: -10px;
+  transform: translateX(-6px);
+}
+
+.fx-bid-sign--right .fx-bid-sign__gavel {
+  margin-inline-end: -10px;
+  transform: translateX(6px);
+}
+
+.fx-bid-sign__board {
+  margin-inline: 4px;
+}
+
+@media (max-width: 768px) {
+  .fx-bid-sign--left.is-visible {
+    left: 0 !important;
+  }
+
+  .fx-bid-sign--right.is-visible {
+    right: 0 !important;
+  }
+
+  .fx-bid-sign__gavel {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .fx-bid-sign--left .fx-bid-sign__gavel {
+    margin-inline-start: -8px;
+    transform: translateX(-4px);
+  }
+
+  .fx-bid-sign--right .fx-bid-sign__gavel {
+    margin-inline-end: -8px;
+    transform: translateX(4px);
+  }
+
+  .fx-bid-sign__stem {
+    width: 28px !important;
+  }
+}

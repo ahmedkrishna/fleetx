@@ -642,7 +642,7 @@ function initHeroBiddingSigns() {
       '</div>';
     const gavel = '<div class="fx-bid-sign__gavel"><i class="ph-fill ph-gavel"></i></div>';
     const stem = '<div class="fx-bid-sign__stem"></div>';
-    sign.innerHTML = isLeft ? (stem + gavel + board) : (board + gavel + stem);
+    sign.innerHTML = isLeft ? (gavel + stem + board) : (board + stem + gavel);
     container.appendChild(sign);
     requestAnimationFrame(() => sign.classList.add('is-visible'));
     setTimeout(() => {
