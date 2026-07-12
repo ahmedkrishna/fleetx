@@ -141,6 +141,7 @@ if ($db_connected) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
   <title>لوحة المشتري | FleetX</title>
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
   </head>
@@ -191,7 +192,16 @@ include 'includes/page-hero.inc.php';
 
   <!-- ── MAIN CONTENT ─────────────────────────────────────── -->
   <main class="fx-buyer-main">
-    <div class="fx-dash-mobile-nav">
+    <div class="fx-dash-mobile-profile fx-dash-mobile-profile--buyer">
+      <div class="fx-dash-mobile-profile__avatar"><i class="ph-fill ph-user"></i></div>
+      <div>
+        <div class="fx-dash-mobile-profile__name"><?= sanitize($user_name) ?></div>
+        <div class="fx-dash-mobile-profile__meta">
+          مشتري معتمد · <?= number_format((float)$buyer_wallet_hero) ?> ر.س محفظة
+        </div>
+      </div>
+    </div>
+    <div class="fx-dash-mobile-nav fx-buyer-mobile-nav">
       <select onchange="if(this.value) window.location.href=this.value" aria-label="قائمة لوحة المشتري">
         <option value="">انتقل إلى قسم...</option>
         <option value="/companies.php">دليل الشركات</option>
@@ -303,6 +313,21 @@ include 'includes/page-hero.inc.php';
           $wallet_bal = $_SESSION['wallet_balance'] ?? 15000;
       }
     ?>
+
+      <div class="fx-buyer-actions-top">
+        <a href="/auctions.php" class="btn-action-top btn-action-top--live">
+          <i class="ph ph-gavel"></i> تصفح المزادات
+        </a>
+        <a href="?section=bids" class="btn-action-top">
+          <i class="ph ph-hash"></i> مزايداتي
+        </a>
+        <a href="?section=wallet" class="btn-action-top">
+          <i class="ph ph-wallet"></i> المحفظة
+        </a>
+        <a href="?section=favorites" class="btn-action-top">
+          <i class="ph ph-heart"></i> المفضلة
+        </a>
+      </div>
 
       <!-- Stat Cards -->
       <div class="stat-grid fx-buyer-stats">

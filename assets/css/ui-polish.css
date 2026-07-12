@@ -614,3 +614,181 @@ body.admin-body .fx-dash-mobile-profile--admin {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Buyer dashboard — mobile polish
+   ========================================================================== */
+
+.fx-dash-mobile-profile--buyer .fx-dash-mobile-profile__avatar {
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+}
+.fx-buyer-actions-top {
+  display: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 991px) {
+  .fx-page-shell--buyer .fx-page-body--overlap { margin-top: -36px; }
+  .fx-page-shell--buyer .fx-buyer-page { padding-bottom: 48px; }
+  .fx-page-shell--buyer .fx-buyer-main { gap: 16px; }
+
+  .fx-page-shell--buyer .fx-page-hero--buyer .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .fx-page-shell--buyer .fx-page-hero--buyer .fx-page-hero__meta::-webkit-scrollbar { display: none; }
+  .fx-page-shell--buyer .fx-page-hero--buyer .fx-page-hero__chip { flex-shrink: 0; }
+  .fx-page-shell--buyer .fx-page-hero--buyer .fx-page-hero__actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .fx-page-shell--buyer .fx-page-hero--buyer .fx-page-hero__actions .btn {
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .fx-page-shell--buyer .fx-buyer-actions-top {
+    display: grid;
+  }
+  .fx-page-shell--buyer .fx-buyer-actions-top .btn-action-top {
+    justify-content: center;
+    font-size: 12px;
+    padding: 10px 8px;
+    min-height: 44px;
+    text-align: center;
+  }
+
+  .fx-page-shell--buyer .buyer-header-bar.fx-buyer-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+  .fx-page-shell--buyer .buyer-title { font-size: 17px; }
+  .fx-page-shell--buyer .buyer-header-bar .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .fx-page-shell--buyer .stat-grid.fx-buyer-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .fx-page-shell--buyer .stat-card { padding: 16px; }
+  .fx-page-shell--buyer .stat-value { font-size: 22px; }
+  .fx-page-shell--buyer .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .fx-page-shell--buyer .fx-buyer-status-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fx-page-shell--buyer .fx-buyer-sanad-chip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .fx-page-shell--buyer .activity-section,
+  .fx-page-shell--buyer .fx-buyer-chart-card,
+  .fx-page-shell--buyer .transactions-section,
+  .fx-page-shell--buyer .settings-card {
+    padding: 16px;
+  }
+  .fx-page-shell--buyer .activity-header,
+  .fx-page-shell--buyer .transactions-header {
+    font-size: 16px;
+  }
+
+  .fx-page-shell--buyer .fx-dash-card-grid,
+  .fx-page-shell--buyer .fav-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .fx-page-shell--buyer .bid-card-img { height: 180px; }
+  .fx-page-shell--buyer .bid-card-body { padding: 16px; }
+
+  .fx-page-shell--buyer .wallet-balance-card,
+  .fx-page-shell--buyer .wallet-verify-card {
+    padding: 20px;
+    border-radius: 18px;
+  }
+  .fx-page-shell--buyer .wallet-balance-amount { font-size: 32px; }
+  .fx-page-shell--buyer .fx-wallet-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .fx-page-shell--buyer .fx-wallet-card-actions .wallet-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .fx-page-shell--buyer .fx-tx-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .fx-page-shell--buyer .fx-tx-header .btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .fx-page-shell--buyer .fx-tx-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .fx-page-shell--buyer .fx-tx-item__amount {
+    width: 100%;
+    text-align: left;
+    padding-inline-start: 52px;
+  }
+
+  .fx-page-shell--buyer .plans-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .fx-page-shell--buyer .plan-card { padding: 18px !important; }
+
+  .fx-page-shell--buyer .settings-card > div[style*="display:flex"] {
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: right;
+  }
+  .fx-page-shell--buyer .settings-submit {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .fx-page-shell--buyer .topup-modal {
+    max-width: calc(100vw - 24px);
+    margin: 12px;
+    padding: 20px;
+  }
+  .fx-page-shell--buyer .topup-presets {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .fx-page-shell--buyer .stat-grid.fx-buyer-stats,
+  .fx-page-shell--buyer .fx-buyer-actions-top {
+    grid-template-columns: 1fr;
+  }
+  .fx-page-shell--buyer .topup-presets {
+    grid-template-columns: 1fr;
+  }
+}
