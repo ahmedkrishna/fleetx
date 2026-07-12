@@ -138,7 +138,7 @@ include 'includes/page-hero.inc.php';
 
     <!-- Left Panel: Bidding Panel (Order 2) -->
 
-<div class="pbb-board fx-live-bidding-panel">
+<div class="pbb-board fx-live-bidding-panel" id="fx-bid-panel">
     
     <!-- Top Header -->
     <div class="pbb-top">
@@ -454,6 +454,19 @@ function syncMobileBidBar() {
   const m = document.getElementById('mobile-bid-price');
   if (m) m.textContent = currentPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' SAR';
 }
+function scrollToBidPanel() {
+  const panel = document.getElementById('fx-bid-panel');
+  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function mobileBidNow() {
+  scrollToBidPanel();
+  addBid(minIncrement);
+}
+function mobileOpenBidInput() {
+  scrollToBidPanel();
+  const input = document.getElementById('custom-bid-input');
+  if (input) setTimeout(() => input.focus(), 400);
+}
 function changePremiumImage(thumbEl, src) {
   document.getElementById('main-gallery-img').src = src;
   document.querySelectorAll('.mpg-thumb').forEach(t => t.classList.remove('active'));
@@ -468,9 +481,19 @@ function changePremiumImage(thumbEl, src) {
       <small>السعر الحالي</small>
       <strong id="mobile-bid-price"><?= number_format($current_price) ?> SAR</strong>
     </div>
-    <button class="fx-mobile-bid-btn" onclick="document.getElementById('custom-bid-input')?.focus(); window.scrollTo({top:0,behavior:'smooth'}); addBid(<?= $min_increment ?>);">
-      <i class="ph-bold ph-gavel"></i> زايد الآن
+    <?php if (!$can_bid && !isLoggedIn()): ?>
+    <a href="/login.php?redirect=<?= urlencode('/auction-live.php?id=' . (int)$id) ?>" class="fx-mobile-bid-btn fx-mobile-bid-btn--login">
+      <i class="ph-bold ph-sign-in"></i> دخول للمزايدة
+    </a>
+    <?php elseif (!$can_bid): ?>
+    <button type="button" class="fx-mobile-bid-btn fx-mobile-bid-btn--secondary" onclick="scrollToBidPanel()">
+      <i class="ph-bold ph-info"></i> التفاصيل
     </button>
+    <?php else: ?>
+    <button type="button" class="fx-mobile-bid-btn" onclick="mobileBidNow()">
+      <i class="ph-bold ph-gavel"></i> زايد +<?= number_format($min_increment) ?>
+    </button>
+    <?php endif; ?>
   </div>
 </div>
 

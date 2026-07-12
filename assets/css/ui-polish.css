@@ -242,3 +242,187 @@ html {
     font-size: 13px;
   }
 }
+
+/* ==========================================================================
+   Seller dashboard — mobile polish
+   ========================================================================== */
+
+.fx-dash-mobile-profile {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+}
+.fx-dash-mobile-profile__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1bc976, #0ea5e9);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.fx-dash-mobile-profile__name {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text-dark);
+  line-height: 1.3;
+}
+.fx-dash-mobile-profile__meta {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+@media (max-width: 991px) {
+  .fx-dash-mobile-profile { display: flex; }
+
+  .fx-page-shell--seller .fx-page-body--overlap { margin-top: -36px; }
+  .fx-page-shell--seller .fx-seller-page { padding-bottom: 48px; }
+
+  .fx-page-shell--seller .seller-header-bar.fx-seller-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 14px;
+  }
+  .fx-page-shell--seller .seller-section-title {
+    font-size: 17px;
+    justify-content: flex-start;
+  }
+  .fx-page-shell--seller .fx-seller-actions-top {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+  .fx-page-shell--seller .fx-seller-actions-top .btn-action-top {
+    flex: unset;
+    justify-content: center;
+    font-size: 12px;
+    padding: 10px 8px;
+    min-height: 44px;
+    text-align: center;
+  }
+
+  .fx-page-shell--seller .stats-grid.fx-seller-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .fx-page-shell--seller .stat-card { padding: 16px; }
+  .fx-page-shell--seller .stat-card-value { font-size: 22px; }
+  .fx-page-shell--seller .stat-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .fx-page-shell--seller .fleet-grid,
+  .fx-page-shell--seller .fx-seller-dash-fleet-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .fx-page-shell--seller .activity-card.fx-seller-card,
+  .fx-page-shell--seller .seller-empty.fx-seller-card,
+  .fx-page-shell--seller .payout-table-wrap.fx-seller-card {
+    padding: 16px;
+  }
+  .fx-page-shell--seller .fx-seller-dash-fleet-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fx-page-shell--seller .activity-item {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .fx-page-shell--seller .activity-amount {
+    width: 100%;
+    text-align: left;
+    padding-inline-start: 52px;
+  }
+
+  .fx-page-shell--seller .fx-page-hero--seller .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .fx-page-shell--seller .fx-page-hero--seller .fx-page-hero__meta::-webkit-scrollbar { display: none; }
+  .fx-page-shell--seller .fx-page-hero--seller .fx-page-hero__chip { flex-shrink: 0; }
+}
+
+@media (max-width: 400px) {
+  .fx-page-shell--seller .stats-grid.fx-seller-stats { grid-template-columns: 1fr; }
+  .fx-page-shell--seller .fx-seller-actions-top { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   Auction live room — mobile polish
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .fx-page-shell--live .fx-live-room {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .fx-page-shell--live .fx-live-room > .live-gallery-panel { order: 1; }
+  .fx-page-shell--live .fx-live-room > .pbb-board,
+  .fx-page-shell--live .fx-live-room > .fx-live-bidding-panel {
+    order: 2;
+    position: static !important;
+    top: auto !important;
+  }
+  .fx-page-shell--live .fx-live-room-page {
+    padding-bottom: calc(148px + env(safe-area-inset-bottom, 0px));
+  }
+  .fx-page-shell--live .fx-page-hero--compact {
+    padding: 96px 0 40px;
+  }
+  .fx-page-shell--live .fx-page-hero--compact .fx-page-hero__actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .fx-page-shell--live .fx-page-hero--compact .fx-page-hero__actions .btn {
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .fx-page-shell--live .fx-live-card { padding: 14px; }
+  .fx-page-shell--live .mpg-main-view { border-radius: 12px; }
+  .fx-page-shell--live .pbb-history-list { max-height: 140px; }
+  .fx-page-shell--live .pbb-terms { font-size: 11px; line-height: 1.5; }
+  .fx-page-shell--live .fx-service-bundles { padding: 14px; }
+}
+
+.fx-mobile-bid-bar.is-hidden { display: none !important; }
+.fx-mobile-bid-btn--login {
+  background: var(--bg-dark) !important;
+  color: #fff !important;
+}
+.fx-mobile-bid-btn--login .ph { color: #fff; }
+.fx-mobile-bid-btn--secondary {
+  background: #fff !important;
+  color: var(--text-dark) !important;
+  border: 2px solid var(--border-light) !important;
+}
+a.fx-mobile-bid-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}

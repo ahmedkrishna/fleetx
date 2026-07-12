@@ -564,6 +564,16 @@ include 'includes/page-hero.inc.php';
 
   <!-- ── MAIN CONTENT ── -->
   <main class="fx-seller-main">
+    <div class="fx-dash-mobile-profile fx-dash-mobile-profile--seller">
+      <div class="fx-dash-mobile-profile__avatar"><i class="ph-fill ph-buildings"></i></div>
+      <div>
+        <div class="fx-dash-mobile-profile__name"><?= sanitize($company['company_name']) ?></div>
+        <div class="fx-dash-mobile-profile__meta">
+          <?= sanitize($plans[$current_plan]['name'] ?? 'الباقة المتقدمة') ?>
+          <?php if (!empty($company['is_verified'])): ?> · موثق<?php endif; ?>
+        </div>
+      </div>
+    </div>
     <div class="fx-dash-mobile-nav">
       <select onchange="if(this.value) window.location.href=this.value" aria-label="قائمة لوحة البائع">
         <option value="">انتقل إلى قسم...</option>
@@ -931,7 +941,7 @@ include 'includes/page-hero.inc.php';
       </div>
     </div>
 
-    <div class="payout-table-wrap fx-seller-card">
+    <div class="payout-table-wrap fx-seller-card fx-table-scroll">
       <div class="payout-table-header" style="display:flex; justify-content:space-between; align-items:center;">
           <span>سجل التحويلات والمعاملات</span>
           <a href="/api/export-report.php?type=seller_payouts" class="btn btn-outline btn-sm"><i class="ph ph-download-simple"></i> تصدير CSV</a>
@@ -1096,7 +1106,7 @@ include 'includes/page-hero.inc.php';
       <h1 class="seller-section-title"><i class="ph-fill ph-gavel fx-icon-primary"></i> المزايدات الواردة</h1>
       <a href="/api/export-report.php?type=seller_bids" class="btn btn-outline btn-sm"><i class="ph ph-download-simple"></i> تصدير CSV</a>
     </div>
-    <div class="payout-table-wrap fx-seller-card">
+    <div class="payout-table-wrap fx-seller-card fx-table-scroll">
       <table class="payout-table">
         <thead><tr><th>المزاد</th><th>المركبة</th><th>المزايد</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th></tr></thead>
         <tbody>
