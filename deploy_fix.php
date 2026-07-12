@@ -63,7 +63,11 @@ if ($res) {
 }
 echo "\nVehicle images backfilled: $fixed_images\n";
 
-// 5. Stats
+// 5. Refresh expired event + auction end times (hero countdowns)
+$refresh = fleetx_refresh_event_end_times($conn);
+echo "\nEvent end_time refresh: events={$refresh['events']} auctions={$refresh['auctions']}\n";
+
+// 6. Stats
 $u = $conn->query('SELECT COUNT(*) FROM users')->fetch_row()[0];
 $a = $conn->query('SELECT COUNT(*) FROM auctions')->fetch_row()[0];
 $v = $conn->query('SELECT COUNT(*) FROM vehicles')->fetch_row()[0];

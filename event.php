@@ -67,6 +67,9 @@ $hero_back_label = '← العودة لقاعة المزادات';
 $hero_eyebrow = 'حدث مزاد نشط';
 $hero_desc = sanitize($event['seller'] ?? ($event['seller_company'] ?? '')) . ' — ' . $total_vehicles . ' مركبة معروضة في هذا الحدث';
 $hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact fx-page-hero--event';
+$event_countdown_end = $db_connected
+    ? fleetx_event_countdown_end($conn, (int)$event_id, $event['end_time'] ?? null)
+    : date('Y-m-d H:i:s', time() + 86400 * 3);
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph-fill ph-buildings"></i> ' . sanitize($event['seller'] ?? ($event['seller_company'] ?? 'الوطنية للتأجير')) . '</span>
   <span class="fx-page-hero__chip"><span class="fx-live-dot"></span> مزاد نشط الآن</span>
@@ -74,7 +77,7 @@ $hero_meta_html = '
 $hero_actions_html = '
   <div class="fx-countdown-panel">
     <div class="fx-countdown-lbl">ينتهي الحدث خلال</div>
-    <div class="fx-countdown-row" data-countdown="' . htmlspecialchars($event['end_time']) . '">
+    <div class="fx-countdown-row" data-countdown="' . htmlspecialchars($event_countdown_end) . '">
       <div class="fx-countdown-unit"><div class="fx-countdown-val"><span data-unit="days">00</span></div><span class="fx-countdown-unit-lbl">أيام</span></div>
       <span class="fx-countdown-sep">:</span>
       <div class="fx-countdown-unit"><div class="fx-countdown-val"><span data-unit="hours">00</span></div><span class="fx-countdown-unit-lbl">ساعات</span></div>

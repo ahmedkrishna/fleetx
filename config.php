@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '91');
+define('FLEETX_CSS_VER', '92');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -290,6 +290,75 @@ function timeLeft($end_time) {
 
 function getTimeDiff($end_time) {
     return timeLeft($end_time);
+}
+
+/**
+ * Refresh expired auction_events.end_time from active lot end times (or +7 days fallback).
+ * Returns ['events' => int, 'auctions' => int].
+ */
+function fleetx_refresh_event_end_times(mysqli $conn): array {
+    $events_updated = 0;
+    $auctions_updated = 0;
+    $fallback = date('Y-m-d H:i:s', time() + 86400 * 7);
+
+    $conn->query("
+        UPDATE auction_events ae
+        INNER JOIN (
+            SELECT event_id, MAX(end_time) AS lot_max_end
+            FROM auctions
+            WHERE event_id IS NOT NULL
+              AND status IN ('active','live')
+              AND end_time IS NOT NULL
+            GROUP BY event_id
+        ) lots ON lots.event_id = ae.id
+        SET ae.end_time = lots.lot_max_end,
+            ae.status = 'active'
+        WHERE ae.status IN ('active','upcoming')
+          AND (ae.end_time IS NULL OR ae.end_time < NOW() OR ae.end_time < lots.lot_max_end)
+    ");
+    $events_updated += (int)$conn->affected_rows;
+
+    $conn->query("
+        UPDATE auction_events
+        SET end_time = '$fallback', status = 'active'
+        WHERE status IN ('active','upcoming')
+          AND (end_time IS NULL OR end_time < NOW())
+    ");
+    $events_updated += (int)$conn->affected_rows;
+
+    $conn->query("
+        UPDATE auctions
+        SET status = 'active', end_time = '$fallback'
+        WHERE status IN ('active','live')
+          AND (end_time IS NULL OR end_time < NOW())
+    ");
+    $auctions_updated += (int)$conn->affected_rows;
+
+    return ['events' => $events_updated, 'auctions' => $auctions_updated, 'fallback' => $fallback];
+}
+
+/** Effective countdown end for an event (event row vs latest active lot). */
+function fleetx_event_countdown_end(mysqli $conn, int $event_id, ?string $event_end_time): string {
+    $best = trim((string)$event_end_time);
+    if ($event_id > 0) {
+        $stmt = $conn->prepare("
+            SELECT MAX(end_time) FROM auctions
+            WHERE event_id = ? AND status IN ('active','live') AND end_time IS NOT NULL
+        ");
+        if ($stmt) {
+            $stmt->bind_param('i', $event_id);
+            $stmt->execute();
+            $lot_max = $stmt->get_result()->fetch_row()[0] ?? null;
+            $stmt->close();
+            if ($lot_max && (!$best || strtotime($lot_max) > strtotime($best))) {
+                $best = $lot_max;
+            }
+        }
+    }
+    if ($best === '' || strtotime($best) <= time()) {
+        $best = date('Y-m-d H:i:s', time() + 86400 * 7);
+    }
+    return $best;
 }
 
 /** Normalize / validate a vehicle image URL from DB or form */

@@ -94,6 +94,7 @@ $files = @(
     'vehicle-details.php',
     'inspector.php',
     'event.php',
+    'extend_auctions.php',
     'about.php',
     'checkout.php',
     'payment-gateway.php',
