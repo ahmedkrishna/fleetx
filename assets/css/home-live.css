@@ -5054,3 +5054,79 @@ body.fx-home-index .fx-hero-bid-signs {
     width: 28px !important;
   }
 }
+
+/* ==========================================================================
+   Hero content — top 40% of section (above lower 60%)
+   ========================================================================== */
+
+body.fx-home-index .fx-hero-section--fleet1 {
+  --fx-hero-content-offset: calc(72px + env(safe-area-inset-top, 0px) + 12px);
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 100svh !important;
+  height: 100svh !important;
+  padding-top: var(--fx-hero-content-offset) !important;
+  padding-bottom: 24px !important;
+  box-sizing: border-box;
+}
+
+body.fx-home-index .fx-hero-content--fleet1 {
+  transform: none !important;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(40% - var(--fx-hero-content-offset));
+  overflow: hidden;
+  margin: 0 !important;
+  padding-inline: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-section--fleet1 {
+    --fx-hero-content-offset: calc(56px + env(safe-area-inset-top, 0px) + 8px);
+    padding-top: var(--fx-hero-content-offset) !important;
+    padding-bottom: 20px !important;
+  }
+
+  body.fx-home-index .fx-hero-content--fleet1 {
+    transform: none !important;
+    max-height: calc(40% - var(--fx-hero-content-offset));
+    gap: 8px;
+  }
+
+  body.fx-home-index .fx-hero-title--fleet1 {
+    font-size: clamp(24px, 6.5vw, 32px) !important;
+    line-height: 1.15 !important;
+  }
+
+  body.fx-home-index .fx-hero-subtitle--fleet1 {
+    font-size: 12px !important;
+    min-height: 28px;
+    margin-bottom: 0 !important;
+  }
+
+  body.fx-home-index .fx-hero-cta-row {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  body.fx-home-index .fx-hero-cta-btn {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  body.fx-home-index .fx-hero-content--fleet1 {
+    transform: none !important;
+  }
+}
