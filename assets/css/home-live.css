@@ -4042,10 +4042,11 @@ body.fx-home-index .fx-auctions-shell .fx-tab-footer {
    Phase 44 — coordinated homepage + nav + subpage polish
    ========================================================================== */
 
-/* Hero — bottom-right corner rounded only */
+/* Hero — both bottom corners rounded */
 body.fx-home-index .fx-hero-wrap--fleet1,
 body.fx-home-index .fx-hero-wrapper--fleet1 {
-  border-radius: 0 0 64px 0 !important;
+  border-radius: 0 0 64px 64px !important;
+  overflow: hidden !important;
 }
 
 /* Navbar — gradient underline only on hover (no stroke box) */
@@ -5128,5 +5129,21 @@ body.fx-home-index .fx-hero-content--fleet1 {
 @media (max-width: 400px) {
   body.fx-home-index .fx-hero-content--fleet1 {
     transform: none !important;
+  }
+}
+
+/* Hero shell — enforce rounded bottom-left + bottom-right corners */
+body.fx-home-index .fx-hero-wrap--fleet1,
+body.fx-home-index .fx-hero-wrapper--fleet1,
+body.fx-home-index .fx-hero-bg-stage {
+  border-radius: 0 0 64px 64px !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-hero-wrap--fleet1,
+  body.fx-home-index .fx-hero-wrapper--fleet1,
+  body.fx-home-index .fx-hero-bg-stage {
+    border-radius: 0 0 40px 40px !important;
   }
 }
