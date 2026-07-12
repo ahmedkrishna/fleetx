@@ -103,7 +103,9 @@ if (empty($hero_bid_signs)) {
     body.fx-home-index .fx-home-quick-stats,
     body.fx-home-index .fx-home-tabs-link,
     body.fx-home-index .auctions-tabs-wrapper { display: none !important; }
-    body.fx-home-index .fx-auctions-shell { display: block !important; }
+    body.fx-home-index .fx-auctions-panel { display: block !important; }
+    body.fx-home-index .fx-auctions-shell,
+    body.fx-home-index .fx-auction-type-toggle { display: none !important; }
     body.fx-home-index .fx-home-auctions-block { display: none !important; }
     body.fx-home-index .fx-home-stats-section { background: #060c16 !important; position: relative; overflow: hidden; }
     body.fx-home-index .fx-stats-video-bg { position: absolute; inset: 0; z-index: 0; }
@@ -212,17 +214,14 @@ if (empty($hero_bid_signs)) {
       <p class="section-subtitle">تصفح مزادات السيارات والمبيعات الفورية المدرجة في المنصة — بيانات حية من قاعدة المنصة.</p>
     </div>
 
-    <div class="fx-auctions-shell">
-      <div class="fx-auction-type-toggle" role="tablist" aria-label="نوع العرض">
-        <button type="button" role="tab" class="fx-auction-type-toggle__label is-active" data-tab="live" aria-selected="true" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
-        <button type="button" class="fx-auction-type-toggle__switch" id="auctionTypeSwitch" aria-pressed="false" aria-label="التبديل بين المزادات الحية والشراء الفوري" onclick="toggleAuctionType(this)">
-          <span class="fx-auction-type-toggle__knob"></span>
-        </button>
-        <button type="button" role="tab" class="fx-auction-type-toggle__label" data-tab="instant" aria-selected="false" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
+    <div class="fx-auctions-panel">
+      <div class="fx-auctions-panel__tabs auctions-tabs fx-home-tabs">
+        <button type="button" class="auctions-tab-btn active" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
+        <button type="button" class="auctions-tab-btn" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
       </div>
 
-      <div id="tab-content-live" class="auctions-tab-content fx-auctions-tab-content active">
-      <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
+      <div id="tab-content-live" class="auctions-tab-content active">
+      <div class="swiper auctions-swiper live-auctions-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
         <div class="swiper-wrapper">
         <?php
           $status_cycle = ['active', 'upcoming', 'ended'];
@@ -285,8 +284,8 @@ if (empty($hero_bid_signs)) {
       </div>
     </div>
 
-    <div id="tab-content-instant" class="auctions-tab-content fx-auctions-tab-content">
-      <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--featured" dir="ltr">
+    <div id="tab-content-instant" class="auctions-tab-content">
+      <div class="swiper auctions-swiper instant-buy-swiper auctions-swiper--padded fx-auctions-swiper--marquee" dir="ltr">
         <div class="swiper-wrapper">
         <?php
           $instant_cards = array_slice($instant_cars, 0, 3);
@@ -347,37 +346,18 @@ if (empty($hero_bid_signs)) {
         <a href="/auctions.php?type=instant" class="btn btn-outline-dark">عرض جميع المركبات <i class="ph ph-arrow-left"></i></a>
       </div>
     </div>
-    </div><!-- /.fx-auctions-shell -->
+    </div><!-- /.fx-auctions-panel -->
   </div>
 </section>
 
 <script>
-  function toggleAuctionType(btn) {
-    const goInstant = btn.getAttribute('aria-pressed') !== 'true';
-    btn.setAttribute('aria-pressed', goInstant ? 'true' : 'false');
-    btn.classList.toggle('is-instant', goInstant);
-    document.querySelectorAll('.fx-auction-type-toggle__label').forEach(function(l) {
-      l.classList.toggle('is-active', l.dataset.tab === (goInstant ? 'instant' : 'live'));
-    });
-    switchAuctionTab(goInstant ? 'instant' : 'live', null);
-  }
-
   function switchAuctionTab(tabId, btn) {
-    document.querySelectorAll('.fx-auctions-shell .auctions-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.fx-auctions-panel .auctions-tab-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    document.querySelectorAll('.fx-auction-type-toggle__label').forEach(function(l) {
-      const on = l.dataset.tab === tabId;
-      l.classList.toggle('is-active', on);
-      l.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
-    const toggle = document.getElementById('auctionTypeSwitch');
-    if (toggle) {
-      toggle.setAttribute('aria-pressed', tabId === 'instant' ? 'true' : 'false');
-      toggle.classList.toggle('is-instant', tabId === 'instant');
-    }
-    document.querySelectorAll('.fx-auctions-shell .auctions-tab-content').forEach(c => c.classList.remove('active'));
-    const panel = document.getElementById('tab-content-' + tabId);
-    if (panel) panel.classList.add('active');
+
+    document.querySelectorAll('.auctions-tab-content').forEach(content => content.classList.remove('active'));
+    document.getElementById('tab-content-' + tabId).classList.add('active');
+
     if (window.fxHomeSwipers && window.fxHomeSwipers[tabId]) {
       requestAnimationFrame(function() {
         const sw = window.fxHomeSwipers[tabId];

@@ -5147,3 +5147,48 @@ body.fx-home-index .fx-hero-bg-stage {
     border-radius: 0 0 40px 40px !important;
   }
 }
+
+/* ==========================================================================
+   Phase 120 — §2: restore v1 word tabs + classic cards
+   ========================================================================== */
+
+body.fx-home-index .fx-auctions-panel {
+  display: block !important;
+}
+
+body.fx-home-index .fx-auctions-shell,
+body.fx-home-index .fx-auction-type-toggle {
+  display: none !important;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-body .ac-title {
+  display: block !important;
+  position: static !important;
+  margin: 0 0 10px !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+  color: #0f172a !important;
+  text-align: right;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-meta--plain {
+  display: none !important;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-meta:not(.ac-meta--plain) {
+  display: flex !important;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-info-row--board,
+body.fx-home-index .fx-home-auctions .ac-timer-board {
+  display: none !important;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-info-row:not(.ac-info-row--board) {
+  display: flex !important;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-timer-side {
+  display: flex !important;
+}
