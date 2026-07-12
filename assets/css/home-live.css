@@ -5253,3 +5253,66 @@ body.fx-home-index .fx-hero-subtitle--fleet1 {
 body.fx-home-index .fx-hero-title--fleet1 {
   margin-top: 0 !important;
 }
+
+/* ==========================================================================
+   Phase 124 — bid signs: no gavel icon, stem outward to section edges
+   ========================================================================== */
+
+body.fx-home-index .fx-hero-bid-signs {
+  overflow: visible !important;
+}
+
+body.fx-home-index .fx-bid-sign__gavel {
+  display: none !important;
+}
+
+body.fx-home-index .fx-bid-sign {
+  direction: ltr !important;
+}
+
+body.fx-home-index .fx-bid-sign__board {
+  direction: rtl;
+  text-align: right;
+}
+
+body.fx-home-index .fx-bid-sign--left,
+body.fx-home-index .fx-bid-sign--right {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+
+body.fx-home-index .fx-bid-sign--left.is-visible {
+  left: 0 !important;
+}
+
+body.fx-home-index .fx-bid-sign--right.is-visible {
+  right: 0 !important;
+}
+
+body.fx-home-index .fx-bid-sign__stem {
+  width: 64px !important;
+  height: 5px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  opacity: 0.9 !important;
+  flex-shrink: 0;
+}
+
+/* Left: stem on outer edge, fades toward left */
+body.fx-home-index .fx-bid-sign--left .fx-bid-sign__stem {
+  margin-inline-end: 8px !important;
+  background: linear-gradient(to left, rgba(14, 165, 233, 0.12), var(--primary), #0ea5e9) !important;
+}
+
+/* Right: stem on outer edge, fades toward right */
+body.fx-home-index .fx-bid-sign--right .fx-bid-sign__stem {
+  margin-inline-start: 8px !important;
+  background: linear-gradient(to right, rgba(14, 165, 233, 0.12), var(--primary), #0ea5e9) !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home-index .fx-bid-sign__stem {
+    width: 40px !important;
+  }
+}
