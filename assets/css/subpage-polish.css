@@ -120,10 +120,16 @@ body.fx-home-index #mobileMenu .fx-mobile-guest-link:hover {
   color: var(--primary) !important;
 }
 
-/* Unified overlap margin for sub-page bodies — small gap below hero */
-body.fx-home.fx-page-shell .fx-page-body--overlap {
-  margin-top: -14px;
-  padding-top: 8px;
+/* Unified overlap margin for sub-page bodies — breathing room below hero */
+body.fx-home.fx-page-shell .fx-page-body--overlap,
+body.fx-home.fx-page-shell .fx-content-overlap {
+  margin-top: 0;
+  padding-top: 24px;
+}
+
+body.fx-home.fx-page-shell .fx-page-body--overlap-lg {
+  margin-top: -12px;
+  padding-top: 20px;
 }
 
 /* Event + vehicle detail heroes — aligned dark cover headers */
@@ -158,7 +164,8 @@ body.fx-home.fx-page-shell .fx-page-body--overlap {
     max-width: 100%;
   }
   .fx-page-shell--listing .fx-page-body--overlap-lg {
-    margin-top: -36px;
+    margin-top: 0;
+    padding-top: 22px;
   }
 }
 
@@ -363,7 +370,8 @@ body.fx-home.fx-page-shell .fx-page-body--overlap {
 
 /* Terms / legal overlap with hero */
 .fx-page-shell--legal .fx-page-body--overlap {
-  margin-top: -48px;
+  margin-top: 0;
+  padding-top: 24px;
   padding-bottom: 80px;
 }
 
@@ -543,7 +551,8 @@ body.fx-home.fx-page-shell .fx-page-body--overlap {
 
 @media (max-width: 768px) {
   .fx-page-shell--legal .fx-page-body--overlap {
-    margin-top: -32px;
+    margin-top: 0;
+    padding-top: 20px;
   }
 }
 
@@ -1133,7 +1142,8 @@ body.fx-home.fx-page-shell .fx-page-body--overlap {
   .fx-page-shell--companies .fx-companies-layout.fx-page-body--overlap,
   .fx-page-shell--about .fx-about-v2.fx-page-body--overlap,
   .fx-page-shell--about .fx-about-page.fx-page-body--overlap {
-    margin-top: -10px;
+    margin-top: 0;
+    padding-top: 20px;
   }
 
   .fx-companies-panel__chips {

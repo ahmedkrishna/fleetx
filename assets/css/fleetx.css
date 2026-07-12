@@ -11,10 +11,10 @@
 @import url('platform-ui.css?v=23');
 @import url('theme-restore.css?v=7');
 /* homepage polish loaded via home-live.css on index only */
-@import url('subpage-polish.css?v=5');
-@import url('site-polish.css?v=18');
+@import url('subpage-polish.css?v=6');
+@import url('site-polish.css?v=19');
 @import url('splash.css?v=100');
-@import url('ui-polish.css?v=119');
+@import url('ui-polish.css?v=126');
 
 /* Phosphor Icons Base */
 .ph {

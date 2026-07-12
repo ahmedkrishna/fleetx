@@ -2235,3 +2235,39 @@ body.admin-body .fx-dash-mobile-profile--admin {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Build 126 — all subpages: more space between page hero and content/cards
+   ========================================================================== */
+
+body.fx-home.fx-page-shell .fx-page-hero {
+  padding-bottom: 88px !important;
+}
+
+body.fx-home.fx-page-shell .fx-page-body--overlap,
+body.fx-home.fx-page-shell .fx-content-overlap {
+  margin-top: 0 !important;
+  padding-top: 28px !important;
+}
+
+body.fx-home.fx-page-shell .fx-page-body--overlap-lg {
+  margin-top: -12px !important;
+  padding-top: 24px !important;
+}
+
+body.fx-home.fx-page-shell .fx-page-body:not(.fx-page-body--overlap):not(.fx-page-body--overlap-lg) {
+  padding-top: 36px !important;
+}
+
+@media (max-width: 768px) {
+  body.fx-home.fx-page-shell .fx-page-hero {
+    padding-bottom: 60px !important;
+  }
+
+  body.fx-home.fx-page-shell .fx-page-body--overlap,
+  body.fx-home.fx-page-shell .fx-content-overlap,
+  body.fx-home.fx-page-shell .fx-page-body--overlap-lg {
+    margin-top: 0 !important;
+    padding-top: 22px !important;
+  }
+}
