@@ -44,10 +44,11 @@ $min_increment = $auction['bid_increment'] ?? 500;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
   <title><?= $is_instant ? 'الشراء الفوري' : 'غرفة المزايدة' ?>: <?= sanitize($title_car) ?> | FleetX</title>
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-home fx-page-shell fx-page-shell--vehicle">
+<body class="fx-home fx-page-shell fx-page-shell--vehicle" data-fx-build="<?= FLEETX_CSS_VER ?>">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -187,7 +188,7 @@ include 'includes/page-hero.inc.php';
 
     </div>
 
-    <div class="fx-pricing-panel">
+    <div class="fx-pricing-panel" id="fxVehiclePricingPanel">
       <div class="pricing-card fx-panel-first fx-vehicle-pricing-card">
         <div class="fx-detail-spec__label">السعر الإجمالي</div>
         <div class="fx-price-display"><?= number_format($current_price) ?> <span class="unit">ر.س</span></div>
@@ -234,5 +235,17 @@ function changePremiumImage(thumbEl, src) {
   thumbEl.classList.add('active');
 }
 </script>
+
+<div class="fx-mobile-bid-bar fx-mobile-buy-bar" id="fxVehicleBuyBar" aria-label="شراء سريع">
+  <div class="fx-mobile-bid-inner">
+    <div class="fx-mobile-bid-price">
+      <small>السعر الإجمالي</small>
+      <strong class="font-en"><?= number_format($current_price) ?> ر.س</strong>
+    </div>
+    <a href="/checkout.php?id=<?= (int)$auction['id'] ?>" class="fx-mobile-bid-btn">
+      <i class="ph-bold ph-shopping-cart"></i> شراء الآن
+    </a>
+  </div>
+</div>
 
 <?php include 'includes/footer.php'; ?>
