@@ -63,11 +63,11 @@ $hero_meta_html = '
 <div class="fx-companies-v2 fx-page-body fx-page-body--overlap">
   <div class="fx-companies-v2__panel reveal">
     <div class="fx-companies-v2__toolbar">
-      <div class="filter-chips">
-        <button type="button" class="chip active" onclick="filterChip(this,'all')"><i class="ph-fill ph-squares-four"></i> الكل</button>
-        <button type="button" class="chip" onclick="filterChip(this,'live')"><i class="ph-fill ph-broadcast"></i> مباشر</button>
-        <button type="button" class="chip" onclick="filterChip(this,'active')"><i class="ph-fill ph-gavel"></i> نشط</button>
-        <button type="button" class="chip" onclick="filterChip(this,'top')"><i class="ph-fill ph-star"></i> الأعلى تقييماً</button>
+      <div class="filter-chips fx-companies-filter-chips" role="tablist" aria-label="تصفية الشركات">
+        <button type="button" class="chip active" role="tab" aria-selected="true" onclick="filterChip(this,'all')"><i class="ph-fill ph-squares-four"></i> الكل</button>
+        <button type="button" class="chip" role="tab" aria-selected="false" onclick="filterChip(this,'live')"><i class="ph-fill ph-broadcast"></i> مباشر</button>
+        <button type="button" class="chip" role="tab" aria-selected="false" onclick="filterChip(this,'active')"><i class="ph-fill ph-gavel"></i> نشط</button>
+        <button type="button" class="chip" role="tab" aria-selected="false" onclick="filterChip(this,'top')"><i class="ph-fill ph-star"></i> الأعلى تقييماً</button>
       </div>
       <div class="fx-companies-v2__search">
         <div class="search-input-wrap">
@@ -158,8 +158,12 @@ $hero_meta_html = '
 <script>
 let activeChip = 'all';
 function filterChip(btn, type) {
-  document.querySelectorAll('.fx-companies-v2__toolbar .chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.fx-companies-v2__toolbar .chip').forEach(c => {
+    c.classList.remove('active');
+    c.setAttribute('aria-selected', 'false');
+  });
   btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
   activeChip = type;
   filterCompanies();
 }
