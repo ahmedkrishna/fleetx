@@ -134,14 +134,6 @@ if (empty($hero_bid_signs)) {
     <div class="hero-content fx-hero-content fx-hero-content--fleet1">
       <p class="hero-subtitle fx-hero-subtitle--fleet1 fx-hero-motion" id="heroSubtitle"></p>
       <h1 class="hero-title fx-hero-title--fleet1 fx-hero-motion" id="heroMainTitle"></h1>
-      <div class="fx-hero-cta-row fx-hero-motion" id="heroCtaRow">
-        <a href="/auctions.php?type=live" class="btn btn-primary fx-hero-cta-btn">
-          <i class="ph-fill ph-broadcast"></i> استكشف المزادات
-        </a>
-        <a href="/register.php" class="btn btn-outline-dark fx-hero-cta-btn">
-          <i class="ph ph-user-plus"></i> ابدأ الآن
-        </a>
-      </div>
     </div>
 
     <script>
@@ -155,7 +147,6 @@ if (empty($hero_bid_signs)) {
         let animating = false;
         const titleEl = document.getElementById('heroMainTitle');
         const subtitleEl = document.getElementById('heroSubtitle');
-        const ctaEl = document.getElementById('heroCtaRow');
 
         function applySlide(index, animate) {
           if (!titleEl || !subtitleEl) return;
@@ -178,7 +169,6 @@ if (empty($hero_bid_signs)) {
             subtitleEl.textContent = slide.subtitle;
             titleEl.classList.add('is-visible');
             subtitleEl.classList.add('is-visible');
-            if (ctaEl) ctaEl.classList.add('is-visible');
             return;
           }
           titleEl.classList.remove('is-visible', 'is-enter');
@@ -197,7 +187,6 @@ if (empty($hero_bid_signs)) {
 
         window.addEventListener('load', function() {
           applySlide(0, false);
-          if (ctaEl) ctaEl.classList.add('is-visible');
           setInterval(cycleHero, 5500);
         });
       })();

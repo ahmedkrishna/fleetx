@@ -5231,3 +5231,25 @@ body.fx-home-index .fx-why-journey__steps li:not(.fx-why-journey__arrow) {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ==========================================================================
+   Phase 123 — hero: no CTAs, tighter title/subtitle gap
+   ========================================================================== */
+
+body.fx-home-index .fx-hero-cta-row {
+  display: none !important;
+}
+
+body.fx-home-index .fx-hero-content--fleet1 {
+  gap: 4px !important;
+}
+
+body.fx-home-index .fx-hero-subtitle--fleet1 {
+  margin: 0 auto !important;
+  min-height: 0 !important;
+  line-height: 1.35 !important;
+}
+
+body.fx-home-index .fx-hero-title--fleet1 {
+  margin-top: 0 !important;
+}
