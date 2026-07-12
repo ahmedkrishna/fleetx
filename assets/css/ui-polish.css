@@ -1191,3 +1191,50 @@ body.admin-body .fx-dash-mobile-profile--admin {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Global UI coordination — section rhythm & touch targets (Build 109)
+   ========================================================================== */
+
+.fx-page-shell .container,
+.fx-page-body {
+  box-sizing: border-box;
+}
+
+.fx-page-shell .fx-page-section-intro,
+.fx-home-section-intro {
+  max-width: 680px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.fx-page-shell .fx-page-section-intro .section-title,
+.fx-home-section-intro .section-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.fx-page-shell .fx-page-section-intro .section-subtitle,
+.fx-home-section-intro .section-subtitle {
+  color: #64748b;
+  line-height: 1.7;
+}
+
+.btn,
+.fx-form-submit,
+.fx-mobile-bid-btn,
+.fx-filter-submit {
+  min-height: 44px;
+}
+
+@media (max-width: 991px) {
+  .fx-page-shell .container,
+  .fx-page-body {
+    padding-inline: 16px;
+  }
+
+  .fx-page-shell {
+    overflow-x: hidden;
+  }
+}

@@ -4694,3 +4694,258 @@ body.fx-home-index .stats-unit-ar--million {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Build 109 — Homepage UI/UX coordination (wins all prior phases)
+   ========================================================================== */
+
+/* §1 Hero — flex placement instead of harsh translateY */
+body.fx-home-index .fx-hero-section--fleet1 {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding-bottom: clamp(72px, 14vh, 128px) !important;
+}
+
+body.fx-home-index .fx-hero-content--fleet1 {
+  transform: none !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: 16px;
+  text-align: center;
+}
+
+body.fx-home-index .fx-hero-title--fleet1 {
+  font-size: clamp(32px, 5.5vw, 56px) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em;
+}
+
+body.fx-home-index .fx-hero-subtitle--fleet1 {
+  font-size: clamp(13px, 2vw, 16px) !important;
+  max-width: 560px !important;
+  margin: 0 auto !important;
+  order: -1;
+}
+
+body.fx-home-index .fx-hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.52s ease;
+}
+
+body.fx-home-index .fx-hero-cta-row.is-visible {
+  opacity: 1;
+}
+
+body.fx-home-index .fx-hero-cta-btn {
+  min-height: 44px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 22px rgba(27, 201, 118, 0.22);
+}
+
+body.fx-home-index .fx-hero-cta-btn.btn-outline-dark {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+body.fx-home-index .fx-hero-bid-signs {
+  z-index: 2;
+  pointer-events: none;
+}
+
+body.fx-home-index .fx-hero-bid-signs .fx-bid-sign {
+  pointer-events: auto;
+}
+
+/* Unified section rhythm */
+body.fx-home-index .fx-home-section-intro {
+  max-width: 680px;
+  margin: 0 auto 28px;
+  text-align: center;
+}
+
+body.fx-home-index .fx-home-section-intro .section-title {
+  margin: 0 0 10px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+body.fx-home-index .fx-home-section-intro .section-subtitle {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.7;
+}
+
+body.fx-home-index .fx-home-auctions,
+body.fx-home-index .fx-why-fleetx,
+body.fx-home-index .fx-home-stats-section.stats-section--parallax,
+body.fx-home-index .fx-home-contact {
+  padding-top: clamp(56px, 8vw, 88px) !important;
+  padding-bottom: clamp(56px, 8vw, 88px) !important;
+}
+
+/* §2 Auctions — toggle + swiper polish */
+body.fx-home-index .fx-auction-type-toggle__switch {
+  min-width: 56px;
+  min-height: 32px;
+}
+
+body.fx-home-index .fx-auction-type-toggle__label {
+  min-height: 40px;
+  padding: 6px 4px;
+}
+
+body.fx-home-index .fx-home-auctions .swiper-button-prev,
+body.fx-home-index .fx-home-auctions .swiper-button-next {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+body.fx-home-index .fx-home-auctions .swiper-button-prev::after,
+body.fx-home-index .fx-home-auctions .swiper-button-next::after {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* §3 HIW — calmer scroll on mobile */
+@media (max-width: 991px) {
+  body.fx-home-index .fx-hiw-section--dark #buyers-section,
+  body.fx-home-index .fx-hiw-section--dark #sellers-section {
+    position: relative !important;
+    top: auto !important;
+    min-height: 0 !important;
+    padding: 48px 0 !important;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark #sellers-section {
+    border-radius: 28px 28px 0 0 !important;
+    margin-top: 0 !important;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark .hiw-tab-content.active {
+    flex-direction: column !important;
+    gap: 20px !important;
+    text-align: center;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark .hiw-tab-col:first-child {
+    text-align: center;
+  }
+
+  body.fx-home-index .fx-hiw-section--dark .hiw-tab-img {
+    max-height: 220px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+}
+
+/* §4 Why — journey scroll on narrow screens */
+@media (max-width: 768px) {
+  body.fx-home-index .fx-why-journey__steps {
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 12px;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  body.fx-home-index .fx-why-journey__steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.fx-home-index .fx-why-journey__steps li {
+    flex: 0 0 min(72vw, 260px);
+    scroll-snap-align: start;
+    min-height: 120px !important;
+  }
+
+  body.fx-home-index .fx-why-journey__steps li + li::before {
+    display: none !important;
+  }
+
+  body.fx-home-index .fx-hero-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body.fx-home-index .fx-hero-cta-btn {
+    width: 100%;
+  }
+}
+
+/* §5 Stats — balanced desktop gap */
+body.fx-home-index .fx-home-stats-section .main-stats-container {
+  gap: clamp(24px, 5vw, 48px) !important;
+}
+
+body.fx-home-index .fx-home-stats-section .stats-hero-wrap {
+  display: grid;
+  gap: 24px;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  body.fx-home-index .fx-home-stats-section .stats-hero-wrap {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+/* §6 Contact + footer spacing */
+body.fx-home-index .fx-home-contact .fx-contact-form-card {
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+body.fx-home-index .fx-home-contact .fx-form-submit {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+}
+
+body.fx-home-index .whatsapp-float {
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
