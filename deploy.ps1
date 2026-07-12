@@ -43,6 +43,7 @@ $files = @(
     'assets/css/home-live.css',
     'assets/css/fleetx.css',
     'assets/css/splash.css',
+    'assets/css/ui-polish.css',
     'assets/css/platform-ui.css',
     'assets/css/theme-restore.css',
     'assets/css/homepage-polish.css',

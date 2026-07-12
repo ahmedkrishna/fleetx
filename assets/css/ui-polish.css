@@ -1,0 +1,244 @@
+/* ==========================================================================
+   FleetX UI Polish — cross-cutting UX fixes (build 102)
+   ========================================================================== */
+
+/* ── Auth: show login form by default, mobile trust strip ─────────────── */
+#loginForm {
+  display: block;
+}
+#loginForm:not(.visible) {
+  opacity: 0.55;
+  pointer-events: none;
+  filter: grayscale(0.15);
+}
+#loginForm.visible {
+  opacity: 1;
+  pointer-events: auto;
+  filter: none;
+  animation: fx-slide-in 0.3s ease;
+}
+
+.fx-auth-mobile-trust {
+  display: none;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(27, 201, 118, 0.08), rgba(14, 165, 233, 0.06));
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+}
+.fx-auth-mobile-trust__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.fx-auth-mobile-trust__item .ph { font-size: 16px; color: var(--primary); }
+
+@media (max-width: 768px) {
+  .fx-auth-mobile-trust { display: flex; flex-wrap: wrap; }
+  .fx-auth-visual { display: none; }
+  .fx-auth-wrap--light,
+  .fx-auth-wrap--register {
+    min-height: calc(100vh - 64px);
+  }
+  .fx-auth-form-panel--light,
+  .fx-auth-form-panel--register {
+    padding: 28px 20px 40px;
+  }
+}
+
+/* Type selector — keyboard & focus */
+.fx-type-card,
+.account-type-card {
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.fx-type-card:focus-visible,
+.account-type-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.fx-type-card:active,
+.account-type-card:active {
+  transform: scale(0.98);
+}
+
+/* ── Mobile menu scroll lock ─────────────────────────────────────────── */
+body.fx-mobile-menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+body.fx-mobile-menu-open .whatsapp-float {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Mobile notifications badge link */
+.fx-mobile-notif-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.fx-mobile-notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+.fx-mobile-notif-badge:empty,
+.fx-mobile-notif-badge:not(.is-visible) {
+  display: none;
+}
+
+.fx-mobile-notif-panel {
+  margin: 8px 0 4px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.fx-mobile-notif-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+.fx-mobile-notif-panel__head a {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.fx-mobile-notif-panel .notif-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.fx-mobile-notif-panel .notif-title { color: #fff; }
+.fx-mobile-notif-panel .notif-body,
+.fx-mobile-notif-panel .notif-time { color: rgba(255,255,255,0.65); }
+
+/* ── Dashboard mobile nav polish ───────────────────────────────────────── */
+.fx-dash-mobile-nav select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 16px center;
+  padding-inline: 16px 40px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.fx-dash-mobile-nav select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* ── Form inputs — consistent focus ring ───────────────────────────────── */
+.fx-form-input:focus,
+.form-input:focus,
+.settings-input:focus,
+.settings-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* ── Error boxes — unified look ──────────────────────────────────────── */
+.error-box,
+.fx-error-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--danger-pale);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: #be123c;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.error-box .ph,
+.fx-error-box .ph {
+  color: var(--danger);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Empty / loading states ──────────────────────────────────────────── */
+.fx-notif-loading,
+.fx-notif-empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ── Toast vs WhatsApp spacing ───────────────────────────────────────── */
+.toast-container {
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 576px) {
+  .whatsapp-float {
+    bottom: 20px;
+    inset-inline-end: 20px;
+    width: 54px;
+    height: 54px;
+  }
+  .toast-container {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    width: min(340px, calc(100vw - 32px));
+  }
+}
+
+/* ── Smooth anchor scroll under fixed navbar ─────────────────────────── */
+html {
+  scroll-padding-top: calc(var(--fx-nav-height, 72px) + 16px);
+}
+
+/* ── Card hover — subtle lift without shadow conflict ────────────────── */
+.auction-card,
+.event-card,
+.fx-auction-card {
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.auction-card:hover,
+.event-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary-border);
+}
+
+/* ── Button press feedback ─────────────────────────────────────────── */
+.btn:active:not(:disabled),
+.fx-btn-auth:active:not(:disabled),
+.settings-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* ── Page hero readability on small screens ──────────────────────────── */
+@media (max-width: 576px) {
+  .fx-page-hero__title {
+    font-size: clamp(1.35rem, 5vw, 1.75rem);
+  }
+  .fx-page-hero__sub {
+    font-size: 13px;
+  }
+}

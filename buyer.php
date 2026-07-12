@@ -200,6 +200,7 @@ include 'includes/page-hero.inc.php';
         <option value="?section=purchases" <?= $section==='purchases'?'selected':'' ?>>مشترياتي</option>
         <option value="?section=favorites" <?= $section==='favorites'?'selected':'' ?>>المفضلة</option>
         <option value="?section=wallet" <?= $section==='wallet'?'selected':'' ?>>المحفظة</option>
+        <option value="?section=subscription" <?= $section==='subscription'?'selected':'' ?>>الاشتراك</option>
         <option value="?section=settings" <?= $section==='settings'?'selected':'' ?>>إعدادات الحساب</option>
       </select>
     </div>

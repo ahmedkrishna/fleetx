@@ -105,24 +105,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="fx-auth-form-panel fx-auth-form-panel--light">
     <div class="fx-auth-box fx-panel-first fx-auth-box--card">
       <h1 class="fx-auth-title">مرحباً بك</h1>
-      <p class="fx-auth-subtitle">اختر نوع حسابك للمتابعة</p>
+      <p class="fx-auth-subtitle">اختر نوع حسابك ثم أدخل بيانات الدخول</p>
+
+      <div class="fx-auth-mobile-trust" aria-hidden="true">
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-shield-check"></i> فحص موثّق</div>
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-gavel"></i> مزادات شفافة</div>
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-lock"></i> دفع آمن</div>
+      </div>
 
       <?php if ($error): ?>
       <div class="fx-error-box"><i class="ph ph-warning-circle"></i> <?= htmlspecialchars($error) ?></div>
       <?php endif; ?>
 
-      <div class="fx-type-selector" id="typeSelector">
-        <div class="fx-type-card <?= ($selected_type==='company') ? 'active' : '' ?>" onclick="selectType('company')" id="card-company">
+      <div class="fx-type-selector" id="typeSelector" role="group" aria-label="نوع الحساب">
+        <div class="fx-type-card <?= ($selected_type==='company') ? 'active' : '' ?>" role="button" tabindex="0" onclick="selectType('company')" onkeydown="fxTypeKey(event,'company')" id="card-company">
           <span class="fx-type-icon"><i class="ph-fill ph-buildings"></i></span>
           <div class="fx-type-name">شركة</div>
           <div class="fx-type-desc">بائع / مؤجر</div>
         </div>
-        <div class="fx-type-card <?= ($selected_type==='trader') ? 'active' : '' ?>" onclick="selectType('trader')" id="card-trader">
+        <div class="fx-type-card <?= ($selected_type==='trader' || $selected_type==='') ? 'active' : '' ?>" role="button" tabindex="0" onclick="selectType('trader')" onkeydown="fxTypeKey(event,'trader')" id="card-trader">
           <span class="fx-type-icon"><i class="ph-fill ph-shopping-cart"></i></span>
           <div class="fx-type-name">تاجر</div>
           <div class="fx-type-desc">مشتري / وكيل</div>
         </div>
-        <div class="fx-type-card" onclick="guestBrowse()" id="card-guest">
+        <div class="fx-type-card" role="button" tabindex="0" onclick="guestBrowse()" onkeydown="fxTypeKey(event,'guest')" id="card-guest">
           <span class="fx-type-icon"><i class="ph-fill ph-eye"></i></span>
           <div class="fx-type-name">زائر</div>
           <div class="fx-type-desc">تصفح فقط</div>
@@ -209,11 +215,21 @@ function guestBrowse() {
   setTimeout(() => { window.location.href = '/index.php?guest=1'; }, 400);
 }
 
-// Auto-show form if type was selected (e.g. after error)
+function fxTypeKey(e, type) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if (type === 'guest') guestBrowse();
+    else selectType(type);
+  }
+}
+
+// Auto-select account type
 <?php if ($selected_type && $selected_type !== 'guest'): ?>
 selectType('<?= htmlspecialchars($selected_type) ?>');
 <?php elseif (!empty($_POST['login_type'])): ?>
 selectType('<?= htmlspecialchars($_POST['login_type']) ?>');
+<?php else: ?>
+selectType('trader');
 <?php endif; ?>
 
 let loginMode = 'password';

@@ -2066,8 +2066,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .fx-auth-divider::before,
 .fx-auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
 .fx-auth-divider span { font-size: 13px; color: var(--text-muted); font-weight: 600; }
-#loginForm { display: none; }
-#loginForm.visible { display: block; animation: fx-slide-in 0.3s ease; }
+/* Login form visibility — see ui-polish.css */
 @media (max-width: 768px) {
   .fx-auth-wrap { grid-template-columns: 1fr; }
   .fx-auth-visual { display: none; }

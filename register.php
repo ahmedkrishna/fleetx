@@ -194,6 +194,11 @@ $auth_revenue_display = $auth_revenue >= 1000000
     <div class="fx-auth-box fx-panel-first fx-auth-box--card fx-reg-box--wide">
       <h1 class="fx-auth-title">إنشاء حساب جديد</h1>
       <p class="fx-auth-subtitle">اختر نوع حسابك وأكمل البيانات في 3 خطوات بسيطة</p>
+      <div class="fx-auth-mobile-trust" aria-hidden="true">
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-shield-check"></i> توثيق نفاذ</div>
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-gavel"></i> مزادات حية</div>
+        <div class="fx-auth-mobile-trust__item"><i class="ph-fill ph-chart-line-up"></i> تقارير فحص</div>
+      </div>
 
   <?php if ($success):
     $reg_role = $_SESSION['register_role'] ?? 'buyer';
@@ -277,8 +282,8 @@ $auth_revenue_display = $auth_revenue >= 1000000
         <h2 class="reg-card-title">نوع الحساب</h2>
         <p class="reg-card-sub">اختر نوع حسابك في المنصة</p>
 
-        <div class="account-type-grid">
-          <div class="account-type-card <?= (($_POST['role']??$init_role)==='seller')?'active':'' ?>" onclick="setRole('seller')" id="atcard-seller">
+        <div class="account-type-grid" role="group" aria-label="نوع الحساب">
+          <div class="account-type-card <?= (($_POST['role']??$init_role)==='seller')?'active':'' ?>" role="button" tabindex="0" onclick="setRole('seller')" onkeydown="regTypeKey(event,'seller')" id="atcard-seller">
             <span class="at-icon"><i class="ph-fill ph-buildings"></i></span>
             <div class="at-name">شركة تأجير</div>
             <div class="at-desc">للشركات ومعارض السيارات الراغبة في بيع أساطيلها</div>
@@ -288,7 +293,7 @@ $auth_revenue_display = $auth_revenue >= 1000000
               <div class="at-feat">تقارير مالية مفصّلة</div>
             </div>
           </div>
-          <div class="account-type-card <?= (($_POST['role']??$init_role)==='buyer')?'active':'' ?>" onclick="setRole('buyer')" id="atcard-buyer">
+          <div class="account-type-card <?= (($_POST['role']??$init_role)==='buyer')?'active':'' ?>" role="button" tabindex="0" onclick="setRole('buyer')" onkeydown="regTypeKey(event,'buyer')" id="atcard-buyer">
             <span class="at-icon"><i class="ph-fill ph-shopping-cart"></i></span>
             <div class="at-name">تاجر / وكيل</div>
             <div class="at-desc">للتجار والأفراد الراغبين في شراء سيارات الأساطيل</div>
@@ -435,6 +440,13 @@ let currentRole = '<?= htmlspecialchars($_POST['role'] ?? $init_role) ?>';
 let nafathVerified = false;
 let otpVerified = false;
 let otpSent = false;
+
+function regTypeKey(e, role) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    setRole(role);
+  }
+}
 
 function setRole(role) {
   currentRole = role;

@@ -7,6 +7,7 @@ $is_buyer  = (getUserRole() === 'buyer');
 $is_admin  = (getUserRole() === 'admin');
 $is_inspector = (getUserRole() === 'inspector');
 $is_logged = isLoggedIn();
+$notif_count = 0;
 $dash_url = $is_logged ? getDashboardUrl() : '/login.php';
 $dash_label = 'لوحة التحكم';
 if ($is_admin) $dash_label = 'لوحة الإدارة';
@@ -112,7 +113,7 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
           <a href="/register.php" class="btn btn-primary btn-sm hide-on-mobile fx-btn-round"><?= fleetx_t('nav_register') ?></a>
         <?php endif; ?>
 
-        <button class="navbar-toggle" id="navToggle" aria-label="قائمة">
+        <button class="navbar-toggle" id="navToggle" aria-label="قائمة التنقل" aria-expanded="false" aria-controls="mobileMenu">
           <i class="ph ph-list navbar-toggle-icon"></i>
         </button>
       </div>
@@ -129,6 +130,21 @@ elseif ($is_buyer) $dash_label = 'لوحة المشتري';
       <li><a href="/map.php"><i class="ph ph-map-trifold"></i> خريطة المزادات</a></li>
       <?php if ($is_logged): ?>
       <li><a href="<?= $dash_url ?>" class="fx-mobile-active"><i class="ph ph-squares-four"></i> <?= $dash_label ?></a></li>
+      <li class="fx-mobile-notif-wrap">
+        <a href="#" class="fx-mobile-notif-link" id="mobileNotifLink" onclick="toggleMobileNotifs(); return false;" aria-expanded="false">
+          <span><i class="ph ph-bell"></i> الإشعارات</span>
+          <span class="fx-mobile-notif-badge<?= $notif_count > 0 ? ' is-visible' : '' ?>" id="mobileNotifBadge"><?= $notif_count > 9 ? '9+' : $notif_count ?></span>
+        </a>
+        <div class="fx-mobile-notif-panel" id="mobileNotifPanel" hidden>
+          <div class="fx-mobile-notif-panel__head">
+            <span>الإشعارات</span>
+            <a href="#" onclick="markAllRead(); return false;">تحديد الكل كمقروء</a>
+          </div>
+          <div class="fx-mobile-notif-panel__list" id="mobileNotifList">
+            <div class="fx-notif-loading">جاري التحميل...</div>
+          </div>
+        </div>
+      </li>
       <?php endif; ?>
       <?php if ($is_seller || $is_admin): ?>
       <li><a href="/add-auction.php"><i class="ph ph-plus-circle"></i> جدولة مزاد</a></li>
@@ -178,16 +194,36 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// Mobile toggle
+function fxEscapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function fxSetMobileMenuOpen(open) {
+  const menu = document.getElementById('mobileMenu');
+  const toggle = document.getElementById('navToggle');
+  if (!menu || !toggle) return;
+  menu.classList.toggle('open', open);
+  document.body.classList.toggle('fx-mobile-menu-open', open);
+  toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  const icon = toggle.querySelector('i');
+  if (icon) {
+    icon.className = open ? 'ph ph-x navbar-toggle-icon' : 'ph ph-list navbar-toggle-icon';
+  }
+}
+
 document.getElementById('navToggle')?.addEventListener('click', function() {
   const menu = document.getElementById('mobileMenu');
-  menu?.classList.toggle('open');
-  const icon = this.querySelector('i');
-  if (icon) {
-    icon.className = menu?.classList.contains('open')
-      ? 'ph ph-x navbar-toggle-icon'
-      : 'ph ph-list navbar-toggle-icon';
-  }
+  fxSetMobileMenuOpen(!menu?.classList.contains('open'));
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') fxSetMobileMenuOpen(false);
+});
+
+document.getElementById('mobileMenu')?.querySelectorAll('a').forEach(function(link) {
+  link.addEventListener('click', function() { fxSetMobileMenuOpen(false); });
 });
 
 <?php if ($is_logged): ?>
@@ -201,41 +237,70 @@ const notifIcons = {
   system:              { icon: 'ph-fill ph-bell',          bg: 'rgba(100,116,139,0.1)',  color: '#64748b' },
 };
 
-function renderNotifications(data) {
-  const badge  = document.getElementById('notifBadge');
-  const list   = document.getElementById('notifList');
-  if (!list) return;
-
-  // Update badge
-  if (badge) {
-    if (data.unread_count > 0) {
-      badge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
-      badge.classList.add('is-visible');
-    } else {
-      badge.classList.remove('is-visible');
-    }
+function toggleMobileNotifs() {
+  const panel = document.getElementById('mobileNotifPanel');
+  const link = document.getElementById('mobileNotifLink');
+  if (!panel) return;
+  const open = panel.hasAttribute('hidden');
+  if (open) {
+    panel.removeAttribute('hidden');
+    link?.setAttribute('aria-expanded', 'true');
+    fetchNotifications();
+  } else {
+    panel.setAttribute('hidden', '');
+    link?.setAttribute('aria-expanded', 'false');
   }
+}
 
-  // Render list
-  if (!data.notifications || data.notifications.length === 0) {
-    list.innerHTML = '<div class="fx-notif-empty">لا توجد إشعارات</div>';
-    return;
-  }
-
-  list.innerHTML = data.notifications.map(n => {
+function renderNotificationItems(notifications) {
+  return notifications.map(n => {
     const ic = notifIcons[n.type] || notifIcons.system;
+    const link = fxEscapeHtml(n.link || '#');
+    const title = fxEscapeHtml(n.title);
+    const body = fxEscapeHtml(n.body);
+    const time = fxEscapeHtml(n.time_ago);
     return `
-      <a href="${n.link || '#'}" class="notif-item ${!n.is_read ? 'unread' : ''}" onclick="markRead(${n.id});">
+      <a href="${link}" class="notif-item ${!n.is_read ? 'unread' : ''}" onclick="markRead(${parseInt(n.id, 10)});">
         <div class="notif-icon" style="background:${ic.bg}; color:${ic.color};">
           <i class="${ic.icon}"></i>
         </div>
         <div class="notif-text">
-          <div class="notif-title">${n.title}</div>
-          <div class="notif-body">${n.body}</div>
-          <div class="notif-time">${n.time_ago}</div>
+          <div class="notif-title">${title}</div>
+          <div class="notif-body">${body}</div>
+          <div class="notif-time">${time}</div>
         </div>
       </a>`;
   }).join('');
+}
+
+function renderNotifications(data) {
+  const badge  = document.getElementById('notifBadge');
+  const list   = document.getElementById('notifList');
+  const mobileList = document.getElementById('mobileNotifList');
+
+  const mobileBadge = document.getElementById('mobileNotifBadge');
+  const countLabel = data.unread_count > 9 ? '9+' : String(data.unread_count || '');
+  [badge, mobileBadge].forEach(function(b) {
+    if (!b) return;
+    if (data.unread_count > 0) {
+      b.textContent = countLabel;
+      b.classList.add('is-visible');
+    } else {
+      b.textContent = '';
+      b.classList.remove('is-visible');
+    }
+  });
+
+  const emptyHtml = '<div class="fx-notif-empty">لا توجد إشعارات</div>';
+  if (!data.notifications || data.notifications.length === 0) {
+    if (list) list.innerHTML = emptyHtml;
+    if (mobileList) mobileList.innerHTML = emptyHtml;
+    return;
+  }
+
+  const html = renderNotificationItems(data.notifications);
+  if (list) list.innerHTML = html;
+  if (mobileList) mobileList.innerHTML = html;
 }
 
 function fetchNotifications() {

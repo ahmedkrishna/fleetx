@@ -80,21 +80,6 @@
 <!-- Swiper JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Intersection Observer for Reveal Animations
-  function reveal() {
-    var reveals = document.querySelectorAll(".reveal");
-    for (var i = 0; i < reveals.length; i++) {
-      var windowHeight = window.innerHeight;
-      var elementTop = reveals[i].getBoundingClientRect().top;
-      var elementVisible = 50;
-      if (elementTop < windowHeight - elementVisible) {
-        reveals[i].classList.add("active");
-      }
-    }
-  }
-  window.addEventListener("scroll", reveal);
-  reveal();
-
   window.FX_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
   window.FX_LOGIN_URL = '/login.php';
   <?php if (isset($hero_bid_signs) && !empty($hero_bid_signs)): ?>
@@ -113,7 +98,7 @@
       if (!window.userFavorites) return;
       document.querySelectorAll('.card-fav').forEach(btn => {
           const id = btn.dataset.id;
-          if (id && window.userFavorites.includes(parseInt(id)) || window.userFavorites.includes(id.toString())) {
+          if (id && (window.userFavorites.includes(parseInt(id, 10)) || window.userFavorites.includes(id.toString()))) {
               let icon = btn.querySelector('i');
               if (icon) {
                   icon.classList.remove('ph');
