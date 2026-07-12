@@ -126,7 +126,9 @@ foreach ($queries as $sql => $label) {
 fx_migrate_run($conn, "INSERT IGNORE INTO platform_settings (setting_key, setting_value) VALUES
     ('inspection_fee', '100'),
     ('buyer_pro_price', '299'),
-    ('platform_fee_percent', '5')", 'platform_settings seed');
+    ('platform_fee_percent', '5'),
+    ('whatsapp_enabled', '1'),
+    ('whatsapp_template_lang', 'ar')", 'platform_settings seed');
 
 fx_migrate_run($conn, "INSERT IGNORE INTO buyer_subscriptions (user_id, plan, price, start_date, end_date, is_active)
     SELECT id, 'pro', 299, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), 1 FROM users WHERE role='buyer' AND id IN (4,5)", 'buyer_subscriptions seed');

@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '98');
+define('FLEETX_CSS_VER', '99');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -152,6 +152,20 @@ function fleetx_subpage_hero_bg(string $page = ''): string {
 
 if (!defined('GOOGLE_CLIENT_ID')) {
     define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID') ?: '');
+}
+
+/** WhatsApp (Taqnyat) — override in config.local.php or admin → platform_settings */
+if (!defined('WHATSAPP_API_URL')) {
+    define('WHATSAPP_API_URL', getenv('WHATSAPP_API_URL') ?: 'https://api.taqnyat.sa/wa/v2/messages/');
+}
+if (!defined('WHATSAPP_API_TOKEN')) {
+    define('WHATSAPP_API_TOKEN', getenv('WHATSAPP_API_TOKEN') ?: '');
+}
+if (!defined('WHATSAPP_TEMPLATE_NAME')) {
+    define('WHATSAPP_TEMPLATE_NAME', getenv('WHATSAPP_TEMPLATE_NAME') ?: '');
+}
+if (!defined('WHATSAPP_TEMPLATE_LANG')) {
+    define('WHATSAPP_TEMPLATE_LANG', getenv('WHATSAPP_TEMPLATE_LANG') ?: 'ar');
 }
 
 /** Logo asset paths — logo.png for light backgrounds, logo-dark.png for dark */
@@ -742,7 +756,7 @@ function notifyUser($conn, $user_id, $type, $title, $message, $link = '', $chann
             sendSmsNotification($mobile, $full_message);
         }
         if (in_array('whatsapp', $channels, true) && fleetx_channel_enabled($conn, 'whatsapp')) {
-            sendWhatsAppNotification($mobile, $full_message);
+            sendWhatsAppNotification($mobile, $full_message, $conn);
         }
     }
     if (in_array('email', $channels, true) && fleetx_channel_enabled($conn, 'email') && $email) {
@@ -759,45 +773,122 @@ function sendSmsNotification($mobile, $message) {
     return true;
 }
 
-function sendWhatsAppNotification($mobile, $message) {
+/** Resolve WhatsApp API credentials: env → constants → platform_settings. */
+function fleetx_whatsapp_config($conn = null, array $overrides = []): array {
+    $url = trim((string)(getenv('WHATSAPP_API_URL') ?: (defined('WHATSAPP_API_URL') ? WHATSAPP_API_URL : '')));
+    $token = trim((string)(getenv('WHATSAPP_API_TOKEN') ?: (defined('WHATSAPP_API_TOKEN') ? WHATSAPP_API_TOKEN : '')));
+    $template = trim((string)(getenv('WHATSAPP_TEMPLATE_NAME') ?: (defined('WHATSAPP_TEMPLATE_NAME') ? WHATSAPP_TEMPLATE_NAME : '')));
+    $lang = trim((string)(getenv('WHATSAPP_TEMPLATE_LANG') ?: (defined('WHATSAPP_TEMPLATE_LANG') ? WHATSAPP_TEMPLATE_LANG : 'ar')));
+
+    if ($conn && fleetx_table_exists($conn, 'platform_settings')) {
+        if ($token === '') $token = trim((string)fleetx_get_setting($conn, 'whatsapp_api_token', ''));
+        if ($template === '') $template = trim((string)fleetx_get_setting($conn, 'whatsapp_template_name', ''));
+        $db_lang = trim((string)fleetx_get_setting($conn, 'whatsapp_template_lang', ''));
+        if ($db_lang !== '') $lang = $db_lang;
+        $db_url = trim((string)fleetx_get_setting($conn, 'whatsapp_api_url', ''));
+        if ($db_url !== '') $url = $db_url;
+    }
+
+    if (!empty($overrides['token'])) $token = trim((string)$overrides['token']);
+    if (!empty($overrides['url'])) $url = trim((string)$overrides['url']);
+    if (!empty($overrides['template'])) $template = trim((string)$overrides['template']);
+    if (!empty($overrides['lang'])) $lang = trim((string)$overrides['lang']);
+
+    if ($url === '' && $token !== '') {
+        $url = 'https://api.taqnyat.sa/wa/v2/messages/';
+    }
+
+    return [
+        'url' => $url,
+        'token' => $token,
+        'template' => $template,
+        'lang' => $lang ?: 'ar',
+        'configured' => ($token !== '' && $url !== ''),
+    ];
+}
+
+/** Build Taqnyat / WhatsApp Cloud payload (template for cold outreach, text for open sessions). */
+function fleetx_whatsapp_build_payload(string $api_mobile, string $message, array $config, bool $force_session = false): array {
+    $body = mb_substr($message, 0, 1024);
+    if (!$force_session && ($config['template'] ?? '') !== '') {
+        return [
+            'to' => $api_mobile,
+            'type' => 'template',
+            'template' => [
+                'name' => $config['template'],
+                'language' => ['code' => $config['lang'] ?? 'ar'],
+                'components' => [[
+                    'type' => 'body',
+                    'parameters' => [['type' => 'text', 'text' => $body]],
+                ]],
+            ],
+        ];
+    }
+    return [
+        'to' => $api_mobile,
+        'type' => 'text',
+        'text' => ['body' => $body],
+    ];
+}
+
+function sendWhatsAppNotification($mobile, $message, $conn = null, array $overrides = []) {
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
     $api_mobile = fleetx_normalize_mobile_api($mobile);
     $line = date('Y-m-d H:i:s') . " [WhatsApp] $api_mobile: $message\n";
     @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
 
-    $wa_url = getenv('WHATSAPP_API_URL') ?: (defined('WHATSAPP_API_URL') ? (string)WHATSAPP_API_URL : '');
-    if ($wa_url === '') return true;
-
-    $token = getenv('WHATSAPP_API_TOKEN') ?: (defined('WHATSAPP_API_TOKEN') ? (string)WHATSAPP_API_TOKEN : '');
-    $headers = ['Content-Type: application/json'];
-    if ($token !== '') {
-        $headers[] = 'Authorization: Bearer ' . $token;
+    $config = fleetx_whatsapp_config($conn, $overrides);
+    if (!$config['configured']) {
+        return ['ok' => true, 'mode' => 'log_only', 'http' => 0, 'response' => ''];
     }
 
-    $payload = json_encode([
-        'to' => $api_mobile,
-        'body' => $message,
-        'type' => 'text',
-    ], JSON_UNESCAPED_UNICODE);
+    $force_session = !empty($overrides['session']);
+    $payload = fleetx_whatsapp_build_payload($api_mobile, $message, $config, $force_session);
+    $headers = [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $config['token'],
+    ];
 
-    $ch = curl_init($wa_url);
+    $ch = curl_init($config['url']);
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE),
         CURLOPT_HTTPHEADER => $headers,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 15,
+        CURLOPT_TIMEOUT => 20,
     ]);
     $resp = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
     curl_close($ch);
 
-    @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [WhatsApp API] HTTP $code " . substr((string)$resp, 0, 200) . "\n", FILE_APPEND);
+    $snippet = substr((string)$resp, 0, 300);
+    @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [WhatsApp API] HTTP $code $snippet\n", FILE_APPEND);
     if (function_exists('fx_integration_log')) {
-        fx_integration_log('whatsapp', 'api', ['mobile' => $api_mobile, 'http' => $code]);
+        fx_integration_log('whatsapp', 'api', ['mobile' => $api_mobile, 'http' => $code, 'template' => $config['template'] ?: 'session']);
     }
-    return $code >= 200 && $code < 300;
+
+    $ok = $code >= 200 && $code < 300;
+    $decoded = json_decode((string)$resp, true);
+    if (is_array($decoded)) {
+        $api_msg = (string)($decoded['message'] ?? '');
+        if ($api_msg === '401' || str_contains(strtolower((string)($decoded['reason'] ?? '')), 'bearer')) {
+            $ok = false;
+        }
+        if (isset($decoded['statuses']) && is_array($decoded['statuses']) && count($decoded['statuses']) > 0) {
+            $ok = true;
+        }
+    }
+    return [
+        'ok' => $ok,
+        'mode' => 'live',
+        'http' => $code,
+        'response' => $snippet,
+        'error' => $err,
+        'mobile' => $api_mobile,
+        'template' => $config['template'],
+    ];
 }
 
 /** AutoData-style market price estimate (heuristic until live API connected) */

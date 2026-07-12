@@ -10,6 +10,7 @@ if (!defined('SANAD_API_KEY')) define('SANAD_API_KEY', getenv('SANAD_API_KEY') ?
 if (!defined('AUTODATA_API_URL')) define('AUTODATA_API_URL', getenv('AUTODATA_API_URL') ?: '');
 if (!defined('AUTODATA_API_KEY')) define('AUTODATA_API_KEY', getenv('AUTODATA_API_KEY') ?: '');
 if (!defined('SMS_API_KEY')) define('SMS_API_KEY', getenv('SMS_API_KEY') ?: '');
+if (!defined('WHATSAPP_API_TOKEN')) define('WHATSAPP_API_TOKEN', getenv('WHATSAPP_API_TOKEN') ?: '');
 
 function fx_integration_log(string $channel, string $message, array $meta = []): void {
     $log_dir = __DIR__ . '/../logs';
@@ -57,6 +58,13 @@ function smsSend(string $mobile, string $message): bool {
         // Production: Taqnyat / Unifonic
     }
     return sendSmsNotification($mobile, $message);
+}
+
+function whatsappSend(string $mobile, string $message, $conn = null, array $overrides = []): array {
+    if (WHATSAPP_API_TOKEN) {
+        fx_integration_log('whatsapp', 'API send', ['mobile' => $mobile]);
+    }
+    return sendWhatsAppNotification($mobile, $message, $conn, $overrides);
 }
 
 if (!defined('PAYMENT_GATEWAY_URL')) define('PAYMENT_GATEWAY_URL', getenv('PAYMENT_GATEWAY_URL') ?: '');
