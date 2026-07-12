@@ -837,7 +837,7 @@ body.admin-body .fx-dash-mobile-profile--admin {
 
   .fx-page-shell--search .fx-page-body--overlap {
     margin-top: 0 !important;
-    padding-top: 22px !important;
+    padding-top: 12px !important;
   }
 
   .fx-page-shell--search .fx-search-page {
@@ -845,7 +845,18 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-search-layout {
-    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .fx-page-shell--search .fx-search-main {
+    order: 1;
+  }
+
+  .fx-page-shell--search .fx-filter-panel.filter-sidebar {
+    order: 2;
     margin-top: 4px;
   }
 
@@ -854,7 +865,7 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-page-hero {
-    padding: 88px 0 60px !important;
+    padding: 88px 0 44px !important;
     border-radius: 0 0 24px 24px;
   }
 
@@ -890,8 +901,19 @@ body.admin-body .fx-dash-mobile-profile--admin {
     margin-bottom: 0;
   }
 
+  .fx-page-shell--search .fx-auctions-mobile-type {
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+
+  .fx-page-shell--search .fx-auctions-mobile-type__link {
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
   .fx-page-shell--search .fx-filter-panel .mobile-sidebar-toggle {
-    min-height: 48px;
+    min-height: 44px;
     width: 100%;
     font-size: 14px;
     border: none;
@@ -921,9 +943,9 @@ body.admin-body .fx-dash-mobile-profile--admin {
   }
 
   .fx-page-shell--search .fx-search-toolbar {
-    padding: 12px 14px;
-    gap: 12px;
-    margin-bottom: 16px;
+    padding: 10px 12px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   .fx-page-shell--search .fx-pills {
@@ -2286,5 +2308,16 @@ body.fx-home.fx-page-shell .fx-page-body:not(.fx-page-body--overlap):not(.fx-pag
 
   body.fx-home.fx-page-shell--search .fx-search-toolbar {
     margin-bottom: 20px;
+  }
+}
+
+/* Build 128 — auctions mobile: cards first, filter below, tighter gaps */
+@media (max-width: 991px) {
+  body.fx-home.fx-page-shell--search .fx-page-hero {
+    padding-bottom: 44px !important;
+  }
+
+  body.fx-home.fx-page-shell--search .fx-page-body--overlap {
+    padding-top: 12px !important;
   }
 }
