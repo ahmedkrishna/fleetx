@@ -1543,3 +1543,128 @@ body.admin-body .fx-dash-mobile-profile--admin {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   About page — mobile polish
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .fx-page-shell--about {
+    overflow-x: hidden;
+  }
+
+  .fx-page-shell--about .fx-page-body--overlap {
+    margin-top: -32px;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover {
+    padding: 92px 0 36px;
+    border-radius: 0 0 28px 28px;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover .fx-page-hero__title {
+    font-size: clamp(22px, 6vw, 28px);
+    line-height: 1.35;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover .fx-page-hero__desc {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-top: 12px;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover .fx-page-hero__meta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--about .fx-page-hero--cover .fx-page-hero__chip {
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .fx-about-v2 {
+    padding: 0 16px 56px;
+  }
+
+  .fx-about-v2__intro p {
+    font-size: 15px;
+    line-height: 1.75;
+    margin-bottom: 24px;
+    padding-inline: 4px;
+  }
+
+  .fx-about-v2__pillars {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .fx-about-v2__pillar {
+    padding: 20px 18px;
+    border-radius: 18px;
+  }
+
+  .fx-about-v2__track {
+    padding: 20px 16px 22px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .fx-about-v2__track-head {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  .fx-about-v2__track-head h2 {
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  .fx-about-v2__steps {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 10px;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .fx-about-v2__steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-about-v2__arrow {
+    display: none !important;
+  }
+
+  .fx-about-v2__steps > li:not(.fx-about-v2__arrow) {
+    flex: 0 0 min(72vw, 220px);
+    scroll-snap-align: start;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .fx-about-v2__cta {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .fx-about-v2__cta .btn {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+}
