@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '97');
+define('FLEETX_CSS_VER', '98');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -735,12 +735,17 @@ function notifyUser($conn, $user_id, $type, $title, $message, $link = '', $chann
     $urow = $ustmt->get_result()->fetch_assoc();
     $mobile = $urow['mobile'] ?? '';
     $email = $urow['email'] ?? '';
+    $full_message = $title . ' — ' . $message . ($link ? ' ' . (str_starts_with($link, 'http') ? $link : SITE_URL . $link) : '');
 
     if ($mobile) {
-        if (in_array('sms', $channels, true)) sendSmsNotification($mobile, $message);
-        if (in_array('whatsapp', $channels, true)) sendWhatsAppNotification($mobile, $message);
+        if (in_array('sms', $channels, true) && fleetx_channel_enabled($conn, 'sms')) {
+            sendSmsNotification($mobile, $full_message);
+        }
+        if (in_array('whatsapp', $channels, true) && fleetx_channel_enabled($conn, 'whatsapp')) {
+            sendWhatsAppNotification($mobile, $full_message);
+        }
     }
-    if (in_array('email', $channels, true) && $email) {
+    if (in_array('email', $channels, true) && fleetx_channel_enabled($conn, 'email') && $email) {
         sendEmailNotification($email, $title, $message . ($link ? "\n$link" : ''));
     }
 }
@@ -757,26 +762,42 @@ function sendSmsNotification($mobile, $message) {
 function sendWhatsAppNotification($mobile, $message) {
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
-    $line = date('Y-m-d H:i:s') . " [WhatsApp] $mobile: $message\n";
+    $api_mobile = fleetx_normalize_mobile_api($mobile);
+    $line = date('Y-m-d H:i:s') . " [WhatsApp] $api_mobile: $message\n";
     @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
-    $wa_url = getenv('WHATSAPP_API_URL') ?: (defined('WHATSAPP_API_URL') ? WHATSAPP_API_URL : '');
-    if ($wa_url) {
-        $payload = json_encode(['to' => $mobile, 'body' => $message], JSON_UNESCAPED_UNICODE);
-        $ch = curl_init($wa_url);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 12,
-        ]);
-        curl_exec($ch);
-        curl_close($ch);
-        if (function_exists('fx_integration_log')) {
-            fx_integration_log('whatsapp', 'sent', ['mobile' => $mobile]);
-        }
+
+    $wa_url = getenv('WHATSAPP_API_URL') ?: (defined('WHATSAPP_API_URL') ? (string)WHATSAPP_API_URL : '');
+    if ($wa_url === '') return true;
+
+    $token = getenv('WHATSAPP_API_TOKEN') ?: (defined('WHATSAPP_API_TOKEN') ? (string)WHATSAPP_API_TOKEN : '');
+    $headers = ['Content-Type: application/json'];
+    if ($token !== '') {
+        $headers[] = 'Authorization: Bearer ' . $token;
     }
-    return true;
+
+    $payload = json_encode([
+        'to' => $api_mobile,
+        'body' => $message,
+        'type' => 'text',
+    ], JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init($wa_url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $payload,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 15,
+    ]);
+    $resp = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [WhatsApp API] HTTP $code " . substr((string)$resp, 0, 200) . "\n", FILE_APPEND);
+    if (function_exists('fx_integration_log')) {
+        fx_integration_log('whatsapp', 'api', ['mobile' => $api_mobile, 'http' => $code]);
+    }
+    return $code >= 200 && $code < 300;
 }
 
 /** AutoData-style market price estimate (heuristic until live API connected) */
@@ -828,6 +849,25 @@ function fleetx_get_setting($conn, string $key, $default = null) {
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     return $row['setting_value'] ?? $default;
+}
+
+function fleetx_channel_enabled($conn, string $channel): bool {
+    $key = $channel . '_enabled';
+    $val = fleetx_get_setting($conn, $key, '1');
+    return (string)$val !== '0' && $val !== false;
+}
+
+/** Normalize Saudi mobile for SMS/WhatsApp APIs (9665XXXXXXXX) */
+function fleetx_normalize_mobile_api(string $mobile): string {
+    $digits = preg_replace('/\D/', '', $mobile);
+    if (str_starts_with($digits, '966')) return $digits;
+    if (str_starts_with($digits, '05') && strlen($digits) === 10) {
+        return '966' . substr($digits, 1);
+    }
+    if (str_starts_with($digits, '5') && strlen($digits) === 9) {
+        return '966' . $digits;
+    }
+    return $digits;
 }
 
 function fleetx_login_role_for_type(string $login_type): string {

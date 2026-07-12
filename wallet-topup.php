@@ -4,6 +4,7 @@ requireLogin();
 
 $page_title = 'شحن المحفظة | FleetX';
 $user_id = (int)getUserId();
+$cancelled = isset($_GET['cancelled']);
 
 if ($db_connected) {
     $wst = $conn->prepare('SELECT wallet_balance FROM users WHERE id = ?');
@@ -16,18 +17,16 @@ if ($db_connected) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = intval($_POST['amount'] ?? 0);
-    if ($amount > 0) {
-        $_SESSION['wallet_balance'] = ($_SESSION['wallet_balance'] ?? 0) + $amount;
-        if ($db_connected) {
-            $stmt = $conn->prepare('UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?');
-            $stmt->bind_param('di', $amount, $user_id);
-            $stmt->execute();
-            notifyUser($conn, $user_id, 'payment', 'تم شحن المحفظة ✓', 'تم إضافة ' . number_format($amount) . ' ر.س إلى محفظتك بنجاح.', '/buyer.php?section=wallet', ['in_app', 'whatsapp', 'sms']);
+    $method = $_POST['payment_method'] ?? 'mada';
+    if ($amount >= 100 && $db_connected && fleetx_table_exists($conn, 'payment_intents')) {
+        require_once __DIR__ . '/includes/integrations.php';
+        $intent = paymentGatewayCreateWalletIntent($conn, $user_id, (float)$amount, $method);
+        if ($intent && !empty($intent['redirect'])) {
+            header('Location: ' . $intent['redirect']);
+            exit;
         }
-        $back = getUserRole() === 'seller' ? '/seller.php?section=wallet&topup=1' : '/buyer.php?section=wallet&topup=1';
-        header('Location: ' . $back);
-        exit;
     }
+    fleetx_set_toast('تعذّر بدء عملية الشحن. تأكد من المبلغ (100 ر.س كحد أدنى) وحاول مرة أخرى.', 'error');
 }
 ?>
 <!DOCTYPE html>
@@ -43,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php
 $hero_title = 'شحن المحفظة الرقمية';
-$hero_desc = 'أودع مبالغ في محفظتك لاستخدامها كتأمين للمزايدة أو للشراء الفوري.';
-$hero_bg = 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600&q=80';
+$hero_desc = 'أودع مبالغ في محفظتك عبر بوابة دفع آمنة (مدى / Visa / Apple Pay) لاستخدامها كتأمين للمزايدة.';
+$hero_bg = fleetx_subpage_hero_bg('wallet-topup');
 $hero_eyebrow = 'المحفظة';
 $hero_back_href = '/profile.php?tab=wallet';
 $hero_back_label = '← العودة لحسابي';
@@ -52,6 +51,9 @@ include 'includes/page-hero.inc.php';
 ?>
 
 <div class="container fx-page-body fx-page-body--overlap fx-wallet-page">
+  <?php if ($cancelled): ?>
+  <div class="fx-error-box" style="margin-bottom:16px;"><i class="ph ph-info"></i> تم إلغاء عملية الشحن.</div>
+  <?php endif; ?>
 
   <div class="fx-wallet-card">
     <div class="fx-wallet-balance">
@@ -72,8 +74,17 @@ include 'includes/page-hero.inc.php';
         </div>
         <?php endforeach; ?>
       </div>
-      <input type="number" name="amount" id="custom_amount" class="fx-form-input fx-wallet-input-spaced" placeholder="أو أدخل مبلغاً مخصصاً" min="100" step="100" required>
-      <button type="submit" class="fx-btn-auth">شحن المحفظة</button>
+      <input type="number" name="amount" id="custom_amount" class="fx-form-input fx-wallet-input-spaced" placeholder="أو أدخل مبلغاً مخصصاً (حد أدنى 100)" min="100" step="100" required>
+
+      <h3 class="fx-wallet-form-title" style="margin-top:20px;">طريقة الدفع</h3>
+      <div class="fx-wallet-pay-methods">
+        <label class="fx-wallet-pay-opt"><input type="radio" name="payment_method" value="mada" checked> <i class="ph-fill ph-credit-card"></i> مدى</label>
+        <label class="fx-wallet-pay-opt"><input type="radio" name="payment_method" value="card"> <i class="ph-fill ph-credit-card"></i> Visa / Mastercard</label>
+        <label class="fx-wallet-pay-opt"><input type="radio" name="payment_method" value="apple_pay"> <i class="ph-fill ph-apple-logo"></i> Apple Pay</label>
+      </div>
+
+      <button type="submit" class="fx-btn-auth"><i class="ph-fill ph-lock"></i> متابعة للدفع الآمن</button>
+      <p class="fx-wallet-pay-note">يتم إضافة الرصيد بعد تأكيد الدفع عبر بوابة FleetX الآمنة.</p>
     </form>
   </div>
 </div>

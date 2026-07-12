@@ -8,8 +8,8 @@ if (!$ref || !$db_connected) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT pi.*, a.title, v.make, v.model, v.year FROM payment_intents pi JOIN auctions a ON pi.auction_id=a.id JOIN vehicles v ON a.vehicle_id=v.id WHERE pi.reference=? AND pi.buyer_id=? AND pi.status='pending' LIMIT 1");
 $uid = (int)getUserId();
+$stmt = $conn->prepare("SELECT * FROM payment_intents WHERE reference=? AND buyer_id=? AND status='pending' LIMIT 1");
 $stmt->bind_param('si', $ref, $uid);
 $stmt->execute();
 $intent = $stmt->get_result()->fetch_assoc();
@@ -19,7 +19,19 @@ if (!$intent) {
     exit;
 }
 
-$title = $intent['title'] ?: ($intent['make'] . ' ' . $intent['model'] . ' ' . $intent['year']);
+$purpose = $intent['purpose'] ?? 'purchase';
+$is_wallet = ($purpose === 'wallet_topup' || (int)($intent['auction_id'] ?? 0) === 0);
+$title = 'شحن المحفظة الرقمية';
+if (!$is_wallet) {
+    $vstmt = $conn->prepare("SELECT a.title, v.make, v.model, v.year FROM auctions a JOIN vehicles v ON a.vehicle_id=v.id WHERE a.id=? LIMIT 1");
+    $aid = (int)$intent['auction_id'];
+    $vstmt->bind_param('i', $aid);
+    $vstmt->execute();
+    $vrow = $vstmt->get_result()->fetch_assoc();
+    if ($vrow) {
+        $title = $vrow['title'] ?: ($vrow['make'] . ' ' . $vrow['model'] . ' ' . $vrow['year']);
+    }
+}
 $method_labels = [
     'card' => 'بطاقة ائتمانية',
     'mada' => 'مدى',
@@ -53,7 +65,7 @@ $method_label = $method_labels[$intent['method']] ?? $intent['method'];
       <input type="hidden" name="confirm" value="1">
       <button type="submit" class="btn btn-primary fx-checkout-submit" style="width:100%;">تأكيد الدفع</button>
     </form>
-    <a href="/checkout.php?id=<?= (int)$intent['auction_id'] ?>&cancelled=1" style="display:block;margin-top:16px;color:var(--text-muted);">إلغاء والعودة</a>
+    <a href="<?= $is_wallet ? '/wallet-topup.php?cancelled=1' : '/checkout.php?id=' . (int)$intent['auction_id'] . '&cancelled=1' ?>" style="display:block;margin-top:16px;color:var(--text-muted);">إلغاء والعودة</a>
   </div>
 </div>
 <?php include 'includes/footer.php'; ?>

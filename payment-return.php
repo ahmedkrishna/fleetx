@@ -25,6 +25,34 @@ if (!$intent) {
     exit;
 }
 
+$purpose = $intent['purpose'] ?? 'purchase';
+$is_wallet = ($purpose === 'wallet_topup' || (int)($intent['auction_id'] ?? 0) === 0);
+
+if ($is_wallet) {
+    $amount = (float)$intent['amount'];
+    $method = $intent['method'] ?? 'mada';
+    $conn->begin_transaction();
+    try {
+        $conn->query("UPDATE payment_intents SET status='completed', completed_at=NOW() WHERE reference='" . $conn->real_escape_string($ref) . "'");
+        $wstmt = $conn->prepare('UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?');
+        $wstmt->bind_param('di', $amount, $uid);
+        $wstmt->execute();
+        $_SESSION['wallet_balance'] = ($_SESSION['wallet_balance'] ?? 0) + $amount;
+        notifyUser($conn, $uid, 'payment', 'تم شحن المحفظة ✓', 'تم إضافة ' . number_format($amount) . ' ر.س إلى محفظتك عبر ' . $method . '.', '/buyer.php?section=wallet', ['in_app', 'whatsapp', 'sms']);
+        $conn->commit();
+        fleetx_set_toast('تم شحن محفظتك بنجاح بمبلغ ' . number_format($amount) . ' ر.س');
+        $back = getUserRole() === 'seller' ? '/seller.php?section=wallet&topup=1' : '/buyer.php?section=wallet&topup=1';
+        header('Location: ' . $back);
+        exit;
+    } catch (Throwable $e) {
+        $conn->rollback();
+        $conn->query("UPDATE payment_intents SET status='failed' WHERE reference='" . $conn->real_escape_string($ref) . "'");
+        fleetx_set_toast('حدث خطأ أثناء شحن المحفظة', 'error');
+        header('Location: /wallet-topup.php');
+        exit;
+    }
+}
+
 $auction_id = (int)$intent['auction_id'];
 $pay_total = (float)$intent['amount'];
 $inspection_fee = (float)($intent['inspection_fee'] ?? 0);

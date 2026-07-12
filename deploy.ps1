@@ -125,6 +125,7 @@ $files = @(
     'migrate_requirements.php',
     'cron/end-auctions.php',
     'tests/verify_live_ui.php',
+    'tests/verify_wallet_payment.php',
     'tests/e2e_end_to_end.php',
     'tests/e2e.php'
 )

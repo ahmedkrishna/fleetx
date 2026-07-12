@@ -79,3 +79,35 @@ function paymentGatewayCreateIntent(mysqli $conn, int $auction_id, int $buyer_id
     }
     return ['reference' => $ref, 'redirect' => $redirect, 'return_url' => $return_url, 'cancel_url' => $cancel_url];
 }
+
+/** Wallet top-up payment intent (auction_id = 0, purpose = wallet_topup). */
+function paymentGatewayCreateWalletIntent(mysqli $conn, int $buyer_id, float $amount, string $method): ?array {
+    if (!fleetx_table_exists($conn, 'payment_intents') || $amount <= 0) return null;
+    $ref = 'FXW-' . strtoupper(substr(md5(uniqid((string)$buyer_id, true)), 0, 12));
+    $extras = '[]';
+    $insp = 0.0;
+    $auction_id = 0;
+    $purpose = 'wallet_topup';
+
+    $has_purpose = false;
+    $col = $conn->query("SHOW COLUMNS FROM payment_intents LIKE 'purpose'");
+    if ($col && $col->num_rows > 0) $has_purpose = true;
+
+    if ($has_purpose) {
+        $stmt = $conn->prepare('INSERT INTO payment_intents (reference, auction_id, buyer_id, amount, method, purpose, extra_services, inspection_fee) VALUES (?,?,?,?,?,?,?,?)');
+        $stmt->bind_param('siidsssd', $ref, $auction_id, $buyer_id, $amount, $method, $purpose, $extras, $insp);
+    } else {
+        $stmt = $conn->prepare('INSERT INTO payment_intents (reference, auction_id, buyer_id, amount, method, extra_services, inspection_fee) VALUES (?,?,?,?,?,?,?)');
+        $stmt->bind_param('siidssd', $ref, $auction_id, $buyer_id, $amount, $method, $extras, $insp);
+    }
+    if (!$stmt->execute()) return null;
+
+    $return_url = SITE_URL . '/payment-return.php?ref=' . urlencode($ref);
+    if (PAYMENT_GATEWAY_URL) {
+        fx_integration_log('payment', 'wallet topup live gateway', ['ref' => $ref, 'amount' => $amount]);
+        $redirect = PAYMENT_GATEWAY_URL . '?ref=' . urlencode($ref) . '&amount=' . $amount . '&return=' . urlencode($return_url);
+    } else {
+        $redirect = '/payment-gateway.php?ref=' . urlencode($ref);
+    }
+    return ['reference' => $ref, 'redirect' => $redirect, 'return_url' => $return_url, 'cancel_url' => '/wallet-topup.php?cancelled=1'];
+}

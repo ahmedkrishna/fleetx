@@ -100,12 +100,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Notify seller
                     $car_name = $vehicle['title'] ?: $vehicle['make'].' '.$vehicle['model'].' '.$vehicle['year'];
                     $seller_user = $conn->query("SELECT user_id FROM seller_companies WHERE id=".(int)$vehicle['seller_id'])->fetch_assoc();
+                    notifyUser($conn, $user_id, 'payment', 'تم الدفع من المحفظة ✓', 'تم دفع ' . formatPrice($price) . " لشراء {$car_name}.", '/buyer.php?section=purchases', ['in_app', 'whatsapp', 'sms']);
                     if ($seller_user) {
-                        createNotification($conn, $seller_user['user_id'], 'payment',
-                            'تم الدفع! 💰', 
-                            "تم دفع مبلغ ".formatPrice($price)." لشراء {$car_name}",
-                            "/seller.php?section=payouts"
-                        );
+                        notifyUser($conn, (int)$seller_user['user_id'], 'payment', 'تم الدفع! 💰', 'تم دفع مبلغ ' . formatPrice($price) . " لشراء {$car_name}", '/seller.php?section=payouts', ['in_app', 'whatsapp']);
                     }
                     
                     $conn->commit();

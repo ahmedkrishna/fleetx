@@ -108,6 +108,7 @@ $queries = [
         INDEX `idx_buyer` (`buyer_id`),
         INDEX `idx_auction` (`auction_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" => 'payment_intents table',
+    "ALTER TABLE `payment_intents` ADD COLUMN `purpose` VARCHAR(32) NOT NULL DEFAULT 'purchase' AFTER `method`" => 'payment_intents.purpose',
 ];
 
 foreach ($queries as $sql => $label) {
