@@ -35,7 +35,7 @@ if ($db_connected) {
 $approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 94;
 $stats_sales_val = '120';
 $stats_sales_unit = '';
-$stats_sales_unit_ar = 'مليون ريال';
+$stats_sales_unit_ar = 'مليون';
 $stats_success_pct = (string) max(94, (int) round($approval_rate));
 
 // Fetch auctions early for hero bid signs + section 2
