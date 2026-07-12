@@ -592,19 +592,16 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
             <strong>فحص شامل</strong>
             <small>تقييم فني دقيق</small>
           </li>
-          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-gavel"></i></span>
             <strong>مزاد حي</strong>
             <small>مزايدة شفافة فورية</small>
           </li>
-          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-hand-coins"></i></span>
             <strong>تسوية آمنة</strong>
             <small>دفع ومحفظة موثقة</small>
           </li>
-          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-truck"></i></span>
             <strong>تسليم موثق</strong>

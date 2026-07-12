@@ -5192,3 +5192,42 @@ body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-info-row:
 body.fx-home-index .fx-home-auctions .auction-card.fx-card-unified .ac-timer-side {
   display: flex !important;
 }
+
+/* ==========================================================================
+   Phase 121 — §4 journey wide card: steps + icons only (no arrows/lines)
+   ========================================================================== */
+
+body.fx-home-index .fx-why-journey__arrow {
+  display: none !important;
+}
+
+body.fx-home-index .fx-why-journey__steps::before,
+body.fx-home-index .fx-why-journey__steps li + li::before {
+  display: none !important;
+  content: none !important;
+}
+
+body.fx-home-index .fx-why-journey__steps {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+}
+
+body.fx-home-index .fx-why-journey__steps li:not(.fx-why-journey__arrow) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+@media (max-width: 900px) {
+  body.fx-home-index .fx-why-journey__steps {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body.fx-home-index .fx-why-journey__steps {
+    grid-template-columns: 1fr !important;
+  }
+}
