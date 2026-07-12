@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '94');
+define('FLEETX_CSS_VER', '96');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -293,14 +293,45 @@ function getTimeDiff($end_time) {
 }
 
 /**
- * Refresh expired auction_events.end_time from active lot end times (or +7 days fallback).
- * Returns ['events' => int, 'auctions' => int].
+ * Refresh auction + event end times: align lots per event, sync event row, +7d fallback when needed.
+ * Returns ['events' => int, 'auctions' => int, 'fallback' => string].
  */
 function fleetx_refresh_event_end_times(mysqli $conn): array {
     $events_updated = 0;
     $auctions_updated = 0;
     $fallback = date('Y-m-d H:i:s', time() + 86400 * 7);
+    $horizon = date('Y-m-d H:i:s', time() + 86400 * 6);
 
+    // Normalize lots to the earliest valid future deadline in each event (ignores +7d fallback bumps).
+    $conn->query("
+        UPDATE auctions a
+        INNER JOIN (
+            SELECT event_id, MIN(end_time) AS canon_end
+            FROM auctions
+            WHERE event_id IS NOT NULL
+              AND status IN ('active','live')
+              AND end_time > NOW()
+              AND end_time <= '$horizon'
+            GROUP BY event_id
+        ) canon ON canon.event_id = a.event_id
+        SET a.end_time = canon.canon_end,
+            a.status = 'active'
+        WHERE a.status IN ('active','live')
+          AND a.event_id IS NOT NULL
+          AND (a.end_time IS NULL OR a.end_time < NOW() OR a.end_time <> canon.canon_end)
+    ");
+    $auctions_updated += (int)$conn->affected_rows;
+
+    // Extend remaining expired lots (no valid sibling deadline) via fallback.
+    $conn->query("
+        UPDATE auctions
+        SET status = 'active', end_time = '$fallback'
+        WHERE status IN ('active','live')
+          AND (end_time IS NULL OR end_time < NOW())
+    ");
+    $auctions_updated += (int)$conn->affected_rows;
+
+    // Sync event end_time from active lots.
     $conn->query("
         UPDATE auction_events ae
         INNER JOIN (
@@ -326,14 +357,6 @@ function fleetx_refresh_event_end_times(mysqli $conn): array {
     ");
     $events_updated += (int)$conn->affected_rows;
 
-    $conn->query("
-        UPDATE auctions
-        SET status = 'active', end_time = '$fallback'
-        WHERE status IN ('active','live')
-          AND (end_time IS NULL OR end_time < NOW())
-    ");
-    $auctions_updated += (int)$conn->affected_rows;
-
     return ['events' => $events_updated, 'auctions' => $auctions_updated, 'fallback' => $fallback];
 }
 
@@ -351,15 +374,29 @@ function fleetx_event_countdown_end(mysqli $conn, int $event_id, ?string $event_
             $est->close();
             $event_row_end = $row['end_time'] ?? null;
         }
+        $horizon = date('Y-m-d H:i:s', time() + 86400 * 6);
         $lst = $conn->prepare("
             SELECT MAX(end_time) AS lot_max FROM auctions
             WHERE event_id = ? AND status IN ('active','live') AND end_time IS NOT NULL
+              AND end_time > NOW() AND end_time <= ?
         ");
         if ($lst) {
-            $lst->bind_param('i', $event_id);
+            $lst->bind_param('is', $event_id, $horizon);
             $lst->execute();
             $lot_max = $lst->get_result()->fetch_assoc()['lot_max'] ?? null;
             $lst->close();
+        }
+        if (!$lot_max) {
+            $lst2 = $conn->prepare("
+                SELECT MAX(end_time) AS lot_max FROM auctions
+                WHERE event_id = ? AND status IN ('active','live') AND end_time IS NOT NULL
+            ");
+            if ($lst2) {
+                $lst2->bind_param('i', $event_id);
+                $lst2->execute();
+                $lot_max = $lst2->get_result()->fetch_assoc()['lot_max'] ?? null;
+                $lst2->close();
+            }
         }
     }
 

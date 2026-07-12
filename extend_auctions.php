@@ -28,4 +28,5 @@ while ($row = $re->fetch_assoc()) {
     $hero_end = fleetx_event_countdown_end($conn, (int)$row['id'], $row['end_time']);
     echo " event #{$row['id']} end={$row['end_time']} hero={$hero_end} remaining={$tl['days']}d {$tl['hours']}h {$tl['mins']}m\n";
 }
+
 echo "\nDone.\n";
