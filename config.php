@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '92');
+define('FLEETX_CSS_VER', '94');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -314,7 +314,7 @@ function fleetx_refresh_event_end_times(mysqli $conn): array {
         SET ae.end_time = lots.lot_max_end,
             ae.status = 'active'
         WHERE ae.status IN ('active','upcoming')
-          AND (ae.end_time IS NULL OR ae.end_time < NOW() OR ae.end_time < lots.lot_max_end)
+          AND (ae.end_time IS NULL OR ae.end_time <> lots.lot_max_end)
     ");
     $events_updated += (int)$conn->affected_rows;
 
@@ -337,25 +337,51 @@ function fleetx_refresh_event_end_times(mysqli $conn): array {
     return ['events' => $events_updated, 'auctions' => $auctions_updated, 'fallback' => $fallback];
 }
 
-/** Effective countdown end for an event (event row vs latest active lot). */
-function fleetx_event_countdown_end(mysqli $conn, int $event_id, ?string $event_end_time): string {
-    $best = trim((string)$event_end_time);
+/** Effective countdown end for an event (active lot deadline, else event row). */
+function fleetx_event_countdown_end(mysqli $conn, int $event_id, ?string $event_end_time = null): string {
+    $lot_max = null;
+    $event_row_end = null;
+
     if ($event_id > 0) {
-        $stmt = $conn->prepare("
-            SELECT MAX(end_time) FROM auctions
+        $est = $conn->prepare('SELECT end_time FROM auction_events WHERE id = ? LIMIT 1');
+        if ($est) {
+            $est->bind_param('i', $event_id);
+            $est->execute();
+            $row = $est->get_result()->fetch_assoc();
+            $est->close();
+            $event_row_end = $row['end_time'] ?? null;
+        }
+        $lst = $conn->prepare("
+            SELECT MAX(end_time) AS lot_max FROM auctions
             WHERE event_id = ? AND status IN ('active','live') AND end_time IS NOT NULL
         ");
-        if ($stmt) {
-            $stmt->bind_param('i', $event_id);
-            $stmt->execute();
-            $lot_max = $stmt->get_result()->fetch_row()[0] ?? null;
-            $stmt->close();
-            if ($lot_max && (!$best || strtotime($lot_max) > strtotime($best))) {
-                $best = $lot_max;
-            }
+        if ($lst) {
+            $lst->bind_param('i', $event_id);
+            $lst->execute();
+            $lot_max = $lst->get_result()->fetch_assoc()['lot_max'] ?? null;
+            $lst->close();
         }
     }
-    if ($best === '' || strtotime($best) <= time()) {
+
+    if ($lot_max && strtotime((string)$lot_max) > time()) {
+        return (string)$lot_max;
+    }
+
+    $candidates = array_filter([
+        $event_end_time ? trim($event_end_time) : null,
+        $event_row_end,
+        $lot_max,
+    ]);
+    $best = '';
+    $best_ts = 0;
+    foreach ($candidates as $c) {
+        $ts = strtotime((string)$c);
+        if ($ts && $ts > $best_ts) {
+            $best_ts = $ts;
+            $best = (string)$c;
+        }
+    }
+    if ($best_ts <= time()) {
         $best = date('Y-m-d H:i:s', time() + 86400 * 7);
     }
     return $best;

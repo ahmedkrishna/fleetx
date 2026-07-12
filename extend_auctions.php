@@ -25,6 +25,7 @@ echo "\n-- Sample active events --\n";
 $re = $conn->query("SELECT id, title, status, end_time FROM auction_events WHERE status IN ('active','upcoming') ORDER BY id LIMIT 5");
 while ($row = $re->fetch_assoc()) {
     $tl = timeLeft($row['end_time']);
-    echo " event #{$row['id']} end={$row['end_time']} remaining={$tl['days']}d {$tl['hours']}h {$tl['mins']}m\n";
+    $hero_end = fleetx_event_countdown_end($conn, (int)$row['id'], $row['end_time']);
+    echo " event #{$row['id']} end={$row['end_time']} hero={$hero_end} remaining={$tl['days']}d {$tl['hours']}h {$tl['mins']}m\n";
 }
 echo "\nDone.\n";
