@@ -146,9 +146,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= sanitize($page_title) ?> | FleetX</title>
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-home fx-page-shell fx-page-shell--checkout">
+<body class="fx-home fx-page-shell fx-page-shell--checkout" data-fx-build="<?= FLEETX_CSS_VER ?>">
 
 <?php include 'includes/navbar.php'; ?>
 
@@ -206,7 +207,7 @@ include 'includes/page-hero.inc.php';
 
       <h3 class="fx-checkout-heading">طريقة الدفع</h3>
       
-      <form action="" method="POST">
+      <form action="" method="POST" id="fxCheckoutForm">
         <div class="fx-checkout-stack fx-checkout-stack--payments">
           
           <label class="payment-option" onclick="document.querySelectorAll('.payment-option').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
@@ -335,6 +336,18 @@ include 'includes/page-hero.inc.php';
   </div>
 </div>
 
+<div class="fx-mobile-bid-bar fx-checkout-mobile-bar" id="fxCheckoutPayBar" aria-label="تأكيد الدفع">
+  <div class="fx-mobile-bid-inner">
+    <div class="fx-mobile-bid-price">
+      <small>الإجمالي</small>
+      <strong class="font-en" id="fxCheckoutMobileTotal"><?= number_format($total) ?> SAR</strong>
+    </div>
+    <button type="submit" form="fxCheckoutForm" class="fx-mobile-bid-btn">
+      <i class="ph-fill ph-lock-key"></i> تأكيد الدفع
+    </button>
+  </div>
+</div>
+
 <?php include 'includes/footer.php'; ?>
 
 <!-- Scripts -->
@@ -375,7 +388,10 @@ include 'includes/page-hero.inc.php';
               summaryDiv.classList.remove('is-visible');
           }
           
-          totalDisplay.innerHTML = currentTotal.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",") + ' SAR';
+          const formatted = currentTotal.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",") + ' SAR';
+          totalDisplay.innerHTML = formatted;
+          const mobileTotal = document.getElementById('fxCheckoutMobileTotal');
+          if (mobileTotal) mobileTotal.textContent = formatted;
       });
   });
   // Show/Hide CC form
