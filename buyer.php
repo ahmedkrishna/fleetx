@@ -81,6 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_settings'])) {
             $stmt->bind_param('sssi', $new_name, $new_phone, $new_city, $_SESSION['user_id']);
             $stmt->execute();
         }
+
+        $wa_mobile = $new_phone ?: ($_SESSION['user_phone'] ?? '');
+        if ($wa_mobile && isset($_POST['whatsapp_optin'])) {
+            if (($_POST['whatsapp_optin'] ?? '0') === '1') {
+                fleetx_whatsapp_optin_register($wa_mobile, $conn, (int)$_SESSION['user_id']);
+            } else {
+                fleetx_whatsapp_optout($wa_mobile, $conn, (int)$_SESSION['user_id']);
+            }
+        }
     }
     fleetx_set_toast('تم حفظ التغييرات بنجاح');
     header('Location: ?section=settings');
@@ -840,18 +849,21 @@ include 'includes/page-hero.inc.php';
       $current_name = $_SESSION['user_name'] ?? '';
       $current_phone = $_SESSION['user_phone'] ?? '';
       $current_city = $_SESSION['user_city'] ?? '';
+      $whatsapp_opted_in = false;
 
       // Try to load from DB
       if ($db_connected) {
-          $stmt = $conn->prepare('SELECT full_name, mobile, city FROM users WHERE id = ?');
+          fleetx_ensure_whatsapp_optin_schema($conn);
+          $stmt = $conn->prepare('SELECT full_name, mobile, city, whatsapp_optin FROM users WHERE id = ?');
           if ($stmt) {
               $stmt->bind_param('i', $user_id);
               $stmt->execute();
-              $stmt->bind_result($db_name, $db_phone, $db_city);
+              $stmt->bind_result($db_name, $db_phone, $db_city, $db_wa_optin);
               if ($stmt->fetch()) {
                   $current_name = $db_name ?: $current_name;
                   $current_phone = $db_phone ?: $current_phone;
                   $current_city = $db_city ?: $current_city;
+                  $whatsapp_opted_in = (int)($db_wa_optin ?? 0) === 1;
               }
               $stmt->close();
           }
@@ -894,6 +906,15 @@ include 'includes/page-hero.inc.php';
                 <option value="<?= $c ?>" <?= $current_city === $c ? 'selected' : '' ?>><?= $c ?></option>
               <?php endforeach; ?>
             </select>
+          </div>
+
+          <div style="margin-top:8px; padding-top:20px; border-top:1px solid var(--border-light);">
+            <h4 style="font-size:16px; font-weight:800; color:var(--text-dark); margin-bottom:12px;">إشعارات واتساب</h4>
+            <label class="promissory-check" style="margin-bottom:20px;">
+              <input type="hidden" name="whatsapp_optin" value="0">
+              <input type="checkbox" name="whatsapp_optin" value="1" <?= $whatsapp_opted_in ? 'checked' : '' ?>>
+              استلام إشعارات المزادات والمزايدات عبر واتساب
+            </label>
           </div>
 
           <div style="margin-top:8px; padding-top:20px; border-top:1px solid var(--border-light);">

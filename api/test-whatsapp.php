@@ -32,6 +32,33 @@ if (!empty($_GET['lang']) || !empty($_POST['lang'])) {
 if (!empty($_GET['session']) || !empty($_POST['session'])) {
     $overrides['session'] = true;
 }
+if (!empty($_GET['force']) || !empty($_POST['force'])) {
+    $overrides['force'] = true;
+}
+
+$action = trim($_GET['action'] ?? $_POST['action'] ?? 'send');
+if ($action === 'optin') {
+    $result = fleetx_whatsapp_optin_register($mobile, $conn, null);
+    echo json_encode([
+        'ok' => $result['ok'] ?? false,
+        'action' => 'optin',
+        'opted_in' => $result['opted_in'] ?? true,
+        'mobile' => $result['mobile'] ?? fleetx_normalize_mobile_api($mobile),
+        'api' => $result['api'] ?? null,
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
+if ($action === 'optout') {
+    $result = fleetx_whatsapp_optout($mobile, $conn, null);
+    echo json_encode([
+        'ok' => $result['ok'] ?? false,
+        'action' => 'optout',
+        'opted_in' => $result['opted_in'] ?? false,
+        'mobile' => $result['mobile'] ?? fleetx_normalize_mobile_api($mobile),
+        'api' => $result['api'] ?? null,
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
 
 if ($save_token && $db_connected && !empty($overrides['token']) && fleetx_table_exists($conn, 'platform_settings')) {
     $pairs = [

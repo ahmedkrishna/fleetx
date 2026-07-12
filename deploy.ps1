@@ -122,6 +122,7 @@ $files = @(
     'api/otp.php',
     'api/google-login.php',
     'api/test-whatsapp.php',
+    'api/test-sms.php',
     'api/e2e_helpers.php',
     'includes/fx-service-bundles.inc.php',
     'includes/integrations.php',
@@ -130,6 +131,7 @@ $files = @(
     'tests/verify_live_ui.php',
     'tests/verify_wallet_payment.php',
     'tests/verify_whatsapp.php',
+    'tests/verify_sms.php',
     'tests/e2e_end_to_end.php',
     'tests/e2e.php'
 )

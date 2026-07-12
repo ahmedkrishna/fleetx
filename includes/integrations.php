@@ -52,12 +52,11 @@ function autodataFetchPrice(string $make, string $model, int $year, int $mileage
     return null;
 }
 
-function smsSend(string $mobile, string $message): bool {
+function smsSend(string $mobile, string $message, $conn = null, array $overrides = []): array {
     if (SMS_API_KEY) {
         fx_integration_log('sms', 'API send', ['mobile' => $mobile]);
-        // Production: Taqnyat / Unifonic
     }
-    return sendSmsNotification($mobile, $message);
+    return sendSmsNotification($mobile, $message, $conn, $overrides);
 }
 
 function whatsappSend(string $mobile, string $message, $conn = null, array $overrides = []): array {

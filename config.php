@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '100');
+define('FLEETX_CSS_VER', '101');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -178,6 +178,23 @@ if (!defined('WHATSAPP_TEMPLATE_NAME')) {
 }
 if (!defined('WHATSAPP_TEMPLATE_LANG')) {
     define('WHATSAPP_TEMPLATE_LANG', getenv('WHATSAPP_TEMPLATE_LANG') ?: 'ar');
+}
+if (!defined('WHATSAPP_OPTIN_URL')) {
+    define('WHATSAPP_OPTIN_URL', getenv('WHATSAPP_OPTIN_URL') ?: 'https://api.taqnyat.sa/wa/v2/contacts/optin/');
+}
+if (!defined('WHATSAPP_OPTOUT_URL')) {
+    define('WHATSAPP_OPTOUT_URL', getenv('WHATSAPP_OPTOUT_URL') ?: 'https://api.taqnyat.sa/wa/v2/contacts/optout/');
+}
+
+/** SMS (Taqnyat) — override in config.local.php or admin → platform_settings */
+if (!defined('SMS_API_URL')) {
+    define('SMS_API_URL', getenv('SMS_API_URL') ?: 'https://api.taqnyat.sa/v1/messages');
+}
+if (!defined('SMS_API_TOKEN')) {
+    define('SMS_API_TOKEN', getenv('SMS_API_TOKEN') ?: getenv('SMS_API_KEY') ?: '');
+}
+if (!defined('SMS_SENDER_NAME')) {
+    define('SMS_SENDER_NAME', getenv('SMS_SENDER_NAME') ?: '');
 }
 
 /** Logo asset paths — logo.png for light backgrounds, logo-dark.png for dark */
@@ -765,7 +782,7 @@ function notifyUser($conn, $user_id, $type, $title, $message, $link = '', $chann
 
     if ($mobile) {
         if (in_array('sms', $channels, true) && fleetx_channel_enabled($conn, 'sms')) {
-            sendSmsNotification($mobile, $full_message);
+            sendSmsNotification($mobile, $full_message, $conn);
         }
         if (in_array('whatsapp', $channels, true) && fleetx_channel_enabled($conn, 'whatsapp')) {
             sendWhatsAppNotification($mobile, $full_message, $conn);
@@ -776,13 +793,242 @@ function notifyUser($conn, $user_id, $type, $title, $message, $link = '', $chann
     }
 }
 
-function sendSmsNotification($mobile, $message) {
+/** Low-level Taqnyat JSON HTTP helper. */
+function fleetx_taqnyat_json_request(string $url, string $token, array $payload, string $method = 'POST'): array {
+    $headers = ['Content-Type: application/json'];
+    if ($token !== '') {
+        $headers[] = 'Authorization: Bearer ' . $token;
+    }
+    $ch = curl_init($url);
+    $opts = [
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 20,
+    ];
+    if (strtoupper($method) === 'GET') {
+        $opts[CURLOPT_HTTPGET] = true;
+    } else {
+        $opts[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
+        $opts[CURLOPT_POSTFIELDS] = json_encode($payload, JSON_UNESCAPED_UNICODE);
+    }
+    curl_setopt_array($ch, $opts);
+    $resp = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
+    curl_close($ch);
+    $decoded = json_decode((string)$resp, true);
+    $ok = $code >= 200 && $code < 300;
+    if (is_array($decoded)) {
+        if ((int)($decoded['statusCode'] ?? 0) === 401) $ok = false;
+        if (isset($decoded['statuses']) && is_array($decoded['statuses']) && count($decoded['statuses']) > 0) $ok = true;
+        if ((int)($decoded['statusCode'] ?? 0) === 201) $ok = true;
+    }
+    return [
+        'ok' => $ok,
+        'http' => $code,
+        'response' => substr((string)$resp, 0, 400),
+        'error' => $err,
+        'decoded' => is_array($decoded) ? $decoded : null,
+    ];
+}
+
+function fleetx_sms_config($conn = null, array $overrides = []): array {
+    $url = trim((string)(getenv('SMS_API_URL') ?: (defined('SMS_API_URL') ? SMS_API_URL : '')));
+    $token = trim((string)(getenv('SMS_API_TOKEN') ?: (getenv('SMS_API_KEY') ?: (defined('SMS_API_TOKEN') ? SMS_API_TOKEN : ''))));
+    $sender = trim((string)(getenv('SMS_SENDER_NAME') ?: (defined('SMS_SENDER_NAME') ? SMS_SENDER_NAME : '')));
+
+    if ($conn && fleetx_table_exists($conn, 'platform_settings')) {
+        if ($token === '') $token = trim((string)fleetx_get_setting($conn, 'sms_api_token', ''));
+        if ($sender === '') $sender = trim((string)fleetx_get_setting($conn, 'sms_sender_name', ''));
+        $db_url = trim((string)fleetx_get_setting($conn, 'sms_api_url', ''));
+        if ($db_url !== '') $url = $db_url;
+    }
+
+    if (!empty($overrides['token'])) $token = trim((string)$overrides['token']);
+    if (!empty($overrides['sender'])) $sender = trim((string)$overrides['sender']);
+    if (!empty($overrides['url'])) $url = trim((string)$overrides['url']);
+
+    if ($url === '' && $token !== '') {
+        $url = 'https://api.taqnyat.sa/v1/messages';
+    }
+
+    return [
+        'url' => $url,
+        'token' => $token,
+        'sender' => $sender,
+        'configured' => ($token !== '' && $sender !== '' && $url !== ''),
+    ];
+}
+
+function sendSmsNotification($mobile, $message, $conn = null, array $overrides = []) {
     $log_dir = __DIR__ . '/logs';
     if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
-    $line = date('Y-m-d H:i:s') . " [SMS] $mobile: $message\n";
+    $api_mobile = fleetx_normalize_mobile_api($mobile);
+    $line = date('Y-m-d H:i:s') . " [SMS] $api_mobile: $message\n";
     @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
-    // Production: integrate Taqnyat / Unifonic API here using SMS_API_KEY env
-    return true;
+
+    $config = fleetx_sms_config($conn, $overrides);
+    if (!$config['configured']) {
+        return ['ok' => true, 'mode' => 'log_only', 'http' => 0, 'response' => ''];
+    }
+
+    $recipient = (int)$api_mobile;
+    $payload = [
+        'recipients' => [$recipient],
+        'body' => mb_substr($message, 0, 1000),
+        'sender' => $config['sender'],
+    ];
+    $result = fleetx_taqnyat_json_request($config['url'], $config['token'], $payload, 'POST');
+
+    @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [SMS API] HTTP {$result['http']} {$result['response']}\n", FILE_APPEND);
+    if (function_exists('fx_integration_log')) {
+        fx_integration_log('sms', 'api', ['mobile' => $api_mobile, 'http' => $result['http']]);
+    }
+
+    return [
+        'ok' => $result['ok'],
+        'mode' => 'live',
+        'http' => $result['http'],
+        'response' => $result['response'],
+        'error' => $result['error'],
+        'mobile' => $api_mobile,
+    ];
+}
+
+function fleetx_ensure_whatsapp_optin_schema($conn): void {
+    if (!$conn) return;
+    static $done = false;
+    if ($done) return;
+    $done = true;
+    if (fleetx_table_exists($conn, 'users') && !fx_column_exists($conn, 'users', 'whatsapp_optin')) {
+        @$conn->query("ALTER TABLE users ADD COLUMN whatsapp_optin TINYINT(1) NOT NULL DEFAULT 0");
+    }
+    if (!fleetx_table_exists($conn, 'whatsapp_optins')) {
+        @$conn->query("CREATE TABLE IF NOT EXISTS whatsapp_optins (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NULL,
+            mobile VARCHAR(20) NOT NULL,
+            opted_in TINYINT(1) NOT NULL DEFAULT 1,
+            source VARCHAR(40) DEFAULT 'register',
+            api_response VARCHAR(500) DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_mobile (mobile),
+            INDEX idx_user (user_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    }
+}
+
+function fx_column_exists($conn, string $table, string $column): bool {
+    if (!$conn || !fleetx_table_exists($conn, $table)) return false;
+    $t = $conn->real_escape_string($table);
+    $c = $conn->real_escape_string($column);
+    $res = $conn->query("SHOW COLUMNS FROM `$t` LIKE '$c'");
+    return $res && $res->num_rows > 0;
+}
+
+function fleetx_user_whatsapp_opted_in($conn, string $mobile, $user_id = null): bool {
+    if (!$conn) return false;
+    fleetx_ensure_whatsapp_optin_schema($conn);
+    if ($user_id) {
+        $stmt = $conn->prepare('SELECT whatsapp_optin FROM users WHERE id = ? LIMIT 1');
+        $stmt->bind_param('i', $user_id);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        if ($row) return (int)($row['whatsapp_optin'] ?? 0) === 1;
+    }
+    $stmt = $conn->prepare('SELECT whatsapp_optin FROM users WHERE mobile = ? LIMIT 1');
+    $stmt->bind_param('s', $mobile);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    return $row && (int)($row['whatsapp_optin'] ?? 0) === 1;
+}
+
+function fleetx_whatsapp_optin_urls($conn = null): array {
+    $optin = trim((string)(getenv('WHATSAPP_OPTIN_URL') ?: (defined('WHATSAPP_OPTIN_URL') ? WHATSAPP_OPTIN_URL : '')));
+    $optout = trim((string)(getenv('WHATSAPP_OPTOUT_URL') ?: (defined('WHATSAPP_OPTOUT_URL') ? WHATSAPP_OPTOUT_URL : '')));
+    if ($conn && fleetx_table_exists($conn, 'platform_settings')) {
+        $db_in = trim((string)fleetx_get_setting($conn, 'whatsapp_optin_url', ''));
+        $db_out = trim((string)fleetx_get_setting($conn, 'whatsapp_optout_url', ''));
+        if ($db_in !== '') $optin = $db_in;
+        if ($db_out !== '') $optout = $db_out;
+    }
+    return [
+        'optin' => $optin ?: 'https://api.taqnyat.sa/wa/v2/contacts/optin/',
+        'optout' => $optout ?: 'https://api.taqnyat.sa/wa/v2/contacts/optout/',
+    ];
+}
+
+function fleetx_whatsapp_set_optin($conn, $user_id, string $mobile, bool $opted_in, string $source = 'register', string $api_response = ''): void {
+    if (!$conn) return;
+    fleetx_ensure_whatsapp_optin_schema($conn);
+    $flag = $opted_in ? 1 : 0;
+    if ($user_id) {
+        $stmt = $conn->prepare('UPDATE users SET whatsapp_optin = ? WHERE id = ?');
+        $stmt->bind_param('ii', $flag, $user_id);
+        $stmt->execute();
+    } else {
+        $stmt = $conn->prepare('UPDATE users SET whatsapp_optin = ? WHERE mobile = ?');
+        $stmt->bind_param('is', $flag, $mobile);
+        $stmt->execute();
+    }
+    $stmt = $conn->prepare('INSERT INTO whatsapp_optins (user_id, mobile, opted_in, source, api_response) VALUES (?,?,?,?,?)');
+    $stmt->bind_param('isiis', $user_id, $mobile, $flag, $source, $api_response);
+    $stmt->execute();
+}
+
+function fleetx_whatsapp_optin_register(string $mobile, $conn = null, $user_id = null): array {
+    $api_mobile = fleetx_normalize_mobile_api($mobile);
+    $wa_config = fleetx_whatsapp_config($conn);
+    $urls = fleetx_whatsapp_optin_urls($conn);
+
+    $api_result = ['ok' => false, 'http' => 0, 'response' => '', 'mode' => 'local_only'];
+    if ($wa_config['configured']) {
+        $payload = ['msisdn' => $api_mobile, 'phone' => $api_mobile, 'to' => $api_mobile];
+        $api_result = fleetx_taqnyat_json_request($urls['optin'], $wa_config['token'], $payload, 'POST');
+        $api_result['mode'] = 'live';
+    }
+
+    if ($conn) {
+        fleetx_whatsapp_set_optin($conn, $user_id, $mobile, true, 'register', $api_result['response'] ?? '');
+    }
+
+    $log_dir = __DIR__ . '/logs';
+    if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
+    @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [WhatsApp Opt-In] $api_mobile HTTP {$api_result['http']} {$api_result['response']}\n", FILE_APPEND);
+    if (function_exists('fx_integration_log')) {
+        fx_integration_log('whatsapp', 'opt-in', ['mobile' => $api_mobile, 'http' => $api_result['http']]);
+    }
+
+    return [
+        'ok' => true,
+        'opted_in' => true,
+        'mobile' => $api_mobile,
+        'api' => $api_result,
+    ];
+}
+
+function fleetx_whatsapp_optout(string $mobile, $conn = null, $user_id = null): array {
+    $api_mobile = fleetx_normalize_mobile_api($mobile);
+    $wa_config = fleetx_whatsapp_config($conn);
+    $urls = fleetx_whatsapp_optin_urls($conn);
+
+    $api_result = ['ok' => false, 'http' => 0, 'response' => '', 'mode' => 'local_only'];
+    if ($wa_config['configured']) {
+        $payload = ['msisdn' => $api_mobile, 'phone' => $api_mobile, 'to' => $api_mobile];
+        $api_result = fleetx_taqnyat_json_request($urls['optout'], $wa_config['token'], $payload, 'POST');
+        $api_result['mode'] = 'live';
+    }
+
+    if ($conn) {
+        fleetx_whatsapp_set_optin($conn, $user_id, $mobile, false, 'settings', $api_result['response'] ?? '');
+    }
+
+    return [
+        'ok' => true,
+        'opted_in' => false,
+        'mobile' => $api_mobile,
+        'api' => $api_result,
+    ];
 }
 
 /** Resolve WhatsApp API credentials: env → constants → platform_settings. */
@@ -849,6 +1095,13 @@ function sendWhatsAppNotification($mobile, $message, $conn = null, array $overri
     $api_mobile = fleetx_normalize_mobile_api($mobile);
     $line = date('Y-m-d H:i:s') . " [WhatsApp] $api_mobile: $message\n";
     @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
+
+    $force = !empty($overrides['force']);
+    $user_id = $overrides['user_id'] ?? null;
+    if (!$force && $conn && !fleetx_user_whatsapp_opted_in($conn, $mobile, $user_id)) {
+        @file_put_contents($log_dir . '/notifications.log', date('Y-m-d H:i:s') . " [WhatsApp] Skipped — not opted in: $api_mobile\n", FILE_APPEND);
+        return ['ok' => true, 'mode' => 'skipped_optout', 'http' => 0, 'response' => 'User not opted in', 'mobile' => $api_mobile];
+    }
 
     $config = fleetx_whatsapp_config($conn, $overrides);
     if (!$config['configured']) {

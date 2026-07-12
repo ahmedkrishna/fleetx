@@ -22,11 +22,13 @@ function fx_migrate_run(mysqli $conn, string $sql, string $label = ''): void {
     }
 }
 
-function fx_column_exists(mysqli $conn, string $table, string $column): bool {
-    $t = $conn->real_escape_string($table);
-    $c = $conn->real_escape_string($column);
-    $res = $conn->query("SHOW COLUMNS FROM `$t` LIKE '$c'");
-    return $res && $res->num_rows > 0;
+if (!function_exists('fx_migrate_column_exists')) {
+    function fx_migrate_column_exists(mysqli $conn, string $table, string $column): bool {
+        $t = $conn->real_escape_string($table);
+        $c = $conn->real_escape_string($column);
+        $res = $conn->query("SHOW COLUMNS FROM `$t` LIKE '$c'");
+        return $res && $res->num_rows > 0;
+    }
 }
 
 $queries = [
@@ -109,13 +111,25 @@ $queries = [
         INDEX `idx_auction` (`auction_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" => 'payment_intents table',
     "ALTER TABLE `payment_intents` ADD COLUMN `purpose` VARCHAR(32) NOT NULL DEFAULT 'purchase' AFTER `method`" => 'payment_intents.purpose',
+    "ALTER TABLE users ADD COLUMN `whatsapp_optin` TINYINT(1) NOT NULL DEFAULT 0" => 'users.whatsapp_optin',
+    "CREATE TABLE IF NOT EXISTS `whatsapp_optins` (
+        `id` INT AUTO_INCREMENT PRIMARY KEY,
+        `user_id` INT NULL,
+        `mobile` VARCHAR(20) NOT NULL,
+        `opted_in` TINYINT(1) NOT NULL DEFAULT 1,
+        `source` VARCHAR(40) DEFAULT 'register',
+        `api_response` VARCHAR(500) DEFAULT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX `idx_mobile` (`mobile`),
+        INDEX `idx_user` (`user_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci" => 'whatsapp_optins table',
 ];
 
 foreach ($queries as $sql => $label) {
     if (str_contains($sql, 'ADD COLUMN')) {
         preg_match('/ADD COLUMN `([^`]+)`/', $sql, $m);
         preg_match('/ALTER TABLE (\w+)/', $sql, $t);
-        if (!empty($m[1]) && !empty($t[1]) && fx_column_exists($conn, $t[1], $m[1])) {
+        if (!empty($m[1]) && !empty($t[1]) && fx_migrate_column_exists($conn, $t[1], $m[1])) {
             echo "SKIP (exists): {$t[1]}.{$m[1]}\n";
             continue;
         }
@@ -127,6 +141,7 @@ fx_migrate_run($conn, "INSERT IGNORE INTO platform_settings (setting_key, settin
     ('inspection_fee', '100'),
     ('buyer_pro_price', '299'),
     ('platform_fee_percent', '5'),
+    ('sms_enabled', '1'),
     ('whatsapp_enabled', '1'),
     ('whatsapp_template_lang', 'ar')", 'platform_settings seed');
 

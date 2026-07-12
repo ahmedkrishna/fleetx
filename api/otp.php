@@ -24,7 +24,7 @@ if ($action === 'send') {
     $stmt = $conn->prepare('INSERT INTO otp_sessions (mobile, otp_code, purpose, expires_at) VALUES (?,?,?, DATE_ADD(NOW(), INTERVAL 5 MINUTE))');
     $stmt->bind_param('sss', $mobile, $otp, $purpose);
     $stmt->execute();
-    sendSmsNotification($mobile, "رمز التحقق FleetX: $otp (صالح 5 دقائق)");
+    sendSmsNotification($mobile, "رمز التحقق FleetX: $otp (صالح 5 دقائق)", $conn);
     $e2e_key = trim($input['e2e_key'] ?? $_GET['e2e_key'] ?? '');
     $is_local = defined('DB_HOST') && str_contains((string)DB_HOST, 'localhost');
     $is_e2e = ($e2e_key === 'mazad2026');

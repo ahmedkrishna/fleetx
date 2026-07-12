@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_submit'])) {
     $cr_number    = trim($_POST['cr_number'] ?? '');
     $fleet_size   = max(0, intval($_POST['fleet_size'] ?? 0));
     $otp_code     = trim($_POST['otp_code'] ?? '');
+    $whatsapp_optin = !empty($_POST['whatsapp_optin']);
 
     // --- Validation ---
     if (!$full_name || !$mobile || !$password) {
@@ -118,6 +119,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_submit'])) {
                 }
                 if ($pending_buyer && function_exists('logActivity')) {
                     logActivity($conn, $user_id, 'buyer_registration_pending', 'تسجيل مشتري جديد بانتظار موافقة الإدارة', ['mobile' => $mobile]);
+                }
+
+                if ($whatsapp_optin && function_exists('fleetx_whatsapp_optin_register')) {
+                    fleetx_whatsapp_optin_register($mobile, $conn, $user_id);
                 }
 
                 $_SESSION['register_pending_buyer'] = $pending_buyer;
@@ -265,6 +270,7 @@ $auth_revenue_display = $auth_revenue >= 1000000
       <input type="hidden" name="cr_number" id="hd_cr" value="<?= htmlspecialchars($_POST['cr_number'] ?? '') ?>">
       <input type="hidden" name="fleet_size" id="hd_fleet" value="<?= htmlspecialchars($_POST['fleet_size'] ?? '') ?>">
       <input type="hidden" name="otp_code" id="hd_otp" value="<?= htmlspecialchars($_POST['otp_code'] ?? '') ?>">
+      <input type="hidden" name="whatsapp_optin" id="hd_whatsapp_optin" value="<?= !empty($_POST['whatsapp_optin']) ? '1' : '0' ?>">
 
       <!-- ══ STEP 1: Account Type ══ -->
       <div id="step1" style="display:<?= ($current_step===1)?'block':'none' ?>;">
@@ -338,6 +344,11 @@ $auth_revenue_display = $auth_revenue >= 1000000
           <label class="form-label" for="password_inp">كلمة المرور</label>
           <input class="form-input" type="password" id="password_inp" placeholder="8 أحرف على الأقل" required value="<?= htmlspecialchars($_POST['password'] ?? '') ?>">
         </div>
+
+        <label class="promissory-check" style="margin-top:8px;">
+          <input type="checkbox" id="whatsapp_optin_inp" value="1" <?= !empty($_POST['whatsapp_optin']) ? 'checked' : '' ?>>
+          أوافق على استلام إشعارات FleetX عبر واتساب على رقم جوالي
+        </label>
 
         <!-- Company fields (seller only) -->
         <div id="company-fields" style="display:none;">
@@ -453,6 +464,7 @@ function goStep(n) {
     document.getElementById('hd_company').value = document.getElementById('company_name_inp')?.value || '';
     document.getElementById('hd_cr').value      = document.getElementById('cr_number_inp')?.value || '';
     document.getElementById('hd_fleet').value   = document.getElementById('fleet_size_inp')?.value || '';
+    document.getElementById('hd_whatsapp_optin').value = document.getElementById('whatsapp_optin_inp')?.checked ? '1' : '0';
 
     // Validate required fields
     const name   = document.getElementById('full_name').value.trim();
