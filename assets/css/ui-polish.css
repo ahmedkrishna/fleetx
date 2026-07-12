@@ -1406,3 +1406,140 @@ body.admin-body .fx-dash-mobile-profile--admin {
     flex-wrap: wrap;
   }
 }
+
+/* ==========================================================================
+   Company profile page — mobile polish
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .fx-page-shell--company-profile {
+    overflow-x: hidden;
+  }
+
+  .fx-page-shell--company-profile .fx-page-body--overlap-lg {
+    margin-top: -32px;
+    padding-bottom: 56px;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover {
+    padding: 92px 0 40px;
+    border-radius: 0 0 28px 28px;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover .fx-page-hero__title {
+    font-size: clamp(22px, 6vw, 28px);
+    line-height: 1.35;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover .fx-page-hero__desc {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover .fx-page-hero__meta {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    margin-top: 12px;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover .fx-page-hero__meta::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--company-profile .fx-page-hero--cover .fx-page-hero__chip {
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .fx-page-shell--company-profile .fx-company-hero-stats {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    gap: 10px;
+    padding-bottom: 4px;
+    margin-top: 14px;
+    scrollbar-width: none;
+  }
+
+  .fx-page-shell--company-profile .fx-company-hero-stats::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--company-profile .fx-company-stat-pill {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    min-width: 96px;
+    padding: 10px 14px;
+  }
+
+  .fx-page-shell--company-profile .fx-bank-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .fx-page-shell--company-profile .fx-bank-strip span {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .fx-page-shell--company-profile .fx-bank-strip strong {
+    word-break: break-word;
+  }
+
+  .fx-page-shell--company-profile .fx-company-profile-tabs {
+    margin-bottom: 16px;
+    padding: 6px;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .fx-page-shell--company-profile .fx-company-profile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fx-page-shell--company-profile .fx-company-profile-tabs .fx-tab-btn {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .fx-page-shell--company-profile .fx-vehicles-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .fx-page-shell--company-profile .fx-card-wrap {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .fx-page-shell--company-profile .fx-card-wrap .auction-card {
+    max-width: 100%;
+  }
+
+  .fx-page-shell--company-profile .fx-empty-state-panel {
+    padding: 32px 18px;
+    text-align: center;
+  }
+
+  .fx-page-shell--company-profile .fx-empty-state-panel__cta {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+}

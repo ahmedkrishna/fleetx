@@ -69,6 +69,7 @@ $hero_bg = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&
 $hero_back_href = '/companies.php';
 $hero_back_label = '← العودة لدليل الشركات';
 $hero_desc = 'تصفح مزادات ومركبات الشركة المعتمدة على منصة FleetX';
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact fx-page-hero--company';
 $hero_meta_html = '
   <span class="fx-page-hero__chip"><i class="ph ph-map-pin"></i> ' . htmlspecialchars($company['city'] ?? 'المملكة') . '</span>
   <span class="fx-page-hero__chip"><i class="ph-fill ph-star"></i> ' . number_format(floatval($company['rating'] ?? 4.5), 1) . ' تقييم</span>';
@@ -90,9 +91,10 @@ $hero_bottom_html = '
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($company['company_name']) ?> | FleetX</title>
   <meta name="description" content="تصفح مزادات وسيارات <?= htmlspecialchars($company['company_name']) ?> على FleetX">
+  <meta name="fx-build" content="<?= FLEETX_CSS_VER ?>">
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
 </head>
-<body class="fx-home fx-page-shell fx-page-shell--company-profile">
+<body class="fx-home fx-page-shell fx-page-shell--company-profile" data-fx-build="<?= FLEETX_CSS_VER ?>">
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 
@@ -104,11 +106,11 @@ $hero_bottom_html = '
     <span><i class="ph ph-info"></i> للتحويل المباشر بعد إتمام الشراء</span>
   </div>
 
-  <div class="fx-tabs-bar">
-    <button type="button" class="fx-tab-btn active" onclick="filterTab(this,'all')">الكل (<?= count($vehicles) ?>)</button>
-    <button type="button" class="fx-tab-btn" onclick="filterTab(this,'live')">مباشر (<?= $live_count ?>)</button>
-    <button type="button" class="fx-tab-btn" onclick="filterTab(this,'upcoming')">قادم (<?= $upcoming_count ?>)</button>
-    <button type="button" class="fx-tab-btn" onclick="filterTab(this,'instant')">شراء فوري (<?= $instant_count ?>)</button>
+  <div class="fx-tabs-bar fx-company-profile-tabs" role="tablist" aria-label="تصفية المركبات">
+    <button type="button" class="fx-tab-btn active" role="tab" aria-selected="true" onclick="filterTab(this,'all')">الكل (<?= count($vehicles) ?>)</button>
+    <button type="button" class="fx-tab-btn" role="tab" aria-selected="false" onclick="filterTab(this,'live')">مباشر (<?= $live_count ?>)</button>
+    <button type="button" class="fx-tab-btn" role="tab" aria-selected="false" onclick="filterTab(this,'upcoming')">قادم (<?= $upcoming_count ?>)</button>
+    <button type="button" class="fx-tab-btn" role="tab" aria-selected="false" onclick="filterTab(this,'instant')">شراء فوري (<?= $instant_count ?>)</button>
   </div>
 
   <?php if (empty($vehicles)): ?>
@@ -162,8 +164,12 @@ $hero_bottom_html = '
 <?php include 'includes/footer.php'; ?>
 <script>
 function filterTab(btn, status) {
-  document.querySelectorAll('.fx-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.fx-company-profile-tabs .fx-tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-selected', 'false');
+  });
   btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
   document.querySelectorAll('#vehiclesGrid .fx-card-wrap').forEach(wrap => {
     const cs = wrap.dataset.status;
     const ct = wrap.dataset.type;
