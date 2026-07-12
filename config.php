@@ -33,7 +33,7 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '96');
+define('FLEETX_CSS_VER', '97');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
@@ -127,6 +127,31 @@ if (!defined('FLEETX_PAGE_HERO_BG')) {
 
 function fleetx_page_hero_bg_url(): string {
     return defined('FLEETX_PAGE_HERO_BG') ? trim((string) FLEETX_PAGE_HERO_BG) : '';
+}
+
+/** Per-page dark hero backgrounds — unique overlay image per sub-page */
+function fleetx_subpage_hero_bg(string $page = ''): string {
+    $page = $page ?: basename($_SERVER['PHP_SELF'] ?? '', '.php');
+    $map = [
+        'about' => 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1600&q=80',
+        'companies' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80',
+        'auctions' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=1600&q=80',
+        'terms' => 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1600&q=80',
+        'map' => 'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=1600&q=80',
+        'buyer' => 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80',
+        'seller' => 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1600&q=80',
+        'inspector' => 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600&q=80',
+        'profile' => 'https://images.unsplash.com/photo-1503376712341-ea1925b4be40?w=1600&q=80',
+        'wallet-topup' => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1600&q=80',
+        'company-profile' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80',
+        'event' => 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80',
+        'vehicle-details' => 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&q=80',
+    ];
+    return $map[$page] ?? fleetx_page_hero_bg_url();
+}
+
+if (!defined('GOOGLE_CLIENT_ID')) {
+    define('GOOGLE_CLIENT_ID', getenv('GOOGLE_CLIENT_ID') ?: '');
 }
 
 /** Logo asset paths — logo.png for light backgrounds, logo-dark.png for dark */
@@ -734,7 +759,23 @@ function sendWhatsAppNotification($mobile, $message) {
     if (!is_dir($log_dir)) @mkdir($log_dir, 0755, true);
     $line = date('Y-m-d H:i:s') . " [WhatsApp] $mobile: $message\n";
     @file_put_contents($log_dir . '/notifications.log', $line, FILE_APPEND);
-    // Production: integrate WhatsApp Business API here
+    $wa_url = getenv('WHATSAPP_API_URL') ?: (defined('WHATSAPP_API_URL') ? WHATSAPP_API_URL : '');
+    if ($wa_url) {
+        $payload = json_encode(['to' => $mobile, 'body' => $message], JSON_UNESCAPED_UNICODE);
+        $ch = curl_init($wa_url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 12,
+        ]);
+        curl_exec($ch);
+        curl_close($ch);
+        if (function_exists('fx_integration_log')) {
+            fx_integration_log('whatsapp', 'sent', ['mobile' => $mobile]);
+        }
+    }
     return true;
 }
 

@@ -74,6 +74,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>تسجيل الدخول | FleetX</title>
   <meta name="description" content="سجّل الدخول إلى منصة FleetX لمزادات أساطيل السيارات">
   <link rel="stylesheet" href="<?= fleetx_css_href() ?>">
+  <?php if (GOOGLE_CLIENT_ID !== ''): ?>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <?php endif; ?>
 </head>
 <body class="fx-auth-body fx-auth-body--light">
 
@@ -124,6 +127,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="fx-type-desc">تصفح فقط</div>
         </div>
       </div>
+
+      <?php if (GOOGLE_CLIENT_ID !== ''): ?>
+      <div class="fx-google-auth" id="googleAuthWrap">
+        <div id="googleSignInBtn" class="fx-google-auth__btn"></div>
+      </div>
+      <div class="fx-auth-divider"><span>أو</span></div>
+      <?php endif; ?>
 
       <form id="loginForm" method="POST" action="">
         <input type="hidden" name="login_type" id="login_type_input" value="">
@@ -221,6 +231,33 @@ async function sendLoginOtp() {
   const data = await res.json();
   if (typeof showToast==='function') showToast(data.message || (data.success?'تم الإرسال':'فشل الإرسال'), data.success?'success':'error');
 }
+<?php if (GOOGLE_CLIENT_ID !== ''): ?>
+function handleGoogleCredential(response) {
+  fetch('/api/google-login.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      credential: response.credential,
+      redirect: new URLSearchParams(window.location.search).get('redirect') || ''
+    })
+  }).then(r => r.json()).then(data => {
+    if (data.ok && data.redirect) window.location.href = data.redirect;
+    else if (typeof showToast === 'function') showToast(data.error || 'فشل تسجيل الدخول', 'error');
+  }).catch(() => { if (typeof showToast === 'function') showToast('خطأ في الاتصال', 'error'); });
+}
+window.addEventListener('load', function() {
+  if (typeof google === 'undefined' || !google.accounts) return;
+  google.accounts.id.initialize({
+    client_id: <?= json_encode(GOOGLE_CLIENT_ID) ?>,
+    callback: handleGoogleCredential,
+    auto_select: false,
+    ux_mode: 'popup'
+  });
+  const el = document.getElementById('googleSignInBtn');
+  if (el) google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', width: 320, text: 'signin_with', locale: 'ar' });
+});
+<?php endif; ?>
+
 async function verifyLoginOtp() {
   const mobile = document.getElementById('mobile').value.trim();
   const otp = document.getElementById('otp_code').value.trim();

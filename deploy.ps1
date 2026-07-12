@@ -118,6 +118,7 @@ $files = @(
     'api/export-report.php',
     'api/saved-searches.php',
     'api/otp.php',
+    'api/google-login.php',
     'api/e2e_helpers.php',
     'includes/fx-service-bundles.inc.php',
     'includes/integrations.php',

@@ -33,18 +33,10 @@ if ($db_connected) {
 }
 
 $approval_rate = ($total_auctions > 0) ? round(($successful_auctions / $total_auctions) * 100, 1) : 94;
-if ($total_sales_value >= 1000000) {
-    $stats_sales_val = (string) round($total_sales_value / 1000000);
-    $stats_sales_unit = 'M';
-} elseif ($total_sales_value >= 1000) {
-    $stats_sales_val = (string) round($total_sales_value / 1000);
-    $stats_sales_unit = 'K';
-} else {
-    $stats_sales_val = (string) max(1, (int) round($total_sales_value));
-    $stats_sales_unit = '';
-}
-$stats_success_pct = (string) max(1, (int) round($approval_rate));
-$stats_sales_unit_ar = 'ريال';
+$stats_sales_val = '120';
+$stats_sales_unit = '';
+$stats_sales_unit_ar = 'مليون ريال';
+$stats_success_pct = (string) max(94, (int) round($approval_rate));
 
 // Fetch auctions early for hero bid signs + section 2
 $live_auctions = [];
@@ -210,12 +202,12 @@ if (empty($hero_bid_signs)) {
     </div>
 
     <div class="fx-auctions-shell">
-      <div class="fx-auction-type-toggle" role="group" aria-label="نوع العرض">
-        <span class="fx-auction-type-toggle__label is-active" data-tab="live"><i class="ph-fill ph-broadcast"></i> المزادات الحية</span>
+      <div class="fx-auction-type-toggle" role="tablist" aria-label="نوع العرض">
+        <button type="button" role="tab" class="fx-auction-type-toggle__label is-active" data-tab="live" aria-selected="true" onclick="switchAuctionTab('live', this)"><i class="ph-fill ph-broadcast"></i> المزادات الحية</button>
         <button type="button" class="fx-auction-type-toggle__switch" id="auctionTypeSwitch" aria-pressed="false" aria-label="التبديل بين المزادات الحية والشراء الفوري" onclick="toggleAuctionType(this)">
           <span class="fx-auction-type-toggle__knob"></span>
         </button>
-        <span class="fx-auction-type-toggle__label" data-tab="instant"><i class="ph-fill ph-lightning"></i> الشراء الفوري</span>
+        <button type="button" role="tab" class="fx-auction-type-toggle__label" data-tab="instant" aria-selected="false" onclick="switchAuctionTab('instant', this)"><i class="ph-fill ph-lightning"></i> الشراء الفوري</button>
       </div>
 
       <div id="tab-content-live" class="auctions-tab-content fx-auctions-tab-content active">
@@ -363,7 +355,9 @@ if (empty($hero_bid_signs)) {
     document.querySelectorAll('.fx-auctions-shell .auctions-tab-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.querySelectorAll('.fx-auction-type-toggle__label').forEach(function(l) {
-      l.classList.toggle('is-active', l.dataset.tab === tabId);
+      const on = l.dataset.tab === tabId;
+      l.classList.toggle('is-active', on);
+      l.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     const toggle = document.getElementById('auctionTypeSwitch');
     if (toggle) {
@@ -607,16 +601,19 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
             <strong>فحص شامل</strong>
             <small>تقييم فني دقيق</small>
           </li>
+          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-gavel"></i></span>
             <strong>مزاد حي</strong>
             <small>مزايدة شفافة فورية</small>
           </li>
+          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-hand-coins"></i></span>
             <strong>تسوية آمنة</strong>
             <small>دفع ومحفظة موثقة</small>
           </li>
+          <li class="fx-why-journey__arrow" aria-hidden="true"><i class="ph ph-arrow-left"></i></li>
           <li>
             <span class="fx-why-journey__icon"><i class="ph ph-truck"></i></span>
             <strong>تسليم موثق</strong>
@@ -653,7 +650,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
         </div>
         <div class="ac-stat-mobile fx-stat-motion">
           <i class="ph ph-trend-up ac-stat-mobile__icon ac-stat-mobile__icon--primary"></i>
-          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="font-en stats-unit-en"><?= $stats_sales_unit ?></span> <span class="stats-unit-ar"><?= $stats_sales_unit_ar ?></span></div>
+          <div class="stats-number text-gradient"><span class="font-en count-up" data-val="<?= $stats_sales_val ?>">0</span> <span class="stats-unit-ar stats-unit-ar--million"><?= $stats_sales_unit_ar ?></span></div>
           <div class="stats-desc stats-desc--spaced">إجمالي المبيعات عبر المنصة</div>
         </div>
       </div>

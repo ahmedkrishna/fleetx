@@ -4301,3 +4301,164 @@ body.fx-home-index .fx-home-stats-section .stats-section__overlay {
   .fx-bid-sign--right.is-visible { right: 4px !important; }
   .fx-bid-sign__board--vip { min-width: 168px; }
 }
+
+/* ═══ Build 97 — Homepage polish ═══ */
+
+/* Hero bid signs — stem toward outer edge */
+.fx-bid-sign--left {
+  flex-direction: row !important;
+  --fx-bid-enter: -90px;
+}
+.fx-bid-sign--right {
+  flex-direction: row !important;
+}
+.fx-bid-sign--left.is-visible { left: 0 !important; }
+.fx-bid-sign--right.is-visible { right: 0 !important; }
+.fx-bid-sign__stem {
+  width: 52px !important;
+  height: 6px !important;
+  flex-shrink: 0;
+}
+.fx-bid-sign--left .fx-bid-sign__stem {
+  margin-left: -8px;
+  background: linear-gradient(270deg, var(--primary), #0ea5e9) !important;
+}
+.fx-bid-sign--right .fx-bid-sign__stem {
+  margin-right: -8px;
+  background: linear-gradient(90deg, var(--primary), #0ea5e9) !important;
+}
+.fx-bid-sign__gavel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px rgba(27, 201, 118, 0.35);
+}
+
+/* §2 — clickable tab labels + taller card images */
+.fx-auction-type-toggle__label {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: inherit;
+}
+.fx-auction-type-toggle__label:hover {
+  background: rgba(27, 201, 118, 0.08);
+}
+.fx-auction-type-toggle__label.is-active {
+  background: rgba(27, 201, 118, 0.12);
+}
+body.fx-home-index .fx-home-auctions .ac-img-wrap--square {
+  aspect-ratio: 4 / 3 !important;
+  max-height: 200px !important;
+}
+body.fx-home-index .fx-home-auctions .ac-info-row--board {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: end;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+body.fx-home-index .fx-home-auctions .ac-meta--plain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+body.fx-home-index .fx-home-auctions .ac-meta--plain span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+body.fx-home-index .fx-home-auctions .ac-price-block {
+  text-align: right;
+}
+body.fx-home-index .fx-home-auctions .ac-price-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 2px;
+}
+body.fx-home-index .fx-home-auctions .ac-price-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+/* §3 — remove strokes on HIW cards and tabs */
+body.fx-home-index .fx-hiw-section--dark .browser-tabs-container,
+body.fx-home-index .fx-hiw-section--dark .hiw-panel,
+body.fx-home-index .fx-hiw-section--dark .b-tab {
+  border: none !important;
+  box-shadow: none !important;
+}
+body.fx-home-index .fx-hiw-section--dark .b-tab.active {
+  border: none !important;
+  background: rgba(27, 201, 118, 0.18) !important;
+}
+
+/* §4 — bid card spacing + journey arrows */
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__body {
+  padding: 32px 36px 36px 40px !important;
+  transform: translate(-6px, -8px);
+}
+body.fx-home-index .fx-why-card--trust .fx-why-card__icon--plain,
+body.fx-home-index .fx-why-card--ai .fx-why-card__icon--plain {
+  margin-bottom: 8px !important;
+}
+body.fx-home-index .fx-why-journey__steps::before {
+  display: none !important;
+}
+body.fx-home-index .fx-why-journey__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: 22px;
+  opacity: 0.85;
+  padding: 0;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: auto;
+}
+body.fx-home-index .fx-why-journey__arrow:hover {
+  transform: none !important;
+}
+body.fx-home-index .fx-why-journey__icon {
+  width: 58px !important;
+  height: 58px !important;
+  font-size: 26px !important;
+  margin-bottom: 8px !important;
+}
+body.fx-home-index .fx-why-card--spotlight .fx-why-card__icon--plain {
+  margin-bottom: 10px !important;
+}
+
+/* §5 — stats video only, 120M Arabic */
+body.fx-home-index .fx-home-stats-section.stats-section--parallax {
+  background: transparent !important;
+}
+body.fx-home-index .fx-home-stats-section .stats-section__overlay {
+  background: linear-gradient(180deg, rgba(6, 12, 22, 0.55), rgba(6, 12, 22, 0.82)) !important;
+}
+body.fx-home-index .fx-home-stats-section .fx-stats-video-bg__media {
+  opacity: 0.45 !important;
+}
+body.fx-home-index .stats-unit-ar--million {
+  font-size: 1.1em;
+  font-weight: 900;
+}
+
+@media (max-width: 992px) {
+  body.fx-home-index .fx-why-journey__arrow {
+    display: none !important;
+  }
+}

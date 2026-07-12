@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare('UPDATE users SET wallet_balance = wallet_balance + ? WHERE id = ?');
             $stmt->bind_param('di', $amount, $user_id);
             $stmt->execute();
-            createNotification($conn, $user_id, 'payment', 'تم شحن المحفظة', 'تم إضافة ' . number_format($amount) . ' ر.س إلى محفظتك', '/buyer.php?section=wallet');
+            notifyUser($conn, $user_id, 'payment', 'تم شحن المحفظة ✓', 'تم إضافة ' . number_format($amount) . ' ر.س إلى محفظتك بنجاح.', '/buyer.php?section=wallet', ['in_app', 'whatsapp', 'sms']);
         }
         $back = getUserRole() === 'seller' ? '/seller.php?section=wallet&topup=1' : '/buyer.php?section=wallet&topup=1';
         header('Location: ' . $back);

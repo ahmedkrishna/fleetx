@@ -73,8 +73,9 @@ try {
 
     $car_name = $vehicle['title'] ?? ($vehicle['make'] . ' ' . $vehicle['model'] . ' ' . $vehicle['year']);
     $seller_user = $conn->query('SELECT user_id FROM seller_companies WHERE id=' . (int)$vehicle['seller_id'])->fetch_assoc();
+    notifyUser($conn, $uid, 'payment', 'تم الدفع بنجاح ✓', 'تم دفع ' . formatPrice($price) . " لشراء {$car_name}. شكراً لثقتك بـ FleetX.", '/buyer.php?section=purchases', ['in_app', 'whatsapp', 'sms']);
     if ($seller_user) {
-        createNotification($conn, (int)$seller_user['user_id'], 'payment', 'تم الدفع! 💰', 'تم دفع مبلغ ' . formatPrice($price) . " لشراء {$car_name}", '/seller.php?section=payouts');
+        notifyUser($conn, (int)$seller_user['user_id'], 'payment', 'تم الدفع! 💰', 'تم دفع مبلغ ' . formatPrice($price) . " لشراء {$car_name}", '/seller.php?section=payouts', ['in_app', 'whatsapp']);
     }
 
     $conn->commit();

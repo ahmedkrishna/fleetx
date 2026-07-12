@@ -38,8 +38,13 @@ $vehicles_total = array_sum(array_column($companies, 'total_count'));
 $hero_title = 'دليل الشركات المعتمدة';
 $hero_eyebrow = 'شركاء FleetX';
 $hero_desc = 'شركات تأجير موثّقة • تقارير فحص معتمدة • أسعار شفافة';
-$hero_bg = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80';
-$hero_bottom_html = '';
+$hero_bg = fleetx_subpage_hero_bg('companies');
+$hero_extra_class = 'fx-page-hero--cover fx-page-hero--compact fx-page-hero--companies';
+$hero_meta_html = '
+  <span class="fx-page-hero__chip"><i class="ph-fill ph-buildings"></i> <span class="font-en">' . count($companies) . '</span>+ شركة</span>
+  <span class="fx-page-hero__chip"><i class="ph-fill ph-broadcast"></i> <span class="font-en">' . $live_total . '</span> مباشر</span>
+  <span class="fx-page-hero__chip"><i class="ph-fill ph-gavel"></i> <span class="font-en">' . $active_total . '</span> نشط</span>
+  <span class="fx-page-hero__chip"><i class="ph-fill ph-car"></i> <span class="font-en">' . number_format($vehicles_total) . '</span> مركبة</span>';
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -55,143 +60,96 @@ $hero_bottom_html = '';
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/page-hero.inc.php'; ?>
 
-<div class="fx-companies-layout fx-page-body fx-page-body--overlap">
-  <div class="fx-companies-hero-stats reveal">
-    <div class="fx-companies-stat-card">
-      <i class="ph-fill ph-buildings"></i>
-      <strong class="font-en"><?= count($companies) ?>+</strong>
-      <span>شركة معتمدة</span>
-    </div>
-    <div class="fx-companies-stat-card">
-      <i class="ph-fill ph-broadcast"></i>
-      <strong class="font-en"><?= $live_total ?></strong>
-      <span>مزاد مباشر</span>
-    </div>
-    <div class="fx-companies-stat-card">
-      <i class="ph-fill ph-gavel"></i>
-      <strong class="font-en"><?= $active_total ?></strong>
-      <span>مزاد نشط</span>
-    </div>
-    <div class="fx-companies-stat-card">
-      <i class="ph-fill ph-car"></i>
-      <strong class="font-en"><?= number_format($vehicles_total) ?></strong>
-      <span>إجمالي المركبات</span>
-    </div>
-  </div>
-
-  <div class="fx-companies-panel reveal">
-    <div class="fx-companies-panel__chips">
+<div class="fx-companies-v2 fx-page-body fx-page-body--overlap">
+  <div class="fx-companies-v2__panel reveal">
+    <div class="fx-companies-v2__toolbar">
       <div class="filter-chips">
         <button type="button" class="chip active" onclick="filterChip(this,'all')"><i class="ph-fill ph-squares-four"></i> الكل</button>
-        <button type="button" class="chip" onclick="filterChip(this,'live')"><i class="ph-fill ph-broadcast"></i> مباشر الآن</button>
+        <button type="button" class="chip" onclick="filterChip(this,'live')"><i class="ph-fill ph-broadcast"></i> مباشر</button>
         <button type="button" class="chip" onclick="filterChip(this,'active')"><i class="ph-fill ph-gavel"></i> نشط</button>
         <button type="button" class="chip" onclick="filterChip(this,'top')"><i class="ph-fill ph-star"></i> الأعلى تقييماً</button>
       </div>
+      <div class="fx-companies-v2__search">
+        <div class="search-input-wrap">
+          <i class="ph ph-magnifying-glass"></i>
+          <input class="search-input" type="text" id="searchInput" placeholder="ابحث عن شركة..." oninput="filterCompanies()">
+        </div>
+        <select class="filter-select" id="cityFilter" onchange="filterCompanies()">
+          <option value="">كل المدن</option>
+          <?php foreach ($cities as $city): ?>
+          <option value="<?= htmlspecialchars($city) ?>"><?= htmlspecialchars($city) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
     </div>
 
-    <div class="fx-companies-panel__body">
-      <div class="fx-companies-search-panel">
-        <div class="fx-companies-search">
-          <div class="search-input-wrap">
-            <i class="ph ph-magnifying-glass"></i>
-            <input class="search-input" type="text" id="searchInput" placeholder="ابحث عن شركة..." oninput="filterCompanies()">
+    <?php if ($is_guest): ?>
+    <div class="guest-banner fx-guest-banner fx-companies-v2__guest">
+      <p><i class="ph-fill ph-info"></i> أنت تتصفح كزائر — سجّل الدخول للمشاركة في المزادات</p>
+      <a href="/login.php?type=trader" class="btn btn-primary btn--pill">سجّل الدخول</a>
+    </div>
+    <?php endif; ?>
+
+    <div class="fx-companies-v2__head">
+      <h2><i class="ph-fill ph-buildings"></i> الشركات المتاحة</h2>
+      <span class="fx-companies-count" id="companyCount"><?= count($companies) ?> شركة</span>
+    </div>
+
+    <div class="companies-grid fx-company-grid fx-company-grid--modern" id="companiesGrid">
+      <?php foreach ($companies as $comp):
+        $has_live = intval($comp['live_count']) > 0;
+        $has_active = intval($comp['active_count']) > 0;
+        $card_cls = $has_live ? 'has-live' : ($has_active ? 'has-active' : 'dimmed');
+        $initial = mb_substr($comp['company_name'], 0, 1, 'UTF-8');
+        $logo = trim($comp['logo_url'] ?? '');
+        $has_logo = $logo !== '' && (str_starts_with($logo, 'http') || str_starts_with($logo, '/'));
+        $rating = floatval($comp['rating'] ?? 4.5);
+        $cta_text = $has_live ? 'دخول المزاد المباشر' : ($has_active ? 'عرض المزادات' : 'عرض السيارات');
+      ?>
+      <a href="/company-profile.php?id=<?= $comp['id'] ?>"
+         class="fx-company-card fx-company-card--v2 <?= $card_cls ?>"
+         data-name="<?= htmlspecialchars($comp['company_name']) ?>"
+         data-city="<?= htmlspecialchars($comp['city'] ?? '') ?>"
+         data-live="<?= intval($comp['live_count']) ?>"
+         data-active="<?= intval($comp['active_count']) ?>"
+         data-rating="<?= $rating ?>">
+        <div class="fx-company-card__banner" aria-hidden="true"><div class="fx-company-card__banner-glow"></div></div>
+        <div class="fx-company-card__main">
+          <div class="fx-company-card__identity">
+            <div class="fx-company-card__avatar">
+              <?php if ($has_logo): ?>
+                <img src="<?= htmlspecialchars($logo) ?>" alt="<?= htmlspecialchars($comp['company_name']) ?>">
+              <?php else: ?>
+                <span class="fx-company-card__initial"><?= htmlspecialchars($initial) ?></span>
+              <?php endif; ?>
+            </div>
+            <div class="fx-company-card__info">
+              <div class="fx-company-card__badges">
+                <?php if ($has_live): ?><span class="fx-live-pill"><span class="fx-live-pill__dot"></span> مباشر</span><?php endif; ?>
+                <?php if (!empty($comp['is_verified'])): ?><span class="fx-verified-pill"><i class="ph-fill ph-seal-check"></i> موثّق</span><?php endif; ?>
+              </div>
+              <h3 class="fx-company-card__name"><?= htmlspecialchars($comp['company_name']) ?></h3>
+              <div class="fx-company-card__meta">
+                <span><i class="ph ph-map-pin"></i> <?= htmlspecialchars($comp['city'] ?? 'المملكة') ?></span>
+                <span><i class="ph-fill ph-star"></i> <span class="font-en"><?= number_format($rating, 1) ?></span></span>
+              </div>
+            </div>
           </div>
-          <select class="filter-select" id="cityFilter" onchange="filterCompanies()">
-            <option value="">كل المدن</option>
-            <?php foreach ($cities as $city): ?>
-            <option value="<?= htmlspecialchars($city) ?>"><?= htmlspecialchars($city) ?></option>
-            <?php endforeach; ?>
-          </select>
+          <div class="fx-company-card__metrics">
+            <div class="fx-company-card__metric"><strong class="font-en"><?= intval($comp['live_count']) ?></strong><span>مباشر</span></div>
+            <div class="fx-company-card__metric"><strong class="font-en"><?= intval($comp['active_count']) ?></strong><span>نشط</span></div>
+            <div class="fx-company-card__metric"><strong class="font-en"><?= number_format(intval($comp['total_count'])) ?></strong><span>إجمالي</span></div>
+          </div>
+          <span class="fx-company-card__cta"><?= $cta_text ?> <i class="ph ph-arrow-left"></i></span>
         </div>
-      </div>
+      </a>
+      <?php endforeach; ?>
+    </div>
 
-      <?php if ($is_guest): ?>
-      <div class="guest-banner fx-guest-banner">
-        <p><i class="ph-fill ph-info"></i> أنت تتصفح كزائر. سجّل الدخول للمشاركة في المزادات</p>
-        <a href="/login.php?type=trader" class="btn btn-primary btn--pill">سجّل الدخول</a>
-      </div>
-      <?php endif; ?>
-
-      <div class="fx-companies-toolbar">
-        <h2><i class="ph-fill ph-buildings"></i> الشركات المتاحة</h2>
-        <span class="fx-companies-count" id="companyCount"><?= count($companies) ?> شركة</span>
-      </div>
-
-      <div class="companies-grid fx-company-grid fx-company-grid--modern" id="companiesGrid">
-        <?php foreach ($companies as $comp):
-          $has_live = intval($comp['live_count']) > 0;
-          $has_active = intval($comp['active_count']) > 0;
-          $card_cls = $has_live ? 'has-live' : ($has_active ? 'has-active' : 'dimmed');
-          $initial = mb_substr($comp['company_name'], 0, 1, 'UTF-8');
-          $logo = trim($comp['logo_url'] ?? '');
-          $has_logo = $logo !== '' && (str_starts_with($logo, 'http') || str_starts_with($logo, '/'));
-          $rating = floatval($comp['rating'] ?? 4.5);
-          $cta_text = $has_live ? 'دخول المزاد المباشر' : ($has_active ? 'عرض المزادات' : 'عرض السيارات');
-        ?>
-        <a href="/company-profile.php?id=<?= $comp['id'] ?>"
-           class="fx-company-card fx-company-card--v2 <?= $card_cls ?>"
-           data-name="<?= htmlspecialchars($comp['company_name']) ?>"
-           data-city="<?= htmlspecialchars($comp['city'] ?? '') ?>"
-           data-live="<?= intval($comp['live_count']) ?>"
-           data-active="<?= intval($comp['active_count']) ?>"
-           data-rating="<?= $rating ?>">
-
-          <div class="fx-company-card__banner" aria-hidden="true">
-            <div class="fx-company-card__banner-glow"></div>
-          </div>
-
-          <div class="fx-company-card__main">
-            <div class="fx-company-card__identity">
-              <div class="fx-company-card__avatar">
-                <?php if ($has_logo): ?>
-                  <img src="<?= htmlspecialchars($logo) ?>" alt="<?= htmlspecialchars($comp['company_name']) ?>">
-                <?php else: ?>
-                  <span class="fx-company-card__initial"><?= htmlspecialchars($initial) ?></span>
-                <?php endif; ?>
-              </div>
-              <div class="fx-company-card__info">
-                <div class="fx-company-card__badges">
-                  <?php if ($has_live): ?>
-                  <span class="fx-live-pill"><span class="fx-live-pill__dot"></span> مباشر</span>
-                  <?php endif; ?>
-                  <?php if (!empty($comp['is_verified'])): ?>
-                  <span class="fx-verified-pill"><i class="ph-fill ph-seal-check"></i> موثّق</span>
-                  <?php endif; ?>
-                </div>
-                <h3 class="fx-company-card__name"><?= htmlspecialchars($comp['company_name']) ?></h3>
-                <div class="fx-company-card__meta">
-                  <span><i class="ph ph-map-pin"></i> <?= htmlspecialchars($comp['city'] ?? 'المملكة') ?></span>
-                  <span><i class="ph-fill ph-star"></i> <span class="font-en"><?= number_format($rating, 1) ?></span></span>
-                </div>
-              </div>
-            </div>
-
-            <div class="fx-company-card__metrics">
-              <div class="fx-company-card__metric">
-                <strong class="font-en"><?= intval($comp['live_count']) ?></strong>
-                <span>مباشر</span>
-              </div>
-              <div class="fx-company-card__metric">
-                <strong class="font-en"><?= intval($comp['active_count']) ?></strong>
-                <span>نشط</span>
-              </div>
-              <div class="fx-company-card__metric">
-                <strong class="font-en"><?= number_format(intval($comp['total_count'])) ?></strong>
-                <span>إجمالي</span>
-              </div>
-            </div>
-
-            <span class="fx-company-card__cta"><?= $cta_text ?> <i class="ph ph-arrow-left"></i></span>
-          </div>
-        </a>
-        <?php endforeach; ?>
-      </div>
-
-      <div id="emptyState" class="fx-panel-first empty-state fx-empty-state-panel" hidden>
-        <i class="ph ph-magnifying-glass"></i>
-        <h3>لا توجد نتائج</h3>
-        <p>جرّب بحثاً مختلفاً أو غيّر الفلتر</p>
-      </div>
+    <div id="emptyState" class="fx-panel-first empty-state fx-empty-state-panel" hidden>
+      <i class="ph ph-magnifying-glass"></i>
+      <h3>لا توجد نتائج</h3>
+      <p>جرّب بحثاً مختلفاً أو غيّر الفلتر</p>
     </div>
   </div>
 </div>
@@ -200,7 +158,7 @@ $hero_bottom_html = '';
 <script>
 let activeChip = 'all';
 function filterChip(btn, type) {
-  document.querySelectorAll('.fx-companies-panel__chips .chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.fx-companies-v2__toolbar .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   activeChip = type;
   filterCompanies();

@@ -510,13 +510,13 @@ function initHomeSwiper(selector, key) {
         slidesPerView: 'auto',
         centeredSlides: true,
         spaceBetween: 18,
-        loop: slideCount >= 6,
-        loopAdditionalSlides: slideCount >= 6 ? 3 : 0,
-        rewind: slideCount < 6,
+        loop: slideCount >= 3,
+        loopAdditionalSlides: Math.max(2, Math.floor(slideCount / 2)),
+        rewind: false,
         initialSlide: featuredInitial,
-        speed: 700,
+        speed: 650,
         autoplay: {
-          delay: 4200,
+          delay: 3600,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
         },
@@ -633,16 +633,16 @@ function initHeroBiddingSigns() {
     sign.className = 'fx-bid-sign ' + (isLeft ? 'fx-bid-sign--left' : 'fx-bid-sign--right');
     sign.style.top = pickTop();
     sign.setAttribute('aria-label', bid.text + ' على ' + bid.car + ' — ' + bid.amount);
-    sign.innerHTML =
-      (isLeft ? '<div class="fx-bid-sign__stem"></div>' : '') +
-      '<div class="fx-bid-sign__gavel"><i class="ph-fill ph-gavel"></i></div>' +
+    const board =
       '<div class="fx-bid-sign__board">' +
         '<div class="fx-bid-sign__text">' +
           '<span class="fx-bid-sign__label">' + bid.text + '<br>على ' + bid.car + '</span>' +
           '<strong class="fx-bid-sign__amount">' + bid.amount + '</strong>' +
         '</div>' +
-      '</div>' +
-      (!isLeft ? '<div class="fx-bid-sign__stem"></div>' : '');
+      '</div>';
+    const gavel = '<div class="fx-bid-sign__gavel"><i class="ph-fill ph-gavel"></i></div>';
+    const stem = '<div class="fx-bid-sign__stem"></div>';
+    sign.innerHTML = isLeft ? (stem + gavel + board) : (board + gavel + stem);
     container.appendChild(sign);
     requestAnimationFrame(() => sign.classList.add('is-visible'));
     setTimeout(() => {
