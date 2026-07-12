@@ -92,6 +92,7 @@ $files = @(
     'assets/images/fleetxhero-mobile.png',
     'assets/images/logo.png',
     'assets/images/logo-dark.png',
+    'assets/videos/hero-video1.mp4',
     'auction-live.php',
     'auctions.php',
     'companies.php',

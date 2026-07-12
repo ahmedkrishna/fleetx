@@ -691,6 +691,15 @@ function initSwipers() {
   initHomeSwiper('.instant-buy-swiper', 'instant');
 }
 
+function initStatsBgVideo() {
+  const video = document.querySelector('.fx-stats-video-bg__media');
+  if (!video) return;
+  video.muted = true;
+  const play = () => video.play().catch(() => {});
+  if (video.readyState >= 2) play();
+  else video.addEventListener('loadeddata', play, { once: true });
+}
+
 /* ── Global Favorite Toggle (API & UI) ──────────────── */
 window.requireLogin = function(message) {
     if (window.FX_LOGGED_IN) return true;
@@ -794,6 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSwipers();
   initHeroBiddingSigns();
   initWhyCardMotion();
+  initStatsBgVideo();
 });
 
 

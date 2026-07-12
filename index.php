@@ -617,7 +617,7 @@ document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHiwModal
 <section class="stats-section stats-section--parallax fx-home-stats-section">
   <?php $fx_stats_video = fleetx_stats_bg_video_url(); if ($fx_stats_video !== ''): ?>
   <div class="fx-stats-video-bg" aria-hidden="true">
-    <video class="fx-stats-video-bg__media" autoplay muted loop playsinline preload="metadata">
+    <video class="fx-stats-video-bg__media" autoplay muted loop playsinline preload="auto">
       <source src="<?= htmlspecialchars($fx_stats_video) ?>" type="video/mp4">
     </video>
   </div>

@@ -33,11 +33,11 @@ if (!defined('DB_NAME')) define('DB_NAME',    'u274391035_db_BbBE85ay');
 if (!defined('SITE_URL')) define('SITE_URL',   'https://mazadi.bearand.com');
 if (!defined('SITE_NAME')) define('SITE_NAME',  'FleetX');
 if (!defined('PLATFORM_FEE_PERCENT')) define('PLATFORM_FEE_PERCENT', 5);
-define('FLEETX_CSS_VER', '121');
+define('FLEETX_CSS_VER', '122');
 
 /** §5 stats background video — change URL here or override in config.local.php; empty = disabled */
 if (!defined('FLEETX_STATS_BG_VIDEO')) {
-    define('FLEETX_STATS_BG_VIDEO', 'https://assets.mixkit.co/videos/preview/mixkit-cars-in-a-parking-lot-seen-from-the-air-4308-large.mp4');
+    define('FLEETX_STATS_BG_VIDEO', '/assets/videos/hero-video1.mp4');
 }
 
 if (isset($_GET['lang']) && in_array($_GET['lang'], ['ar', 'en'], true)) {
