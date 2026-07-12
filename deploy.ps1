@@ -101,6 +101,7 @@ $files = @(
     'extend_auctions.php',
     'about.php',
     'checkout.php',
+    'cart.php',
     'payment-gateway.php',
     'payment-return.php',
     'wallet-topup.php',

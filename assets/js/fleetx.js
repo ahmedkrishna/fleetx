@@ -730,14 +730,14 @@ window.toggleFavorite = async function(id, btn) {
                     btn.classList.remove('active');
                     if (typeof showToast === 'function') showToast('تم الإزالة من المفضلة', 'info');
                     if (btn.dataset.removeOnUnfav === '1') {
-                        const card = btn.closest('.fx-fav-card, .auction-card');
+                        const card = btn.closest('.fx-fav-card, .auction-card, .fx-cart-item');
                         if (card) {
                             card.style.transition = 'opacity 0.3s, transform 0.3s';
                             card.style.opacity = '0';
                             card.style.transform = 'scale(0.95)';
                             setTimeout(() => {
                                 card.remove();
-                                if (!document.querySelector('.fx-fav-card, .fav-grid .auction-card')) {
+                                if (!document.querySelector('.fx-fav-card, .fav-grid .auction-card, .fx-cart-item')) {
                                     location.reload();
                                 }
                             }, 300);
