@@ -158,6 +158,7 @@ $admin_active = 'auctions';
 
 <!-- MAIN CONTENT -->
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
   
   <!-- Top Bar -->
   <div class="admin-topbar" style="background:#FFFFFF;border-bottom:1px solid var(--navy-mid)">

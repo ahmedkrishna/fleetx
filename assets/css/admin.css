@@ -198,4 +198,10 @@ body.admin-body {
 
 @media (max-width: 576px) {
   .admin-content { padding: 12px; }
+  .admin-sidebar-header { padding: 14px 16px; }
+  .admin-nav-link {
+    min-height: 44px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 }

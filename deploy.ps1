@@ -85,6 +85,7 @@ $files = @(
     'api/invoice.php',
     'api/auto-bid.php',
     'admin/head.inc.php',
+    'admin/mobile-chrome.inc.php',
     'admin/sidebar.inc.php',
     'assets/images/fleetxhero.png',
     'assets/images/fleetxhero-desktop.png',

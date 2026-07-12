@@ -74,11 +74,12 @@ $admin_active = 'dashboard';
 
 <!-- MAIN CONTENT -->
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
 
   <!-- Top Bar -->
   <div class="admin-topbar">
     <div style="display:flex;align-items:center;gap:16px">
-      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="admin-sidebar">
         <i class="fas fa-bars"></i>
       </button>
       <div class="admin-search-bar" style="max-width:400px">
@@ -87,7 +88,7 @@ $admin_active = 'dashboard';
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:16px">
-      <div style="display:flex;align-items:center;gap:12px;padding:8px 16px;background:#f8fafc;border:1px solid var(--border-light);border-radius:999px">
+      <div class="fx-admin-user-pill" style="display:flex;align-items:center;gap:12px;padding:8px 16px;background:#f8fafc;border:1px solid var(--border-light);border-radius:999px">
         <div style="width:36px;height:36px;background:var(--primary-gradient);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:14px">م</div>
         <div>
           <div style="font-size:14px;font-weight:700;color:var(--text-dark)"><?php echo sanitize($_SESSION['user_name']); ?></div>
@@ -165,6 +166,7 @@ $admin_active = 'dashboard';
       <a href="auctions.php" class="btn btn-secondary btn-sm">إدارة كافة المزادات</a>
     </div>
     
+    <div class="admin-table-wrapper">
     <table class="admin-table">
       <thead>
         <tr>
@@ -218,6 +220,7 @@ $admin_active = 'dashboard';
         <?php endforeach; ?>
       </tbody>
     </table>
+    </div>
   </div>
 
 </main>

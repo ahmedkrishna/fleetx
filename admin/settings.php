@@ -41,8 +41,12 @@ $admin_active = 'settings';
 <body class="admin-body">
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
   <div class="admin-topbar">
-    <h2 class="admin-page-title">إعدادات المنصة</h2>
+    <div style="display:flex;align-items:center;gap:var(--space-4)">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="admin-sidebar"><i class="fas fa-bars"></i></button>
+      <h2 class="admin-page-title">إعدادات المنصة</h2>
+    </div>
   </div>
   <?php if ($success): ?><div class="admin-alert-success"><i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?></div><?php endif; ?>
   <div class="admin-card">

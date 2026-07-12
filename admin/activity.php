@@ -21,8 +21,15 @@ $admin_active = 'activity';
 <body class="admin-body">
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
 <main class="admin-content">
-  <div class="admin-topbar"><h2 class="admin-page-title">سجل النشاط والتدقيق</h2></div>
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
+  <div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:var(--space-4)">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="admin-sidebar"><i class="fas fa-bars"></i></button>
+      <h2 class="admin-page-title">سجل النشاط والتدقيق</h2>
+    </div>
+  </div>
   <div class="admin-card">
+    <div class="admin-table-wrapper">
     <table class="admin-table" style="width:100%;">
       <thead><tr><th>المستخدم</th><th>النوع</th><th>الرسالة</th><th>التاريخ</th></tr></thead>
       <tbody>
@@ -37,6 +44,7 @@ $admin_active = 'activity';
         <?php if (empty($logs)): ?><tr><td colspan="4">لا توجد سجلات</td></tr><?php endif; ?>
       </tbody>
     </table>
+    </div>
   </div>
 </main>
 </body>

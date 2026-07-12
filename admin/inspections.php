@@ -77,6 +77,7 @@ function fx_insp_status_badge(string $status, ?int $seller_approved): string {
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
 
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
   <div class="admin-topbar" style="background:#FFFFFF;border-bottom:1px solid var(--navy-mid)">
     <div style="display:flex;align-items:center;gap:var(--space-4)">
       <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">

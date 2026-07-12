@@ -137,6 +137,7 @@ $admin_active = 'approvals';
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
 
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
   <div class="admin-topbar">
     <div style="display:flex;align-items:center;gap:16px">
       <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة">

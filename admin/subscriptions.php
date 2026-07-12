@@ -65,8 +65,12 @@ $admin_active = 'subscriptions';
 <body class="admin-body">
 <?php include __DIR__ . '/sidebar.inc.php'; ?>
 <main class="admin-content">
+<?php include __DIR__ . '/mobile-chrome.inc.php'; ?>
   <div class="admin-topbar">
-    <h2 style="font-size:var(--font-size-xl);">إدارة الاشتراكات</h2>
+    <div style="display:flex;align-items:center;gap:var(--space-4)">
+      <button type="button" id="sidebar-toggle" class="btn btn-secondary btn-sm admin-sidebar-toggle" aria-label="فتح القائمة" aria-expanded="false" aria-controls="admin-sidebar"><i class="fas fa-bars"></i></button>
+      <h2 class="admin-page-title" style="font-size:var(--font-size-xl);">إدارة الاشتراكات</h2>
+    </div>
     <div>
       <a href="?tab=seller" class="btn btn-sm <?= $tab==='seller'?'btn-primary':'btn-secondary' ?>">بائعون</a>
       <a href="?tab=buyer" class="btn btn-sm <?= $tab==='buyer'?'btn-primary':'btn-secondary' ?>">مشترون</a>
